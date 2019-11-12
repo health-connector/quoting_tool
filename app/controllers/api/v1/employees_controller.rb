@@ -11,5 +11,15 @@ class Api::V1::EmployeesController < ApplicationController
       render :json => {status: "failure", census_records: [], errors: @roster_upload_form.failure}
     end
   end
-end
 
+  def download_roster
+    object = resource.bucket(input[:bucket]).object(input[:key])
+    encoded_result = Base64.encode64(object.get.body.read)
+
+    if result.success?
+      render json: { status: "success", metadata: encoded_result }
+    else
+      render json: { status: "failure", metadata: '' }
+    end
+  end
+end

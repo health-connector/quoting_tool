@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         collection do
           post :upload
           get :get_plans
+          get :download_roster
         end
       end
 
