@@ -531,7 +531,8 @@ export class PlanFilterComponent implements OnInit {
   }
 
   getSbcDocument(key) {
-    this.planService.getSbcDocumentFor(key);
+    const win = window.open('', '_blank');
+    this.planService.getSbcDocumentFor(key, win);
   }
 
   sortData(kind) {

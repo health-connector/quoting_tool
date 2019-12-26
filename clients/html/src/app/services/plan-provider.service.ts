@@ -63,14 +63,14 @@ export class PlanProviderService {
     });
   }
 
-  public getSbcDocumentFor(key) {
+  public getSbcDocumentFor(key, win) {
     this.api_request.authedGet('products/sbc_document.json', {key: key}).subscribe(response => {
       if (response['status'] === 'success') {
         const contentType = 'application/pdf';
         const b64Data = response['metadata'][1];
         const blob = this.b64toBlob(b64Data, contentType);
         const blobUrl = URL.createObjectURL(blob);
-        saveAs(blobUrl, "sbc_document")
+        win.location.href = blobUrl
       }
     });
   }
