@@ -158,15 +158,12 @@ export class EmployerDetailsComponent implements OnInit {
       this.counties = this.availableCounties.filter((county) => county.county === this.employerDetails.county);
       this.loadEmployeesFromStorage();
     }
-    // Sets effective Date options
 
-    if (this.todaysDate.getDate() > 15) {
-      this.effectiveDateOptions = [new Date(this.todaysDate.getFullYear(),
-        this.todaysDate.getMonth() + 2, 1), new Date(this.todaysDate.getFullYear(), this.todaysDate.getMonth() + 3, 1)];
-    } else {
-      this.effectiveDateOptions = [new Date(this.todaysDate.getFullYear(),
-        this.todaysDate.getMonth() + 1, 1), new Date(this.todaysDate.getFullYear(), this.todaysDate.getMonth() + 2, 1)];
-    }
+    var dates = [] ;
+    this.employerDetailsService.getStartOnDates().subscribe(function(response) {
+      dates = response["dates"].map(date => dates.push(date));
+    });
+    this.effectiveDateOptions = dates;
   }
 
   getZipCodes() {

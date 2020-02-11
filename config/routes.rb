@@ -9,6 +9,7 @@ Rails.application.routes.draw do
         collection do
           post :upload
           get :get_plans
+          get :start_on_dates
         end
       end
 

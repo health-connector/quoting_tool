@@ -12,4 +12,8 @@ export class EmployerDetailsService {
     return this.api_request.authedPost('employees/upload.json', upload);
   }
 
+  getStartOnDates()  {
+    return this.api_request.authedGet('employees/start_on_dates.json');
+  }
+
 }

@@ -1,0 +1,117 @@
+key: :enterprise
+namespaces:
+  - key: :tenants
+    namespaces:
+      - key: :cca
+        settings:
+          - key: :organization_name
+            default: Massachusetts Health Connector for Business
+          - key: :owner_account_name
+            default: ""
+        namespaces:
+          - key: :sites
+            namespaces:
+              - key: :primary
+                settings:
+                  - key: :url
+                    type: URL
+                    default: https://business.mahealthconnector.org/get-a-quote/
+                  - key: :title
+                    type: string
+                    default: Employer Quick Quote
+                  - key: :description
+                    type: string
+                    default: Employer Quick Quote
+                namespaces:
+                  - key: :environments
+                    namespaces:
+                    - key: :production
+                      namespaces:
+                        - key: :features
+                          namespaces:
+                            - key: :quoting_tool
+                              settings:
+                                - key: is_required
+                                  description: Feature must be required if true
+                                  default: false
+                                - key: is_enabled
+                                  description: Feature must be enabled if true
+                                  default: false
+                                - key: alt_key
+                                  description: Shortened Key reference to be used in Registry
+                                  default: ea
+                                - key: :title
+                                  description: Name for this setting that will appear in the UI
+                                  default: Enroll Application Component
+                                - key: :description
+                                  description: Help text that will appear in the UI
+                                  default: A streamlined, end-to-end technology for employers, employees and individuals to sponsor, shop and enroll in insurance benefits
+                              namespaces:
+                                - key: :features
+                                  namespaces:
+                                    - key: :aca_shop_market
+                                      settings:
+                                        - key: is_required
+                                          description: Feature must be enabled if true
+                                          default: false
+                                        - key: is_enabled
+                                          description: Feature must be enabled if true
+                                          default: false
+                                        - key: alt_key
+                                          description: Shortened Key reference to be used in Registry
+                                          default: shop
+                                        - key: :title
+                                          description: Name for this setting that will appear in the UI
+                                          default: ACA SHOP Market
+                                        - key: :description
+                                          description: Help text that will appear in the UI
+                                          default: ACA Small Business Health Options (SHOP) Portal
+                                      namespaces:
+                                        - key: :options
+                                          namespaces:
+                                            - key: :open_enrollment
+                                              namespaces:
+                                              - key: :settings
+                                                settings:
+                                                  - key: minimum_length_days
+                                                    type: :integer
+                                                    default: 5
+                                                  - key: minimum_length_adv_days
+                                                    type: :integer
+                                                    default: 10
+                                                  - key: monthly_end_on
+                                                    type: :integer
+                                                    default: 20
+                                                  - key: maximum_length_months
+                                                    type: :integer
+                                                    default: 2
+                                            - key: :initial_application
+                                              namespaces:
+                                              - key: :settings
+                                                settings:
+                                                  - key: earliest_start_prior_to_effective_on_months
+                                                    type: :integer
+                                                    default: -2
+                                        - key: :features
+                        - key: :options
+                          namespaces:
+                            - key: :settings
+                              settings:
+                                - key: copyright_period_start
+                                  type: :string
+                                  default: ""
+                                - key: policies_url
+                                  type: :string
+                                  default: ""
+                                - key: faqs_url
+                                  type: :string
+                                  default: ""
+                                - key: help_url
+                                  type: :string
+                                  default: ""
+                                - key: business_resource_center_url
+                                  type: :string
+                                  default: ""
+                                - key: nondiscrimination_notice_url
+                                  type: :string
+                                  default: ""
