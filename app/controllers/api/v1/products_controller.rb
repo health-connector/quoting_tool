@@ -11,13 +11,13 @@ class Api::V1::ProductsController < ApplicationController
     zip = params[:zip_code].squish!
     sic = params[:sic_code]
 
-    data = Rails.cache.fetch("data_#{kind}_#{county}_#{zip}_#{sic}_#{year}_#{month}", expires_in: 45.minutes) do
+    # data = Rails.cache.fetch("data_#{kind}_#{county}_#{zip}_#{sic}_#{year}_#{month}", expires_in: 45.minutes) do
       products = Products::Product.where(:"kind" => kind, :"service_area_id".in => service_area_ids(county, zip, year), :"application_period.min".lte => effective_date, :"application_period.max".gte => Date.new(year, 1, 1).end_of_year)
-      products.inject([]) do |result, product|
+      data = products.inject([]) do |result, product|
         result << ::ProductSerializer.new(product, params: {key: sic, rating_area_id: rating_area_id(county, zip, year), quarter: quarter(month)}).serializable_hash[:data][:attributes]
         result
       end
-    end
+    # end
     render :json => {status: "success", plans: data}
   end
 
