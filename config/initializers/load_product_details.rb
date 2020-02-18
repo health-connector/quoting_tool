@@ -16,7 +16,9 @@ end
       result[tuple.age] = tuple.cost
       result
     end
-    $rates[[product.id, pt.rating_area_id, quarter(pt.effective_period.min.month)]] = {entries: output, max_age: product.premium_ages.max, min_age: product.premium_ages.min}
+    (quarter(pt.effective_period.min.month)..quarter(pt.effective_period.max.month)).each do |q|
+      $rates[[product.id, pt.rating_area_id, q]] = {entries: output, max_age: product.premium_ages.max, min_age: product.premium_ages.min}
+    end
   end
 end
 
