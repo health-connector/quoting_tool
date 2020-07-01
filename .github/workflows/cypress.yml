@@ -16,7 +16,7 @@ jobs:
         uses: actions/cache@v1
         id: npm-cache
         with:
-          path: node_modules
+          path: clients/html/node_modules
           key: ${{ runner.os }}-node12-${{ hashFiles('**clients/html/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node12-
