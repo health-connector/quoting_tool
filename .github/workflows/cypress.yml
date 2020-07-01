@@ -36,3 +36,7 @@ jobs:
         run: cd clients/html && npm i cypress@latest --save-dev
       - name: Run end to end tests
         run: cd clients/html && npm run e2e -- --headless
+      - name: Set code coverage commit status
+        run: npx set-gh-status --check-against-readme
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
