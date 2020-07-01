@@ -35,4 +35,4 @@ jobs:
         if: steps.cypress-cache.outputs.cache-hit != 'true'
         run: cd clients/html && npm i cypress@latest --save-dev
       - name: Run end to end tests
-        run: cd clients/html && npm run e2e -- --prod --headless
+        run: cd clients/html && npm run e2e -- --headless

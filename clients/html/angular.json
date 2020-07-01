@@ -95,9 +95,7 @@
         "e2e": {
           "builder": "@briebug/cypress-schematic:cypress",
           "options": {
-            "devServerTarget": "quoting-tool:serve",
-            "watch": true,
-            "headless": false
+            "devServerTarget": "quoting-tool:serve"
           },
           "configurations": {
             "production": {
