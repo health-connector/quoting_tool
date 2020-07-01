@@ -51,6 +51,7 @@
     "@angular/cli": "^8.3.19",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "^8.2.14",
+    "@briebug/cypress-schematic": "^3.3.0",
     "@types/c3": "^0.6.4",
     "@types/chartist": "^0.9.46",
     "@types/datatables.net": "^1.10.18",
