@@ -61,6 +61,7 @@
     "@types/jquery": "^3.3.31",
     "@types/node": "~12.7.12",
     "codelyzer": "^5.2.0",
+    "cypress": "^4.9.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "^4.4.1",
