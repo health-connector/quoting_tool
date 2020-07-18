@@ -35,7 +35,7 @@
     "husky": "^3.1.0",
     "jquery": "^3.4.1",
     "jspdf-html2canvas": "^1.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "ngx-treeview": "^6.0.2",
     "node-sass": "^4.13.0",
     "pace-js": "^1.0.2",
