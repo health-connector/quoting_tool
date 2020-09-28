@@ -7,6 +7,7 @@ class ProductSerializer
     "11821" => "Delta Dental",
     "31779" => "UnitedHealthcare",
     "29125" => "Tufts Health Premier",
+    "38712" => "Tufts Health Premier",
     "88806" => "Fallon Health",
     "52710" => "Fallon Health",
     "41304" => "AllWays Health Partners",
