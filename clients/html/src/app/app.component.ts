@@ -19,7 +19,6 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     localStorage.removeItem('employerDetails');
     this.detectBrowser();
-    this.router.events.subscribe(event => console.log(event));
   }
 
   onDismiss() {
