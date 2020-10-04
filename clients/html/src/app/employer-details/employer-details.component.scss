@@ -1,20 +1,20 @@
 @import '../../../src/assets/scss/variable';
 
 .btn-link a {
-  color: #0036cb;
+  color: var(--secondary-blue);
 }
 
 .btn-outline-primary {
-  color: #c56c24;
-  border-color: #c56c24;
+  color: var(--light-orange);
+  border-color: var(--light-orange);
 }
 
 .btn-outline-primary:hover {
-  background-color: #c56c24;
+  background-color: var(--light-orange);
 }
 
 .fa-question {
-  color: $ma-dark-blue;
+  color: var(--primary-orange);
 }
 
 .fa-question:hover {
@@ -35,11 +35,9 @@ fieldset.household:hover {
 }
 
 fieldset.household > legend {
-  background: #005e81;
+  background: var(--secondary-blue);
   color: #fff;
   padding: 0px 8px 3px 8px;
-  -webkit-border-radius: 5px 5px 0px 0px;
-  -moz-border-radius: 5px 5px 0px 0px;
   font-weight: normal;
   font-size: 20px;
   font-weight: 600;
@@ -50,7 +48,7 @@ fieldset.dependent {
 }
 
 fieldset.dependent > legend {
-  color: #c56c24;
+  color: var(--light-orange);
 }
 
 .fa-trash {
@@ -63,7 +61,7 @@ fieldset.dependent > legend {
 
 .heading-text {
   font-weight: 700;
-  color: $ma-primary-orange;
+  color: var(--primary-orange);
 }
 
 ::-webkit-inner-spin-button,
@@ -74,7 +72,7 @@ fieldset.dependent > legend {
 
 .modal-header {
   color: #fff;
-  background: #005e81;
+  background:var(--secondary-blue);
 }
 
 .required-field {

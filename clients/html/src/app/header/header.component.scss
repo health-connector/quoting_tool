@@ -1,8 +1,8 @@
 @import '../../../src/assets/scss/variable';
 
 .main-header {
-  background-color: #ffffff;
-  border-bottom: solid 3px $ma-dark-blue;
+  background-color: hsl(0, 0%, 100%);
+  border-bottom: solid 3px var(--secondary-blue);
   min-height: 50px;
 }
 
@@ -17,5 +17,16 @@
 }
 
 .navbar-brand {
-  border-right: solid 1px #d7d7d7;
+  border-right: solid 1px hsl(0, 0%, 84%);
+}
+
+.logo-link {
+  display: inline-block;
+  width: 9rem;
+}
+
+.ct-logo {
+  width: 100%;
+
+  height: auto;
 }

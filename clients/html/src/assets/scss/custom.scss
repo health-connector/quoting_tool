@@ -1,7 +1,7 @@
 // In this scss you can overwrite all our scss, we suggested you to add your scss into this, so whenever the update comes it will not affect your code.
 
 body {
-  background-color: #f2efef;
+  background-color: hsl(0, 10%, 94%);
   font-family: 'Roboto Slab', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -9,11 +9,11 @@ body {
 }
 
 a {
-  color: #381be7;
+  color: var(--secondary-blue);
 }
 
 a:active {
-  color: #c56c24;
+  color: var(--light-orange);
 }
 
 .btn {
@@ -22,53 +22,40 @@ a:active {
 }
 
 .btn-link {
-  color: #c56c24;
+  color: var(--light-orange);
 }
 
 .btn-outline-info {
-  color: #00507e;
-  border-color: #00507e;
+  color: hsl(202, 100%, 25%);
+  border-color: hsl(202, 100%, 25%);
 }
 
 .btn-primary {
-  background-color: $ma-dark-blue;
-  border-color: $ma-dark-blue;
+  background-color: var(--primary-orange);
+  border-color: var(--primary-orange);
 }
 
 .btn-primary:hover {
-  background-color: #c56c24;
-  border-color: #c56c24;
+  background-color: var(--light-orange);
+  border-color: var(--light-orange);
 }
 
 .btn-success, .btn-success:disabled {
-  background-color: #c56c24;
-  border-color: #c56c24;
-  color: #fff;
+  background-color: var(--light-orange);
+  border-color: var(--light-orange);
+  color: #ffffff;
 }
 
-.btn-success:hover {
-  background-color: lighten($ma-primary-orange, 10%);
-  border-color: lighten($ma-primary-orange, 10%);
-}
+
 
 .btn-primary.disabled,
 .btn-primary:disabled {
-  background-color: #005e81;
-  border-color: #005e81;
+  background-color: hsl(196, 100%, 25%);
+  border-color: hsl(196, 100%, 25%);
 }
 
 .btn-success {
   color: #fff;
-}
-
-.footer {
-  font-size: 14px;
-  color: #ffffff;
-  background-color: $ma-dark-blue;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
 }
 
 .autocomplete-container, .autocomplete-container .input-container input {
@@ -79,17 +66,17 @@ a:active {
 }
 
 .ngx-datatable .datatable-header {
-  background-color: #005e81;
+  background-color: hsl(196, 100%, 25%);
 }
 
 .ngb-dp-day {
   .bg-primary {
-    background-color: #c56c24 !important;
+    background-color: var(--light-orange) !important;
   }
 }
 
 .ngb-dp-weekday {
-  color: #005e81 !important;
+  color:var(--secondary-blue) !important;
 }
 
 .ngx-datatable.material .datatable-header .datatable-header-cell {
@@ -98,7 +85,7 @@ a:active {
 }
 
 .plan-tooltip {
-  border-bottom: 1px dashed #007bc4;
+  border-bottom: 1px dashed hsl(202, 100%, 38%);
   color: #414141;
 }
 
