@@ -1,4 +1,4 @@
-# Quoting Tool
+# Quoting Tool ![check-code-coverage](https://img.shields.io/badge/code--coverage-29.28%25-red)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.3.
 

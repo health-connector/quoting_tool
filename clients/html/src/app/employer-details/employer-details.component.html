@@ -210,7 +210,13 @@
                 <div class="col-3">
                   <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" formControlName="firstName" placeholder="First Name" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="firstName"
+                      placeholder="First Name"
+                      [attr.data-cy]="'first-name-input'"
+                    />
                   </div>
                 </div>
                 <div class="col-3">
@@ -248,7 +254,7 @@
                     *ngFor="let dependent of editEmployeeForm.get('dependents')?.controls; let j = index"
                     [@fadeInOut]
                   >
-                    <fieldset class="dependent">
+                    <fieldset class="dependent" [attr.data-cy]="'dependent' + j">
                       <legend>
                         <h6 class="sub-heading-text">Dependent {{ j + 1 }}</h6>
                       </legend>
@@ -261,6 +267,7 @@
                               class="form-control"
                               formControlName="firstName"
                               placeholder="First Name"
+                              [attr.data-cy]="'first-name-input'"
                             />
                           </div>
                         </div>
@@ -348,13 +355,25 @@
                 <div class="col-3">
                   <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" formControlName="firstName" placeholder="First Name" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="firstName"
+                      placeholder="First Name"
+                      [attr.data-cy]="'first-name-input'"
+                    />
                   </div>
                 </div>
                 <div class="col-3">
                   <div class="form-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" class="form-control" formControlName="lastName" placeholder="Last Name" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="lastName"
+                      placeholder="Last Name"
+                      [attr.data-cy]="'last-name-input'"
+                    />
                   </div>
                 </div>
                 <div class="col-3">
@@ -400,6 +419,7 @@
                               class="form-control"
                               formControlName="firstName"
                               placeholder="First Name"
+                              [attr.data-cy]="'first-name-input'"
                             />
                           </div>
                         </div>
@@ -485,6 +505,7 @@
           <div
             *ngFor="let employee of quoteForm.get('employees')?.controls; let i = index"
             [attr.employee-index]="i"
+            [attr.data-cy]="'employee-' + i"
             id="employee-hh-card"
             [@fadeInOut]
           >
@@ -498,13 +519,26 @@
                 <div class="col-3">
                   <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" class="form-control" formControlName="firstName" placeholder="First Name" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="firstName"
+                      placeholder="First Name"
+                      data-cy="first-name-input"
+                    />
                   </div>
                 </div>
                 <div class="col-3">
                   <div class="form-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" class="form-control" formControlName="lastName" placeholder="Last Name" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      formControlName="lastName"
+                      placeholder="Last
+                    Name"
+                      data-cy="last-name-input"
+                    />
                   </div>
                 </div>
                 <div class="col-3">
@@ -519,13 +553,14 @@
                       #d="ngbDatepicker"
                       (click)="d.toggle()"
                       required
+                      data-cy="dob-input"
                     />
                   </div>
                 </div>
                 <div class="col-2">
                   <div class="form-group">
                     <label for="coverageKind">Coverage Type <span class="required-field">*</span></label>
-                    <select type="text" class="form-control" formControlName="coverageKind">
+                    <select type="text" class="form-control" formControlName="coverageKind" data-cy="coverage-type">
                       <option value="both" selected>Both</option>
                       <option value="healthOnly">Health Only</option>
                       <option value="dentalOnly">Dental Only</option>
@@ -552,6 +587,7 @@
                               class="form-control"
                               formControlName="firstName"
                               placeholder="First Name"
+                              [attr.data-cy]="'first-name-input'"
                             />
                           </div>
                         </div>
@@ -657,6 +693,7 @@
           </button>
           <button
             type="button"
+            data-cy="add-employee-btn"
             (click)="addEmployee()"
             class="btn btn-primary add-new-employee"
             *ngIf="!showEmployeeRoster"
@@ -677,6 +714,7 @@
             (click)="createRoster()"
             [disabled]="!quoteForm.valid"
             *ngIf="!showEmployeeRoster"
+            data-cy="save-roster"
           >
             <i class="fas fa-users"></i> Save Roster
           </button>
@@ -684,6 +722,7 @@
             class="float-right btn btn-success view-plans-button"
             routerLink="/employer-details/health"
             *ngIf="showEmployeeRoster"
+            data-cy="view-plans"
             ><i class="fas fa-check"></i> View Plans</a
           >
         </div>
