@@ -1146,7 +1146,11 @@ GEM
     zeitwerk (2.1.10)
 
 PLATFORMS
+  java
   ruby
+  x64-mingw32
+  x86-mingw32
+  x86-mswin32
 
 DEPENDENCIES
   activemodel (~> 6.0.0)
