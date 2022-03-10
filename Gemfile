@@ -32,6 +32,7 @@ gem 'resource_registry',  git:  'https://github.com/ideacrew/resource_registry.g
 gem 'fast_jsonapi'
 gem 'roo', '~> 2.1'
 gem 'virtus', '~> 1.0'
+gem 'mimemagic'
 gem 'nokogiri',                 '~> 1.10'
 gem 'nokogiri-happymapper',     '~> 0.8.0', :require => 'happymapper'
 gem 'money-rails',              '~> 1.13'
