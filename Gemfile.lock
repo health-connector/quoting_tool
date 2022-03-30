@@ -1039,7 +1039,8 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
-    puma (3.12.2)
+    puma (4.3.12)
+      nio4r (~> 2.0)
     rack (2.0.8)
     rack-cors (1.0.5)
       rack (>= 1.6.0)
@@ -1163,7 +1164,7 @@ DEPENDENCIES
   nokogiri (~> 1.10)
   nokogiri-happymapper (~> 0.8.0)
   pry-byebug
-  puma (~> 3.12)
+  puma (~> 4.3)
   rack-cors
   rails (~> 6.0.0)
   resource_registry!
