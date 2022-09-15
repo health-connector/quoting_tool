@@ -10,12 +10,12 @@ class ProductSerializer
     "38712" => "Tufts Health Premier",
     "88806" => "Fallon Health",
     "52710" => "Fallon Health",
-    "41304" => "AllWays Health Partners",
+    "41304" => "Mass General Brigham",
     "18076" => "Altus Dental",
     "34484" => "Health New England",
     "59763" => "Tufts Health Direct",
     "42690" => "Blue Cross Blue Shield MA",
-    "82569" => "BMC HealthNet Plan"
+    "82569" => "WellSense"
   }
 
   attributes :deductible, :name, :group_size_factors, :group_tier_factors, :participation_factors, :hsa_eligible, :out_of_pocket_in_network
