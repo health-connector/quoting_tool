@@ -48,7 +48,7 @@ module Parsers
       element :plan_brochure, String, tag: 'planBrochure'
 
       def to_hash
-        {
+        qhp_hash = {
           standard_component_id: standard_component_id.gsub(/\n/,'').strip,
           plan_marketing_name: plan_marketing_name.gsub(/\n/,'').strip,
           hios_product_id: hios_product_id.gsub(/\n/,'').strip,
@@ -91,6 +91,9 @@ module Parsers
           enrollment_payment_url: enrollment_payment_url.present? ? enrollment_payment_url.gsub(/\n/,'').strip : "",
           plan_brochure: (plan_brochure.gsub(/\n/,'').strip rescue "")
         }
+        qhp_hash.merge!(is_specialist_referral_required: is_specialist_referral_required.gsub(/\n/,'').strip) if is_specialist_referral_required.present?
+        qhp_hash.merge!(health_care_specialist_referral_type: health_care_specialist_referral_type.gsub(/\n/,'').strip) if health_care_specialist_referral_type.present?
+        qhp_hash
       end
     end
   end
