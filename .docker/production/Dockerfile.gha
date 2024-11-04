@@ -1,0 +1,119 @@
+############################################
+###             Base image               ###
+############################################
+
+ARG RUBY_VERSION=2.6.3
+FROM ruby:$RUBY_VERSION-slim-buster AS base
+LABEL author="MHC"
+
+ENV USERNAME=quoting_tool
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG BUNDLER_VERSION=2.0.2
+ENV BUNDLER_VERSION=$BUNDLER_VERSION
+
+# Only install what's needed that isn't in the base image
+RUN apt-get update \
+    && apt-get -yq dist-upgrade \
+    && apt-get install -y \
+      fontconfig \
+      libsodium23 \
+      libxext6 \
+      libxrender1 \
+      libyaml-cpp0.6 \
+#      openjdk-11-jre \
+      ruby-dalli \
+      sshpass \
+      unzip \
+      zip \
+      zlibc \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && truncate -s 0 /var/log/*log
+
+# Configure bundler and PATH, install bundler version
+ENV GEM_HOME=/usr/local/bundle
+ENV BUNDLE_PATH=$GEM_HOME
+ENV BUNDLE_APP_CONFIG=$BUNDLE_PATH
+ENV BUNDLE_BIN=/usr/local/bin
+ENV BUNDLE_JOBS=4
+ENV BUNDLE_RETRY=3
+
+ENV LANG=C.UTF-8
+
+ENV HOME=/quoting_tool
+
+ENV PATH=$HOME/bin:$BUNDLE_BIN:$GEM_HOME/gems/bin:$PATH
+
+# RUN gem update --system
+RUN rm -f /usr/local/bin/ruby/gems/*/specifications/default/bundler-*.gemspec
+RUN gem install bundler -v $BUNDLER_VERSION
+
+RUN groupadd --gid 1001 $USERNAME \
+  && useradd --uid 1001 --gid $USERNAME --shell /bin/bash --create-home $USERNAME
+
+RUN mkdir $HOME \
+  && chown -R $USERNAME:$USERNAME $HOME
+
+# Configure app home directory
+WORKDIR $HOME
+
+RUN mkdir /etc/infra
+
+ENV RAILS_ENV=production
+#ENV NODE_ENV=production
+
+
+#############################################
+### Builder. Not necessary in production. ###
+#############################################
+FROM base AS builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qq \
+  && apt-get install -yq --no-install-recommends \
+    build-essential \
+    git \
+    libpq-dev \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && truncate -s 0 /var/log/*log
+
+
+#############################################
+### Bundle dependencies    ###
+#############################################
+FROM builder AS prod_gems_and_assets
+
+COPY --chown=$USERNAME:$USERNAME ./Gemfile $HOME/Gemfile
+COPY --chown=$USERNAME:$USERNAME ./Gemfile.lock $HOME/Gemfile.lock
+
+RUN bundle config set --local without 'development test' \
+  && bundle install
+
+
+#############################################
+# Deployable image
+#############################################
+FROM base AS deploy
+
+#ARG HOSTNAME=localhost
+#
+## Quoting tool specific config
+#ENV QUOTING_TOOL_DB_HOST=${HOSTNAME}
+#ENV QUOTING_TOOL_DB_PORT=27017
+
+ENV QUOTING_TOOL_DB_NAME=quoting_tool_prod
+
+COPY --chown=$USERNAME:$USERNAME --from=prod_gems_and_assets $BUNDLE_PATH $BUNDLE_PATH
+COPY --chown=$USERNAME:$USERNAME . $HOME
+#lets not have this extra duplicated file, if we can avoid it
+#COPY --chown=$USERNAME:$USERNAME ./.docker/config/credentials.yml.enc $HOME/config
+
+# AVOID.. replace with env var usage
+#COPY --chown=$USERNAME:$USERNAME ./.docker/config/master.key $HOME/config
+RUN echo '[ ! -z "$TERM" -a -r /etc/infra/motd ] && cat /etc/infra/motd' >> /etc/bash.bashrc
+
+USER $USERNAME
