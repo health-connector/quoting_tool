@@ -1,7 +1,6 @@
 ############################################
 ###             Base image               ###
 ############################################
-
 ARG RUBY_VERSION=2.6.3
 FROM ruby:$RUBY_VERSION-slim-buster AS base
 LABEL author="MHC"
@@ -87,6 +86,15 @@ RUN apt-get update -qq \
 #############################################
 FROM builder AS prod_gems_and_assets
 
+# Require source of mime data for Rails < 6.0.3.6 (https://rubyonrails.org/2021/3/26/marcel-upgrade-releases)
+# This is a build time requirement of activestorage (though AS is not loaded at startup)
+RUN apt-get update -qq \
+    && apt-get install -yq --no-install-recommends \
+      shared-mime-info \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && truncate -s 0 /var/log/*log
+
 COPY --chown=$USERNAME:$USERNAME ./Gemfile $HOME/Gemfile
 COPY --chown=$USERNAME:$USERNAME ./Gemfile.lock $HOME/Gemfile.lock
 
@@ -106,6 +114,9 @@ FROM base AS deploy
 #ENV QUOTING_TOOL_DB_PORT=27017
 
 ENV QUOTING_TOOL_DB_NAME=quoting_tool_prod
+
+# Copy freedesktop file for mime types, if activestorage comes into play in future
+#COPY --chown=$USERNAME:$USERNAME --from=prod_gems_and_assets '/usr/share/mime/packages/freedesktop.org.xml' '/usr/share/mime/packages/freedesktop.org.xml'
 
 COPY --chown=$USERNAME:$USERNAME --from=prod_gems_and_assets $BUNDLE_PATH $BUNDLE_PATH
 COPY --chown=$USERNAME:$USERNAME . $HOME
