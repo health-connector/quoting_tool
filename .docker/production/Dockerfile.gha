@@ -1,3 +1,5 @@
+# Note this file only currently produces an image suitable for the Rails server part of this project (not client)
+
 ############################################
 ###             Base image               ###
 ############################################
@@ -12,7 +14,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG BUNDLER_VERSION=2.0.2
 ENV BUNDLER_VERSION=$BUNDLER_VERSION
 
-# Only install what's needed that isn't in the base image
+# Only install what's needed that isn't in the base image (per `app list --installed`)
 RUN apt-get update \
     && apt-get -yq dist-upgrade \
     && apt-get install -y \
@@ -59,7 +61,6 @@ RUN mkdir $HOME \
 WORKDIR $HOME
 
 ENV RAILS_ENV=production
-#ENV NODE_ENV=production
 
 
 #############################################
