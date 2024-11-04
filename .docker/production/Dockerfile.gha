@@ -58,8 +58,6 @@ RUN mkdir $HOME \
 # Configure app home directory
 WORKDIR $HOME
 
-RUN mkdir /etc/infra
-
 ENV RAILS_ENV=production
 #ENV NODE_ENV=production
 
@@ -123,6 +121,5 @@ COPY --chown=$USERNAME:$USERNAME . $HOME
 
 # AVOID.. replace with env var usage
 #COPY --chown=$USERNAME:$USERNAME ./.docker/config/master.key $HOME/config
-RUN echo '[ ! -z "$TERM" -a -r /etc/infra/motd ] && cat /etc/infra/motd' >> /etc/bash.bashrc
 
 USER $USERNAME
