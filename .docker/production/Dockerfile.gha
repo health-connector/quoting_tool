@@ -82,7 +82,7 @@ RUN apt-get update -qq \
 FROM builder AS prod_gems_and_assets
 
 # Require source of mime data for Rails < 6.0.3.6 (https://rubyonrails.org/2021/3/26/marcel-upgrade-releases)
-# This is a build time requirement of activestorage (though AS is not loaded at startup)
+# This is a build time requirement of activestorage (though activestorage is not currently loaded at startup)
 RUN apt-get update -qq \
     && apt-get install -yq --no-install-recommends \
       shared-mime-info \
@@ -115,10 +115,6 @@ ENV QUOTING_TOOL_DB_NAME=quoting_tool_prod
 
 COPY --chown=$USERNAME:$USERNAME --from=prod_gems_and_assets $BUNDLE_PATH $BUNDLE_PATH
 COPY --chown=$USERNAME:$USERNAME . $HOME
-#lets not have this extra duplicated file, if we can avoid it
-#COPY --chown=$USERNAME:$USERNAME ./.docker/config/credentials.yml.enc $HOME/config
-
-# AVOID.. replace with env var usage
-#COPY --chown=$USERNAME:$USERNAME ./.docker/config/master.key $HOME/config
 
 USER $USERNAME
+
