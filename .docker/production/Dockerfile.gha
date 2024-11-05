@@ -102,14 +102,6 @@ RUN bundle config set --local without 'development test' \
 #############################################
 FROM base AS deploy
 
-#ARG HOSTNAME=localhost
-#
-## Quoting tool specific config
-#ENV QUOTING_TOOL_DB_HOST=${HOSTNAME}
-#ENV QUOTING_TOOL_DB_PORT=27017
-
-ENV QUOTING_TOOL_DB_NAME=quoting_tool_prod
-
 # Copy freedesktop file for mime types, if activestorage comes into play in future
 #COPY --chown=$USERNAME:$USERNAME --from=prod_gems_and_assets '/usr/share/mime/packages/freedesktop.org.xml' '/usr/share/mime/packages/freedesktop.org.xml'
 
