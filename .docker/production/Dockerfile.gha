@@ -23,8 +23,6 @@ RUN apt-get update \
       libxext6 \
       libxrender1 \
       libyaml-cpp0.6 \
-#      openjdk-11-jre \
-      ruby-dalli \
       sshpass \
       unzip \
       zip \
