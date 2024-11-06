@@ -5,9 +5,11 @@ on:
   push:
     branches:
       - 'master'
+      - pv188414647_add_gha_workflow
   pull_request:
     branches:
       - 'master'
+      - pv188414637_add_dockerfile
 
 concurrency:
   group: docker-${{ github.ref }}
