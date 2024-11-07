@@ -146,8 +146,6 @@ jobs:
         uses: anchore/scan-action@v5
         with:
           image: ${{ format('{0}/{1}', needs.prep.outputs.registryGhcr, needs.prep.outputs.taggedImage) }}
-          # remove acs-report-enable =  is dead flag (https://github.com/anchore/scan-action/pull/192)
-          acs-report-enable: true
           fail-build: false
           severity-cutoff: critical
           cache-db: true
