@@ -1,0 +1,208 @@
+name: Build Docker Image
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prep:
+    if: >-
+      github.repository_owner == 'health-connector' && 
+        (github.event_name == 'push' || 
+        github.event_name == 'workflow_dispatch' || 
+        github.event.pull_request.head.repo.owner.login == 'health-connector')
+    runs-on: ubuntu-latest
+    outputs:
+      taggedImageFull: ${{ steps.prep.outputs.tagged_image_full }}
+      latestTagFull: ${{ steps.prep.outputs.latest_tag_full }}
+      shortSha: ${{ steps.prep.outputs.short_sha}}
+      branchName: ${{ steps.prep.outputs.branch_name }}
+      ghRepositoryName: ${{ steps.prep.outputs.gh_repository_name }}
+      registryGhcr: ${{ steps.prep.outputs.registry_ghcr }}
+    steps:
+      - name: Prepare info
+        id: prep
+        # For BRANCH_NAME, PR will use head_ref (source branch), push will fallback to ref_name (current branch).
+        run: |
+          BRANCH_NAME=${{ github.head_ref || github.ref_name }}
+          TAGSAFE_BRANCH_NAME=$(echo $BRANCH_NAME | sed -e 's/[^a-zA-Z0-9_.]/-/g' -e 's/^[-.]//g')
+          SHORT_SHA=$(echo $GITHUB_SHA | head -c7)
+          GH_REPO=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')
+          IMAGE=health-connector/$GH_REPO
+          REGISTRY_GHCR='ghcr.io'
+          
+          TAG=$TAGSAFE_BRANCH_NAME-$SHORT_SHA
+          TAGGED_IMAGE=$IMAGE:$TAG
+          TAGGED_IMAGE_FULL=$REGISTRY_GHCR/$TAGGED_IMAGE
+          LATEST_IMAGE=$IMAGE:latest          
+          LATEST_IMAGE_FULL=$REGISTRY_GHCR/$LATEST_IMAGE
+          
+          echo "tagged_image_full=$TAGGED_IMAGE_FULL" >> $GITHUB_OUTPUT
+          echo "latest_tag_full=$LATEST_IMAGE_FULL" >> $GITHUB_OUTPUT
+          echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "gh_repository_name=$GH_REPO" >> $GITHUB_OUTPUT
+          echo "registry_ghcr=ghcr.io" >> $GITHUB_OUTPUT
+  
+  build-and-upload-image:
+    if: >-
+      github.repository_owner == 'health-connector' &&
+        (github.event_name == 'push' ||
+        github.event_name == 'workflow_dispatch' ||
+        github.event.pull_request.head.repo.owner.login == 'health-connector')
+    needs: [prep]
+    runs-on: ubuntu-latest
+    env:
+      PUSH_IMAGE: ${{ github.event_name != 'pull_request' }}
+    outputs:
+      didPush: ${{ steps.job_results.outputs.did_push == 'true' }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add git HEAD info to docker image
+        run: git show --quiet HEAD > release.txt
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          install: true
+          version: v0.17.1
+
+      # Cache layers specific to current sha, but allow rummaging through older caches if none for current
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ needs.prep.outputs.registryGhcr }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build Image
+        id: build_push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: .docker/production/Dockerfile.gha
+          # Set the desired build target here
+          target: deploy
+          # needed to access mongo and rabbit on GHA machine at build time
+          network: host
+          # send to container registry if not a pull request (e.g., merge to master or forced run)
+          push: ${{ env.PUSH_IMAGE == 'true' }}
+          # create local image (for scanning) if it is a pull request
+          load: ${{ env.PUSH_IMAGE == 'false' }}
+          # For non-"latest" tag, example of format is "ghcr.io/health-connector/quoting_tool:mybranch-40df5b1"
+          tags: |
+            ${{ needs.prep.outputs.taggedImageFull }}
+            ${{ needs.prep.outputs.latestTagFull }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          # Note the mode=max here, for caching intermediates in multi-stage build
+          # More: https://github.com/moby/buildkit?tab=readme-ov-file#local-directory-1
+          # And: https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#-export-build-cache-to-an-external-cache-destination---cache-to
+          cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
+          # Can bump provenance as needed, but for now, keep it minimal to minimize risk of leaking secure info
+          # https://docs.docker.com/build/ci/github-actions/attestations/#default-provenance
+          # Note only supported for image push, not load
+          provenance: ${{ env.PUSH_IMAGE == 'true' && 'mode=min' }}
+
+      # See https://docs.docker.com/build/ci/github-actions/cache/#local-cache OR https://github.com/moby/buildkit/issues/1896
+      # need for this two-step w/r/t cache-to above and cache movement here.
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Add package push info to summary
+        continue-on-error: true
+        run: |
+          if [[ ${{ env.PUSH_IMAGE }} == 'true' ]]; then
+            TAGS=$(echo "${{ fromJSON(steps.build_push.outputs.metadata)['image.name'] }}" | tr ',' '\n' | sed 's/^/- /')
+            echo -e "The following image tags were pushed:\n$TAGS\n" >> $GITHUB_STEP_SUMMARY
+            echo 'New images can be found on GHCR here: https://github.com/health-connector/quoting_tool/pkgs/container/quoting_tool.' >> $GITHUB_STEP_SUMMARY
+          else
+            echo 'Image build triggered as local-only - no image pushed to registry.' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      # scan either the pushed image (for non-pr) or the local-only image (for pr)
+      - name: Scan Docker image for security issues with Grype
+        id: scan
+        uses: anchore/scan-action@v5
+        with:
+          image: ${{ needs.prep.outputs.taggedImageFull }}
+          fail-build: false
+          severity-cutoff: critical
+          cache-db: true
+
+      - name: Upload Grype security scan SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif }}
+
+#      - name: Setup sysdig cache
+#        uses: actions/cache@v4
+#        with:
+#          path: cache
+#          key: ${{ runner.os }}-cache-${{ hashFiles('**/sysdig-cli-scanner', '**/latest_version.txt', '**/db/main.db.meta.json', '**/scanner-cache/inlineScannerCache.db') }}
+#          restore-keys: ${{ runner.os }}-cache-
+#
+#      # Sysdig will try local docker daemon for scannable image, and fallback to remote repository (though accessing
+#      # non-public, remote package may need means to use credentials, or do a local load in build step for all cases, etc.)
+#      # https://docs.sysdig.com/en/sysdig-secure/install-agent-components/install-vulnerability-cli-scanner/running-in-vm-mode/#image-sources
+#      # This dumps to console out - does not push to github security - see to impl that: https://github.com/sysdiglabs/secure-inline-scan-examples/tree/main/github/new-scan-engine
+#      - name: Download sysdig-cli-scanner if needed and scan the image with sysdig scanner
+#        env:
+#          SECURE_API_TOKEN: ${{ secrets.SECURE_API_TOKEN }}
+#          SYSDIG_SECURE_ENDPOINT: "https://us2.app.sysdig.com"
+#        run: |
+#          curl -sLO https://download.sysdig.com/scanning/sysdig-cli-scanner/latest_version.txt
+#          mkdir -p "${GITHUB_WORKSPACE}/cache/db/"
+#          if [ ! -f "${GITHUB_WORKSPACE}/cache/latest_version.txt" ] || [ "$(cat ./latest_version.txt)" != "$(cat ${GITHUB_WORKSPACE}/cache/latest_version.txt)" ]; then
+#            cp ./latest_version.txt "${GITHUB_WORKSPACE}/cache/latest_version.txt"
+#            curl -sL -o "${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner" "https://download.sysdig.com/scanning/bin/sysdig-cli-scanner/$(cat ${GITHUB_WORKSPACE}/cache/latest_version.txt)/linux/amd64/sysdig-cli-scanner"
+#            chmod +x "${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner"
+#          else
+#            echo "Latest version of sysdig cli scanner is already downloaded"
+#          fi
+#          ${GITHUB_WORKSPACE}/cache/sysdig-cli-scanner \
+#            --apiurl "${SYSDIG_SECURE_ENDPOINT}" \
+#            ${{ needs.prep.outputs.taggedImageFull }} \
+#            --console-log \
+#            --dbpath="${GITHUB_WORKSPACE}/cache/db/" \
+#            --cachepath="${GITHUB_WORKSPACE}/cache/scanner-cache/"
+
+      # Even workflow-level env vars are not available to if conditions on jobs (like the slack jobs that follow). So,
+      # pass results on this way. didPush is true if we intended to push and the job didn't die from failure before this.
+      - name: Set job results outputs
+        id: job_results
+        run: |
+          echo "did_push=${{ env.PUSH_IMAGE == 'true' }}" >> $GITHUB_OUTPUT   
+
+#  notify-slack:
+#    if: ${{ github.repository_owner == 'health-connector' && needs.build-and-upload-image.outputs.didPush }}
+#    needs: [prep, build-and-upload-image]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Post to a Slack channel
+#        uses: slackapi/slack-github-action@v1
+#        with:
+#          channel-id: "docker-images-${{ needs.prep.outputs.ghRepositoryName }}"
+#          slack-message: "New image pushed: `${{ needs.prep.outputs.taggedImageFull }}` built from <https://github.com/health-connector/${{ needs.prep.outputs.ghRepositoryName }}/commit/${{ needs.prep.outputs.shortSha }}|${{ needs.prep.outputs.shortSha }}> on `${{ needs.prep.outputs.branchName }}`"
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.YELLR_BOT_TOKEN }}
