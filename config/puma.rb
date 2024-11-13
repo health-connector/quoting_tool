@@ -10,11 +10,28 @@ threads min_threads_count, max_threads_count
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
-port        ENV.fetch("PORT") { 3000 }
+port ENV.fetch("PORT") { 3000 }
 
 # Specifies the `environment` that Puma will run in.
 #
 environment ENV.fetch("RAILS_ENV") { "development" }
+
+on_worker_boot do
+  Mongoid::Clients.clients.each_value do |client|
+    client.close
+    client.reconnect
+  end
+end
+
+before_fork do
+  Mongoid.disconnect_clients
+end
+
+# Puma 3.6 does not support fork_worker mode. Uncomment the below when puma installed version upgrades to support this,
+# per Mongoid docs' recommendations.
+# on_refork do
+#   Mongoid.disconnect_clients
+# end
 
 # Specifies the `pidfile` that Puma will use.
 pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
