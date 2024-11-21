@@ -44,7 +44,7 @@
     "sass": "^1.23.7",
     "sweetalert2": "^9.3.17",
     "web-animations-js": "^2.3.2",
-    "xlsx": "^0.15.2",
+    "xlsx": "^0.17.0",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
