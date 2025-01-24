@@ -3,14 +3,19 @@
 /*******************************/
 @import url('https://fonts.googleapis.com/css?family=Rubik:300,400,500,700,900');
 /*Theme Colors*/
+$client-primary: #293352;
+$client-bg-color: #005595;
+$client-bg-color-lighten: lighten($client-bg-color, 5%);
 
-$themecolor: #2962ff;
+$client-secondary: #005595;
+
+$themecolor: $client-primary;
 $themecolor-dark: #028ee1;
 $themecolor-alt: #26c6da;
 $theme-light: #fff;
 $theme-dark: #212529;
 $ma-dark-blue: #0f5e82;
-$ma-primary-orange: #c56724;
+$ma-primary-orange: $client-primary;
 
 $skin1: linear-gradient(to right, #0178bc 0%, #00bdda 100%);
 $skin2: linear-gradient(to right, #318f94 0%, #5ec58c 100%);

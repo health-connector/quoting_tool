@@ -1,5 +1,7 @@
+@import '../../../src/assets/scss/variable';
+
 a {
-  color: #005e81;
+  color: $client-primary;
   font-weight: 600;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -8,10 +10,10 @@ a {
 }
 
 a:hover {
-  color: #c56c24;
+  color: $client-secondary;
 }
 
 a.active {
-  color: #c56c24;
+  color: $client-secondary;
   text-decoration: underline;
 }

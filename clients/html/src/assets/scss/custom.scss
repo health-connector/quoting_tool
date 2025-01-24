@@ -31,18 +31,18 @@ a:active {
 }
 
 .btn-primary {
-  background-color: $ma-dark-blue;
-  border-color: $ma-dark-blue;
+  background-color: $client-secondary;
+  border-color: $client-secondary;
 }
 
 .btn-primary:hover {
-  background-color: #c56c24;
-  border-color: #c56c24;
+  background-color: $client-primary;
+  border-color: $client-primary;
 }
 
 .btn-success, .btn-success:disabled {
-  background-color: #c56c24;
-  border-color: #c56c24;
+  background-color: $client-secondary;
+  border-color: $client-primary;
   color: #fff;
 }
 
@@ -64,7 +64,7 @@ a:active {
 .footer {
   font-size: 14px;
   color: #ffffff;
-  background-color: $ma-dark-blue;
+  background-color: $client-secondary;
   position: fixed;
   bottom: 0;
   left: 0;
