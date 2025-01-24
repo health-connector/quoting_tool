@@ -3,7 +3,10 @@
 #############
 
 # base image
-FROM node:12.10.0 as build
+FROM node:14.20 AS build
+
+RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
+RUN echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
 
 # install chrome for protractor tests
 RUN apt-get update && apt-get install
@@ -12,7 +15,7 @@ RUN apt-get update && apt-get install
 WORKDIR /app
 
 # add `/app/node_modules/.bin` to $PATH
-ENV PATH /app/node_modules/.bin:$PATH
+ENV PATH=/app/node_modules/.bin:$PATH
 
 # install and cache app dependencies
 COPY ./clients/html/package.json /app/package.json
