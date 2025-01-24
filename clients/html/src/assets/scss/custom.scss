@@ -13,7 +13,7 @@ a {
 }
 
 a:active {
-  color: #c56c24;
+  color: $client-secondary;
 }
 
 .btn {
@@ -22,7 +22,7 @@ a:active {
 }
 
 .btn-link {
-  color: #c56c24;
+  color: $client-secondary;
 }
 
 .btn-outline-info {
@@ -84,7 +84,7 @@ a:active {
 
 .ngb-dp-day {
   .bg-primary {
-    background-color: #c56c24 !important;
+    background-color: $client-secondary !important;
   }
 }
 

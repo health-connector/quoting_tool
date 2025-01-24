@@ -5,12 +5,12 @@
 }
 
 .btn-outline-primary {
-  color: #c56c24;
-  border-color: #c56c24;
+  color: $client-secondary;
+  border-color: $client-secondary;
 }
 
 .btn-outline-primary:hover {
-  background-color: #c56c24;
+  background-color: $client-secondary;
 }
 
 .fa-question {
@@ -50,7 +50,7 @@ fieldset.dependent {
 }
 
 fieldset.dependent > legend {
-  color: #c56c24;
+  color: $client-secondary;
 }
 
 .fa-trash {
