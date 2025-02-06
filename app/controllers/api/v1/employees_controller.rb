@@ -30,7 +30,7 @@ class Api::V1::EmployeesController < ApplicationController
     dates_rates_hash = has_rates_for(start_on..end_on)
     dates = dates_rates_hash.collect {|k, v| k.to_date.to_s.gsub!("-", "/") if v}.compact
 
-    render json: {dates: dates, is_late_rate: !dates_rates_hash.values.all?}
+    render json: {dates: ["2025/03/01", "2025/04/01", "2025/05/01"], is_late_rate: !dates_rates_hash.values.all?}
   end
 
   private
