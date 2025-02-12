@@ -70,7 +70,7 @@ export class EmployerDetailsComponent implements OnInit {
   public months: any;
   public todaysDate = new Date();
   public employeeRosterDetails: any;
-  public show: boolean;
+  public showSicDetails: boolean;
   showNewEmployee = false;
   excelArray: any;
 
