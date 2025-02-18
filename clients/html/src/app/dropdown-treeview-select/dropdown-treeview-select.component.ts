@@ -9,26 +9,26 @@ import sicCodes from '../../data/sicCodes.json';
   styleUrls: ['./dropdown-treeview-select.component.css']
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
-  items: TreeviewItem[];
-  sicCodes = sicCodes;
+  items: TreeviewItem[] = [];
+  sicCodes: any[] = sicCodes;
 
-  config = TreeviewConfig.create({
+  config: TreeviewConfig = TreeviewConfig.create({
     hasFilter: true,
     hasCollapseExpand: false
   });
 
-  constructor(private selectedSicService: SelectedSicService) {}
+  constructor(private selectedSicService: SelectedSicService) { }
 
   ngOnInit() {
     this.items = this.buildSicTree();
   }
 
   onValueChange(value: number) {
-    console.log('valueChange raised with value: ' + value);
+    console.log('Value Change:', value);
   }
 
   select(item: TreeviewItem) {
-    if (item.children === undefined) {
+    if (!item.children) {
       this.selectItem(item);
     }
   }
@@ -37,27 +37,21 @@ export class DropdownTreeviewSelectComponent implements OnInit {
     this.selectedSicService.changeMessage(item);
   }
 
-  buildSicTree(): TreeviewItem[] {
-    // The object that will format data to proper format for treeview
-    const parentObject = {
-      text: String,
-      value: 0,
-      collapsed: true,
-      children: []
-    };
+  private buildSicTree(): TreeviewItem[] {
+    const divisionLabels: string[] = [];
+    const majorGroupLabels: { key: string; text: string; code: string; collapsed: boolean }[] = [];
+    const industryGroupLabels: { key: string; text: string; value: string; collapsed: boolean }[] = [];
+    const standardIndustryCodes: { key: string; text: string; value: string; collapsed: boolean }[] = [];
 
-    const availableItems = [];
-    const divisionLabels = [];
-    const majorGroupLabels = [];
-    const industryGroupLabels = [];
-    const standardIndustryCodes = [];
-    this.sicCodes.map((sic) => {
-      // Generates Division Labels options
+    // Process SIC codes
+    this.sicCodes.forEach((sic) => {
+      // Collect unique Division Labels
       if (!divisionLabels.includes(sic['Division_Label'])) {
         divisionLabels.push(sic['Division_Label']);
       }
-      // Generates Major Group Labels options
-      if (!majorGroupLabels.includes({ text: sic['MajorGroup_Label'] })) {
+
+      // Collect unique Major Group Labels
+      if (!majorGroupLabels.some(mgl => mgl.text === sic['MajorGroup_Label'])) {
         majorGroupLabels.push({
           key: sic['Division_Label'],
           text: sic['MajorGroup_Label'],
@@ -65,8 +59,9 @@ export class DropdownTreeviewSelectComponent implements OnInit {
           collapsed: true
         });
       }
-      // Generates Industry Group Labels options
-      if (!industryGroupLabels.includes({ text: sic['IndustryGroup_Label'] })) {
+
+      // Collect unique Industry Group Labels
+      if (!industryGroupLabels.some(igl => igl.text === sic['IndustryGroup_Label'])) {
         industryGroupLabels.push({
           key: sic['MajorGroup_Label'],
           text: sic['IndustryGroup_Label'],
@@ -74,12 +69,9 @@ export class DropdownTreeviewSelectComponent implements OnInit {
           collapsed: true
         });
       }
-      // Generates Standard Industry Code options
-      if (
-        !standardIndustryCodes.includes({
-          value: sic['StandardIndustryCode_Code']
-        })
-      ) {
+
+      // Collect unique Standard Industry Codes
+      if (!standardIndustryCodes.some(sicCode => sicCode.value === sic['StandardIndustryCode_Code'])) {
         standardIndustryCodes.push({
           key: sic['IndustryGroup_Label'],
           text: sic['StandardIndustryCode_Full'],
@@ -88,32 +80,42 @@ export class DropdownTreeviewSelectComponent implements OnInit {
         });
       }
     });
-    // Maps division options to treeview format
-    divisionLabels.map((divisionLabel, index) => {
-      parentObject.text = divisionLabel;
-      parentObject.value = index;
-      // Maps Major Group Label options to treeview format and gets unique options
-      const groupLabels = majorGroupLabels
-        .filter((mgl) => mgl.key === divisionLabel)
-        .filter((thing, i, self) => self.findIndex((t) => t.text === thing.text) === i);
-      parentObject.children = groupLabels;
-      // Maps Industry Group Label options to treeview format and gets unique options
-      parentObject.children.map((child) => {
-        const igLabels = industryGroupLabels
-          .filter((igl) => igl.key === child.text)
-          .filter((thing, i, self) => self.findIndex((t) => t.text === thing.text) === i);
-        child['children'] = igLabels;
-        // Maps Standat Industry Code options to treeview format
-        child.children.map((kid) => {
-          const iCodes = standardIndustryCodes.filter((sic) => sic.key === kid.text);
-          kid['children'] = iCodes;
+
+    // Build tree structure
+    const availableItems: TreeviewItem[] = [];
+
+    divisionLabels.forEach((divisionLabel, index) => {
+      const divisionNode = {
+        text: divisionLabel,
+        value: index,
+        collapsed: true,
+        children: []
+      };
+
+      // Add Major Group Labels
+      divisionNode.children = majorGroupLabels
+        .filter(mgl => mgl.key === divisionLabel)
+        .map(mgl => ({
+          ...mgl,
+          children: []
+        }));
+
+      // Add Industry Group Labels
+      divisionNode.children.forEach(child => {
+        child.children = industryGroupLabels
+          .filter(igl => igl.key === child.text)
+          .map(igl => ({
+            ...igl,
+            children: []
+          }));
+
+        // Add Standard Industry Codes
+        child.children.forEach(kid => {
+          kid.children = standardIndustryCodes.filter(sic => sic.key === kid.text);
         });
       });
 
-      let name = divisionLabel + index;
-      // @ts-ignore
-      name = new TreeviewItem(parentObject);
-      availableItems.push(name);
+      availableItems.push(new TreeviewItem(divisionNode));
     });
 
     return availableItems;

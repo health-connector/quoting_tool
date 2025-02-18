@@ -210,7 +210,7 @@ export class EmployerDetailsComponent implements OnInit {
         'standardIndustryCodeCode'
       ];
       this.quoteForm.get('sic').setValue(sicValue);
-      this.show = false;
+      this.showSicDetails = false
     }
   }
 
