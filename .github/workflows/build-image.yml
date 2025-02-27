@@ -192,7 +192,7 @@ jobs:
       - name: Set job results outputs
         id: job_results
         run: |
-          echo "did_push=${{ env.PUSH_IMAGE == 'true' }}" >> $GITHUB_OUTPUT   
+          echo "did_push=${{ env.PUSH_IMAGE == 'true' }}" >> $GITHUB_OUTPUT
 
  notify-slack:
    if: github.repository_owner == 'health-connector' && needs.build-and-upload-image.outputs.didPush == 'true'
