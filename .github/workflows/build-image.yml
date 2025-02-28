@@ -184,12 +184,18 @@ jobs:
 #            --dbpath="${GITHUB_WORKSPACE}/cache/db/" \
 #            --cachepath="${GITHUB_WORKSPACE}/cache/scanner-cache/"
 
+      - name: Debug PUSH_IMAGE
+        run: echo "PUSH_IMAGE=${{ env.PUSH_IMAGE }}"
+
       # Even workflow-level env vars are not available to if conditions on jobs (like the slack jobs that follow). So,
       # pass results on this way. didPush is true if we intended to push and the job didn't die from failure before this.
       - name: Set job results outputs
         id: job_results
         run: |
           echo "did_push=${{ env.PUSH_IMAGE == 'true' }}" >> $GITHUB_OUTPUT
+
+      - name: Debug didPush
+        run: echo "didPush=${{ steps.job_results.outputs.did_push }}"
 
   notify-slack:
     if: github.repository_owner == 'health-connector' && needs.build-and-upload-image.outputs.didPush == 'true'
