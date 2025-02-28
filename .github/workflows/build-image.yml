@@ -55,11 +55,12 @@ jobs:
           echo "registry_ghcr=ghcr.io" >> $GITHUB_OUTPUT
 
   build-and-upload-image:
-    if: github.repository_owner == 'health-connector' && (
-      github.event_name == 'push' || 
-      github.event_name == 'workflow_dispatch' || 
-      github.event.pull_request.head.repo.owner.login == 'health-connector'
-    )
+    if: >-
+      github.repository_owner == 'health-connector' && (
+        github.event_name == 'push' || 
+        github.event_name == 'workflow_dispatch' || 
+        github.event.pull_request.head.repo.owner.login == 'health-connector'
+      )
     needs: [prep]
     runs-on: ubuntu-latest
     env:
