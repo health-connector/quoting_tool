@@ -202,4 +202,4 @@ jobs:
           channel-id: "docker-images-${{ needs.prep.outputs.ghRepositoryName }}"
           slack-message: "New image pushed: `${{ needs.prep.outputs.taggedImageFull }}` built from <https://github.com/health-connector/${{ needs.prep.outputs.ghRepositoryName }}/commit/${{ needs.prep.outputs.shortSha }}|${{ needs.prep.outputs.shortSha }}> on `${{ needs.prep.outputs.branchName }}`"
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.YELLR_BOT_TOKEN }}
+          SLACK_BOT_TOKEN: ${{ secrets.CCA_DEPLOY_SLACK_BOT_TOKEN }}
