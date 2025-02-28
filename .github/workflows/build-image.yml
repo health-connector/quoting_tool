@@ -15,11 +15,12 @@ concurrency:
 
 jobs:
   prep:
-    if: github.repository_owner == 'health-connector' && (
-      github.event_name == 'push' || 
-      github.event_name == 'workflow_dispatch' || 
-      github.event.pull_request.head.repo.owner.login == 'health-connector'
-    )
+    if: >-
+      github.repository_owner == 'health-connector' && (
+        github.event_name == 'push' || 
+        github.event_name == 'workflow_dispatch' || 
+        github.event.pull_request.head.repo.owner.login == 'health-connector'
+      )
     runs-on: ubuntu-latest
     outputs:
       taggedImageFull: ${{ steps.prep.outputs.tagged_image_full }}
