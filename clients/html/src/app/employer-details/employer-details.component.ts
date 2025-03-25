@@ -85,7 +85,7 @@ export class EmployerDetailsComponent implements OnInit {
     decoupleChildFromParent: true
   };
 
-  @ViewChild('file', { static: false }) file: ElementRef;
+  @ViewChild('file') file: ElementRef;
 
   @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
     event.returnValue = false;
