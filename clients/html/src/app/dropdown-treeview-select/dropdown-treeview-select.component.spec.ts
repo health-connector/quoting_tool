@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { DropdownTreeviewSelectComponent } from './dropdown-treeview-select.component';
 import { SelectedSicService } from '../services/selected-sic.service';
@@ -9,7 +9,7 @@ describe('DropdownTreeviewSelectComponent', () => {
   let component: DropdownTreeviewSelectComponent;
   let fixture: ComponentFixture<DropdownTreeviewSelectComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [DropdownTreeviewSelectComponent],
       imports: [FormsModule],

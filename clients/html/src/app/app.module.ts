@@ -32,8 +32,7 @@ const routes: Routes = [
   {
     path: 'employer-details/dental',
     loadChildren: () => import('./employer-details/employer-details-dental/dental.module').then((m) => m.DentalModule)
-  },
-
+  }
 ];
 
 @NgModule({
@@ -46,9 +45,9 @@ const routes: Routes = [
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
-    RouterModule.forRoot(routes),
+    RouterModule.forRoot(routes, { relativeLinkResolution: 'corrected' }),
     SweetAlert2Module.forRoot(),
-    SharedModule,
+    SharedModule
   ],
   bootstrap: [AppComponent]
 })
