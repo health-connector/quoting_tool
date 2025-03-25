@@ -36,19 +36,20 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent, HeaderComponent, FooterComponent],
-  imports: [
-    CommonModule,
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    NgbModule,
-    RouterModule.forRoot(routes, {}),
-    SweetAlert2Module.forRoot(),
-    SharedModule
-  ],
-  bootstrap: [AppComponent]
+    declarations: [AppComponent],
+    imports: [
+        CommonModule,
+        BrowserModule,
+        BrowserAnimationsModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        NgbModule,
+        RouterModule.forRoot(routes, {}),
+        SweetAlert2Module.forRoot(),
+        SharedModule,
+        HeaderComponent, FooterComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule {}

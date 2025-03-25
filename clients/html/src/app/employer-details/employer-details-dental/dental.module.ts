@@ -6,18 +6,18 @@ import { SharedModule } from '../../shared/shared.module';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
-  declarations: [EmployerDetailsDentalComponent],
-  imports: [
-    CommonModule, NgbModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: EmployerDetailsDentalComponent
-      }
-    ]),
-    SharedModule
-  ],
-  exports: [EmployerDetailsDentalComponent]
-  // providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }]
+    imports: [
+        CommonModule, NgbModule,
+        RouterModule.forChild([
+            {
+                path: '',
+                component: EmployerDetailsDentalComponent
+            }
+        ]),
+        SharedModule,
+        EmployerDetailsDentalComponent
+    ],
+    exports: [EmployerDetailsDentalComponent]
+    // providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }]
 })
 export class DentalModule {}

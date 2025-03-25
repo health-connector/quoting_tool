@@ -1,9 +1,13 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NgFor, NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-nav',
-  templateUrl: './nav.component.html',
-  styleUrls: ['./nav.component.scss']
+    selector: 'app-nav',
+    templateUrl: './nav.component.html',
+    styleUrls: ['./nav.component.scss'],
+    standalone: true,
+    imports: [NgFor, NgClass, RouterLink]
 })
 export class NavComponent implements OnInit {
   @Input() validForm: string;

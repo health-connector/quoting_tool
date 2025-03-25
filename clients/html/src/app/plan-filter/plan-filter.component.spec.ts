@@ -77,9 +77,8 @@ describe('PlanFilterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [PlanFilterComponent, PlanFilterPipe, OrderByPipe],
-      imports: [NgbModule, BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, FormsModule]
-    }).compileComponents();
+    imports: [NgbModule, BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, FormsModule, PlanFilterComponent, PlanFilterPipe, OrderByPipe]
+}).compileComponents();
   }));
 
   beforeEach(() => {

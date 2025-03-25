@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { FormBuilder, Validators, FormArray, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators, FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbAlert, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateStruct, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
@@ -11,6 +11,13 @@ import zipcodes from '../../data/zipCode.json';
 import sics from '../../data/sic.json';
 import sicCodes from '../../data/sicCodes.json';
 import { SelectedSicService } from '../services/selected-sic.service';
+import { CoverageTypePipe } from './coverage-type.pipe';
+import { RouterLink } from '@angular/router';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { DropdownTreeviewSelectComponent } from '../dropdown-treeview-select/dropdown-treeview-select.component';
+import { AutocompleteLibModule } from 'angular-ng-autocomplete';
+import { NavComponent } from '../nav/nav.component';
+import { NgIf, NgFor, DatePipe } from '@angular/common';
 
 type AOA = any[][];
 
@@ -22,21 +29,20 @@ interface Alert {
 }
 
 @Component({
-  selector: 'app-employer-details',
-  templateUrl: './employer-details.component.html',
-  styleUrls: ['./employer-details.component.scss'],
-  providers: [NgbModal, EmployerDetailsService],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0
-        })
-      ),
-      transition('void <=> *', animate(400))
-    ])
-  ]
+    selector: 'app-employer-details',
+    templateUrl: './employer-details.component.html',
+    styleUrls: ['./employer-details.component.scss'],
+    providers: [NgbModal, EmployerDetailsService],
+    animations: [
+        trigger('fadeInOut', [
+            state('void', style({
+                opacity: 0
+            })),
+            transition('void <=> *', animate(400))
+        ])
+    ],
+    standalone: true,
+    imports: [NgIf, NgFor, NgbAlert, NavComponent, FormsModule, ReactiveFormsModule, AutocompleteLibModule, DropdownTreeviewSelectComponent, NgxDatatableModule, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbInputDatepicker, RouterLink, DatePipe, CoverageTypePipe]
 })
 export class EmployerDetailsComponent implements OnInit {
   rows = [];

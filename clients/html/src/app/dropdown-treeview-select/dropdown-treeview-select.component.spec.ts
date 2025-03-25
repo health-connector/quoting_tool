@@ -11,10 +11,9 @@ describe('DropdownTreeviewSelectComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [DropdownTreeviewSelectComponent],
-      imports: [FormsModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    imports: [FormsModule, DropdownTreeviewSelectComponent],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA]
+}).compileComponents();
   }));
 
   beforeEach(() => {

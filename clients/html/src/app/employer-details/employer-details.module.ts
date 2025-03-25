@@ -10,17 +10,17 @@ import { SharedModule } from '../shared/shared.module';
 import { RouterModule } from '@angular/router';
 
 @NgModule({
-  declarations: [EmployerDetailsComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild([{ path: '', component: EmployerDetailsComponent }]),
-    ReactiveFormsModule,
-    AutocompleteLibModule,
-    NgxDatatableModule,
-    NgbModule,
-    SharedModule
-  ],
-  exports: [EmployerDetailsComponent],
-  providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }]
+    imports: [
+        CommonModule,
+        RouterModule.forChild([{ path: '', component: EmployerDetailsComponent }]),
+        ReactiveFormsModule,
+        AutocompleteLibModule,
+        NgxDatatableModule,
+        NgbModule,
+        SharedModule,
+        EmployerDetailsComponent
+    ],
+    exports: [EmployerDetailsComponent],
+    providers: [{ provide: NgbDateAdapter, useClass: NgbDateNativeAdapter }]
 })
 export class EmployerDetailsModule {}

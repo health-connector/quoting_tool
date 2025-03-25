@@ -1,12 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { SelectedSicService } from '../services/selected-sic.service';
-import { TreeviewItem, TreeviewConfig } from 'ngx-treeview';
+import { TreeviewItem, TreeviewConfig, TreeviewModule } from 'ngx-treeview';
 import sicCodes from '../../data/sicCodes.json';
+import { FormsModule } from '@angular/forms';
+import { NgIf } from '@angular/common';
 
 @Component({
-  selector: 'app-dropdown-treeview-select',
-  templateUrl: './dropdown-treeview-select.component.html',
-  styleUrls: ['./dropdown-treeview-select.component.css']
+    selector: 'app-dropdown-treeview-select',
+    templateUrl: './dropdown-treeview-select.component.html',
+    styleUrls: ['./dropdown-treeview-select.component.css'],
+    standalone: true,
+    imports: [NgIf, FormsModule, TreeviewModule]
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
   items: TreeviewItem[] = [];

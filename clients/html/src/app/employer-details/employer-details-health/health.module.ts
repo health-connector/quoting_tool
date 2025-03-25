@@ -6,16 +6,16 @@ import { EmployerDetailsHealthComponent } from './employer-details-health.compon
 import { SharedModule } from '../../shared/shared.module';
 
 @NgModule({
-  declarations: [EmployerDetailsHealthComponent],
-  imports: [
-    CommonModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: EmployerDetailsHealthComponent
-      }
-    ]),
-    SharedModule
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild([
+            {
+                path: '',
+                component: EmployerDetailsHealthComponent
+            }
+        ]),
+        SharedModule,
+        EmployerDetailsHealthComponent
+    ]
 })
 export class HealthModule {}

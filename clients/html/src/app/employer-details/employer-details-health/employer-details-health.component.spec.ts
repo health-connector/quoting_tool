@@ -10,10 +10,9 @@ describe('EmployerDetailsHealthComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [EmployerDetailsHealthComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [RouterTestingModule]
-    }).compileComponents();
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [RouterTestingModule, EmployerDetailsHealthComponent]
+}).compileComponents();
   }));
 
   beforeEach(() => {

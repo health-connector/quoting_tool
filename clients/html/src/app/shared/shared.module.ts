@@ -13,15 +13,12 @@ import { PlanFilterPipe } from '../plan-filter/plan-filter.pipe';
 import { OrderByPipe } from '../plan-filter/order-by.pipe';
 
 @NgModule({
-  declarations: [
-    NavComponent,
-    DropdownTreeviewSelectComponent,
-    CoverageTypePipe,
-    PlanFilterComponent,
-    PlanFilterPipe,
-    OrderByPipe
-  ],
-  imports: [CommonModule, RouterModule, FormsModule, TreeviewModule.forRoot(), NgbCollapseModule, NgbTooltipModule],
-  exports: [NavComponent, DropdownTreeviewSelectComponent, CoverageTypePipe, PlanFilterComponent]
+    imports: [CommonModule, RouterModule, FormsModule, TreeviewModule.forRoot(), NgbCollapseModule, NgbTooltipModule, NavComponent,
+        DropdownTreeviewSelectComponent,
+        CoverageTypePipe,
+        PlanFilterComponent,
+        PlanFilterPipe,
+        OrderByPipe],
+    exports: [NavComponent, DropdownTreeviewSelectComponent, CoverageTypePipe, PlanFilterComponent]
 })
 export class SharedModule {}

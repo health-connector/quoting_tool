@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import carriers from '../../../data/qhp.json';
 import { Router } from '@angular/router';
+import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
+import { NavComponent } from '../../nav/nav.component';
 
 @Component({
-  selector: 'app-employer-details-health',
-  templateUrl: './employer-details-health.component.html',
-  styleUrls: ['./employer-details-health.component.css']
+    selector: 'app-employer-details-health',
+    templateUrl: './employer-details-health.component.html',
+    styleUrls: ['./employer-details-health.component.css'],
+    standalone: true,
+    imports: [NavComponent, PlanFilterComponent]
 })
 export class EmployerDetailsHealthComponent implements OnInit {
   public employerDetails: any;

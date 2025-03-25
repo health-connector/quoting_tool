@@ -17,23 +17,28 @@ import { PlanProviderService } from '../services/plan-provider.service';
 import { Product } from '../data/products';
 import { RosterEntry } from '../data/sponsor_roster';
 import { PackageTypes } from '../config/package_types';
+import { OrderByPipe } from './order-by.pipe';
+import { PlanFilterPipe } from './plan-filter.pipe';
+import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-plan-filter',
-  templateUrl: './plan-filter.component.html',
-  styleUrls: ['./plan-filter.component.css'],
-  providers: [PlanProviderService],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0
-        })
-      ),
-      transition('void <=> *', animate(400))
-    ])
-  ]
+    selector: 'app-plan-filter',
+    templateUrl: './plan-filter.component.html',
+    styleUrls: ['./plan-filter.component.css'],
+    providers: [PlanProviderService],
+    animations: [
+        trigger('fadeInOut', [
+            state('void', style({
+                opacity: 0
+            })),
+            transition('void <=> *', animate(400))
+        ])
+    ],
+    standalone: true,
+    imports: [NgFor, NgIf, NgClass, NgbCollapse, NgbTooltip, FormsModule, NgStyle, RouterLink, TitleCasePipe, CurrencyPipe, DatePipe, PlanFilterPipe, OrderByPipe]
 })
 export class PlanFilterComponent implements OnInit {
   public tooltips = tooltips[0];

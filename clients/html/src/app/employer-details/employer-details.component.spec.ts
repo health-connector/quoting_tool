@@ -20,18 +20,18 @@ describe('EmployerDetailsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [EmployerDetailsComponent, NavComponent, CoverageTypePipe],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-      imports: [
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    imports: [
         ReactiveFormsModule,
         NgbModule,
         RouterTestingModule,
         HttpClientTestingModule,
         AutocompleteLibModule,
-        BrowserAnimationsModule
-      ],
-      providers: [{ provide: FormBuilder, useValue: formBuilder }]
-    }).compileComponents();
+        BrowserAnimationsModule,
+        EmployerDetailsComponent, NavComponent, CoverageTypePipe
+    ],
+    providers: [{ provide: FormBuilder, useValue: formBuilder }]
+}).compileComponents();
   }));
 
   beforeEach(() => {
