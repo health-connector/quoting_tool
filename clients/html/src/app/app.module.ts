@@ -45,7 +45,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     HttpClientModule,
     NgbModule,
-    RouterModule.forRoot(routes, { relativeLinkResolution: 'corrected' }),
+    RouterModule.forRoot(routes, {}),
     SweetAlert2Module.forRoot(),
     SharedModule
   ],
