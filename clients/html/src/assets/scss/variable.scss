@@ -123,19 +123,19 @@ $cyan: #4fc3f7 !default;
 $text-muted: $gray-500 !default;
 
 $colors: (
-  blue: $blue,
-  indigo: $indigo,
-  purple: $purple,
-  pink: $pink,
-  red: $red,
-  orange: $orange,
-  yellow: $yellow,
-  green: $green,
-  teal: $teal,
-  cyan: $cyan,
-  white: $white,
-  gray: $gray-600,
-  gray-dark: $gray-800
+  'blue': $blue,
+  'indigo': $indigo,
+  'purple': $purple,
+  'pink': $pink,
+  'red': $red,
+  'orange': $orange,
+  'yellow': $yellow,
+  'green': $green,
+  'teal': $teal,
+  'cyan': $cyan,
+  'white': $white,
+  'gray': $gray-600,
+  'gray-dark': $gray-800
 );
 
 $primary: $blue !default;
@@ -201,7 +201,7 @@ $h3-font-size: 24px !default;
 $h4-font-size: 18px !default;
 $h5-font-size: 16px !default;
 $h6-font-size: 14px !default;
-$headings-margin-bottom: (1rem / 2) !default;
+$headings-margin-bottom: calc(1rem / 2) !default;
 $headings-font-weight: 400 !default;
 $headings-color: inherit !default;
 // Breadcrumbs
