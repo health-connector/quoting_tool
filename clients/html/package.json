@@ -24,7 +24,7 @@
     "@angular/router": "^12.2.17",
     "@ng-bootstrap/ng-bootstrap": "^11.0.0",
     "@sweetalert2/ngx-sweetalert2": "8.1.0",
-    "@swimlane/ngx-datatable": "19.0.0",
+    "@swimlane/ngx-datatable": "20.0.0",
     "angular-ng-autocomplete": "2.0.5",
     "bootstrap": "4.6.0",
     "classlist.js": "^1.1.20150312",
