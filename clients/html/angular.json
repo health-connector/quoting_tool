@@ -46,7 +46,9 @@
               "core-js/modules/es.string.replace.js",
               "core-js/modules/es.string.match.js",
               "@babel/runtime/helpers/defineProperty",
-              "raf"
+              "raf",
+              "rgbcolor",
+              "sweetalert2"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
