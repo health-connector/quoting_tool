@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, output } from '@angular/core';
 import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -106,7 +106,7 @@ interface TreeItem {
 export class TreeviewWrapperComponent {
   @Input() items: TreeItem[] = [];
   @Input() showFilter: boolean = true;
-  @Output() valueChange = new EventEmitter<TreeItem>();
+  valueChange = output<TreeItem>();
 
   filterText: string = '';
   filteredItems: TreeItem[] = [];
