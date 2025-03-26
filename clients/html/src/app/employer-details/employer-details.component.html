@@ -625,13 +625,13 @@
         <div class="modal-body">
           <div class="card">
             <div class="card-body">
-              <input type="file" id="file" #file (change)="checkFilePresence(file)" />
+              <input type="file" id="file" #file (change)="checkFilePresence(file())" />
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button
-            (click)="fileUploaded(file)"
+            (click)="fileUploaded(file())"
             type="button"
             class="btn btn-primary"
             [disabled]="true"
