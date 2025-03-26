@@ -17,8 +17,7 @@ interface TreeItem {
   template: `
     <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)" />
   `,
-  standalone: true,
-  imports: [NgIf, FormsModule, TreeviewWrapperComponent]
+  imports: [FormsModule, TreeviewWrapperComponent]
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
   private selectedSicService = inject(SelectedSicService);

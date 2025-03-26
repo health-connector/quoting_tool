@@ -3,8 +3,8 @@ import { RouterLink } from '@angular/router';
 import { NgFor, NgClass } from '@angular/common';
 
 @Component({
-  selector: 'app-nav',
-  template: `
+    selector: 'app-nav',
+    template: `
     <div class="row">
       <div class="col-12">
         <ul class="nav">
@@ -23,9 +23,8 @@ import { NgFor, NgClass } from '@angular/common';
       </div>
     </div>
   `,
-  styleUrls: ['./nav.component.scss'],
-  standalone: true,
-  imports: [NgFor, NgClass, RouterLink]
+    styleUrls: ['./nav.component.scss'],
+    imports: [NgFor, NgClass, RouterLink]
 })
 export class NavComponent implements OnInit {
   validForm = input<string>();

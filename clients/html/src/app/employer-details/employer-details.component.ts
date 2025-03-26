@@ -37,42 +37,38 @@ interface Alert {
 }
 
 @Component({
-  selector: 'app-employer-details',
-  templateUrl: './employer-details.component.html',
-  styleUrls: ['./employer-details.component.scss'],
-  providers: [NgbModal, EmployerDetailsService],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0
-        })
-      ),
-      transition('void <=> *', animate(400))
-    ])
-  ],
-  standalone: true,
-  imports: [
-    NgIf,
-    NgFor,
-    NgbAlert,
-    NavComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    AutocompleteLibModule,
-    DropdownTreeviewSelectComponent,
-    NgxDatatableModule,
-    NgbDropdown,
-    NgbDropdownToggle,
-    NgbDropdownMenu,
-    NgbDropdownItem,
-    NgbInputDatepicker,
-    RouterLink,
-    DatePipe,
-    CoverageTypePipe
-  ],
-  host: { '(window:beforeunload)': 'unloadHandler($event)' }
+    selector: 'app-employer-details',
+    templateUrl: './employer-details.component.html',
+    styleUrls: ['./employer-details.component.scss'],
+    providers: [NgbModal, EmployerDetailsService],
+    animations: [
+        trigger('fadeInOut', [
+            state('void', style({
+                opacity: 0
+            })),
+            transition('void <=> *', animate(400))
+        ])
+    ],
+    imports: [
+        NgIf,
+        NgFor,
+        NgbAlert,
+        NavComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        AutocompleteLibModule,
+        DropdownTreeviewSelectComponent,
+        NgxDatatableModule,
+        NgbDropdown,
+        NgbDropdownToggle,
+        NgbDropdownMenu,
+        NgbDropdownItem,
+        NgbInputDatepicker,
+        RouterLink,
+        DatePipe,
+        CoverageTypePipe
+    ],
+    host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class EmployerDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);

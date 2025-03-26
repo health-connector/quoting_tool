@@ -5,8 +5,8 @@ import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
 import { NavComponent } from '../../nav/nav.component';
 
 @Component({
-  selector: 'app-employer-details-health',
-  template: `
+    selector: 'app-employer-details-health',
+    template: `
 <div class="container mt-3">
   <app-nav [validForm]="true" myPath="Health" />
   <div class="row">
@@ -53,9 +53,8 @@ import { NavComponent } from '../../nav/nav.component';
 </div>
 
 `,
-  styleUrls: ['./employer-details-health.component.css'],
-  standalone: true,
-  imports: [NavComponent, PlanFilterComponent]
+    styleUrls: ['./employer-details-health.component.css'],
+    imports: [NavComponent, PlanFilterComponent]
 })
 export class EmployerDetailsHealthComponent implements OnInit {
   private router = inject(Router);

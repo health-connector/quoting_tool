@@ -11,7 +11,6 @@ interface TreeItem {
 
 @Component({
   selector: 'app-treeview-wrapper',
-
   template: `
     <div class="treeview">
       <div class="treeview-header" *ngIf="showFilter()">
@@ -101,8 +100,7 @@ interface TreeItem {
       }
     `
   ],
-  standalone: true,
-  imports: [NgIf, NgTemplateOutlet, NgFor, FormsModule]
+  imports: [NgIf, NgFor, FormsModule]
 })
 export class TreeviewWrapperComponent {
   items = input<TreeItem[]>([]);

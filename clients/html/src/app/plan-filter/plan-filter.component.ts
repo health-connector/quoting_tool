@@ -25,38 +25,34 @@ import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'app-plan-filter',
-  templateUrl: './plan-filter.component.html',
-  styleUrls: ['./plan-filter.component.css'],
-  providers: [PlanProviderService],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0
-        })
-      ),
-      transition('void <=> *', animate(400))
-    ])
-  ],
-  standalone: true,
-  imports: [
-    NgFor,
-    NgIf,
-    NgClass,
-    NgbCollapse,
-    NgbTooltip,
-    FormsModule,
-    NgStyle,
-    RouterLink,
-    TitleCasePipe,
-    CurrencyPipe,
-    DatePipe,
-    PlanFilterPipe,
-    OrderByPipe
-  ],
-  host: { '(window:beforeunload)': 'unloadHandler($event)' }
+    selector: 'app-plan-filter',
+    templateUrl: './plan-filter.component.html',
+    styleUrls: ['./plan-filter.component.css'],
+    providers: [PlanProviderService],
+    animations: [
+        trigger('fadeInOut', [
+            state('void', style({
+                opacity: 0
+            })),
+            transition('void <=> *', animate(400))
+        ])
+    ],
+    imports: [
+        NgFor,
+        NgIf,
+        NgClass,
+        NgbCollapse,
+        NgbTooltip,
+        FormsModule,
+        NgStyle,
+        RouterLink,
+        TitleCasePipe,
+        CurrencyPipe,
+        DatePipe,
+        PlanFilterPipe,
+        OrderByPipe
+    ],
+    host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class PlanFilterComponent implements OnInit {
   private planService = inject(PlanProviderService);
