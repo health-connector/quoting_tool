@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener, inject } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import tooltips from '../../data/tooltips.json';
 import tableHeaders from '../../data/tableHeaders.json';
@@ -55,7 +55,8 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
     DatePipe,
     PlanFilterPipe,
     OrderByPipe
-  ]
+  ],
+    host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class PlanFilterComponent implements OnInit {
   private planService = inject(PlanProviderService);
@@ -125,7 +126,7 @@ export class PlanFilterComponent implements OnInit {
   @Input() carrierPlans: any;
   @Input() planType: any;
 
-  @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+  unloadHandler(event: Event) {
     event.returnValue = false;
   }
 

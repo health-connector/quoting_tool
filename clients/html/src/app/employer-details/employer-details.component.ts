@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener, inject } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, Validators, FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import {
@@ -71,7 +71,8 @@ interface Alert {
     RouterLink,
     DatePipe,
     CoverageTypePipe
-  ]
+  ],
+    host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class EmployerDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -127,7 +128,7 @@ export class EmployerDetailsComponent implements OnInit {
 
   @ViewChild('file') file: ElementRef;
 
-  @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
+  unloadHandler(event: Event) {
     event.returnValue = false;
   }
 
