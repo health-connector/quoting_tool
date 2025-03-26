@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import tooltips from '../../data/tooltips.json';
 import tableHeaders from '../../data/tableHeaders.json';
@@ -123,8 +123,8 @@ export class PlanFilterComponent implements OnInit {
     { key: 'single_product', value: 'One Plan', view: 'dental' }
   ];
 
-  @Input() carrierPlans: any;
-  @Input() planType: any;
+  carrierPlans = input<any>();
+  planType = input<any>();
 
   unloadHandler(event: Event) {
     event.returnValue = false;
@@ -157,7 +157,7 @@ export class PlanFilterComponent implements OnInit {
         'MA',
         this.employerDetails['county'],
         this.employerDetails['zip'],
-        this.planType,
+        this.planType(),
         consumer
       );
       this.employerDetails.employees.forEach(function(employee) {
@@ -185,7 +185,7 @@ export class PlanFilterComponent implements OnInit {
       this.relationshipCalculator = this.calculator(formattedStartDate, this.relationshipContributionModel);
     }
 
-    if (this.planType === 'health') {
+    if (this.planType() === 'health') {
       this.btnName = 'Select Dental';
       this.btnLink = '/employer-details/dental';
     } else {
@@ -195,7 +195,7 @@ export class PlanFilterComponent implements OnInit {
   }
 
   will_enroll(kind) {
-    if (kind === '' || kind === 'both' || kind.match(this.planType)) {
+    if (kind === '' || kind === 'both' || kind.match(this.planType())) {
       return true;
     }
     return false;
@@ -288,7 +288,7 @@ export class PlanFilterComponent implements OnInit {
         date,
         contributionModel,
         this.sponsorRoster,
-        this.planType
+        this.planType()
       );
 
       return calc;
@@ -297,7 +297,7 @@ export class PlanFilterComponent implements OnInit {
         date,
         contributionModel,
         this.sponsorRoster,
-        this.planType
+        this.planType()
       );
 
       return calculator;
@@ -512,11 +512,11 @@ export class PlanFilterComponent implements OnInit {
   }
 
   getToolTip(type) {
-    return this.tooltips[this.planType].map((key) => key[type]);
+    return this.tooltips[this.planType()].map((key) => key[type]);
   }
 
   getTableHeader(col) {
-    return this.tableHeaders[this.planType].map((key) => key[col]);
+    return this.tableHeaders[this.planType()].map((key) => key[col]);
   }
 
   metalLevelCount(metalLevel, planType) {
@@ -558,7 +558,7 @@ export class PlanFilterComponent implements OnInit {
         format: 'a4'
       },
       imageType: 'image/png',
-      output: `./pdf/${this.planType}.pdf`,
+      output: `./pdf/${this.planType()}.pdf`,
       success: function(pdf) {
         pdf.save();
         Swal.close();

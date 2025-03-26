@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgFor, NgClass } from '@angular/common';
 
@@ -28,8 +28,8 @@ import { NgFor, NgClass } from '@angular/common';
   imports: [NgFor, NgClass, RouterLink]
 })
 export class NavComponent implements OnInit {
-  @Input() validForm: string;
-  @Input() myPath: string;
+  validForm = input<string>();
+  myPath = input<string>();
 
   navLinks = [
     { path: '/employer-details', name: 'Employer Details' },
@@ -41,16 +41,16 @@ export class NavComponent implements OnInit {
 
   isFormValid(name) {
     if (name === 'Health') {
-      return !this.validForm;
+      return !this.validForm();
     }
 
     if (name === 'Dental') {
-      return !this.validForm;
+      return !this.validForm();
     }
   }
 
   isLinkActive(link) {
-    if (link === this.myPath) {
+    if (link === this.myPath()) {
       return true;
     } else {
       return false;

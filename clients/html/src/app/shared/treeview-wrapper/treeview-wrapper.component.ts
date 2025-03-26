@@ -1,4 +1,4 @@
-import { Component, Input, output } from '@angular/core';
+import { Component, output, input } from '@angular/core';
 import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -11,9 +11,10 @@ interface TreeItem {
 
 @Component({
   selector: 'app-treeview-wrapper',
+
   template: `
     <div class="treeview">
-      <div class="treeview-header" *ngIf="showFilter">
+      <div class="treeview-header" *ngIf="showFilter()">
         <div class="form-group">
           <input
             type="text"
@@ -104,15 +105,15 @@ interface TreeItem {
   imports: [NgIf, NgTemplateOutlet, NgFor, FormsModule]
 })
 export class TreeviewWrapperComponent {
-  @Input() items: TreeItem[] = [];
-  @Input() showFilter: boolean = true;
+  items = input<TreeItem[]>([]);
+  showFilter = input<boolean>(true);
   valueChange = output<TreeItem>();
 
   filterText: string = '';
   filteredItems: TreeItem[] = [];
 
   ngOnInit() {
-    this.filteredItems = this.items;
+    this.filteredItems = this.items();
   }
 
   toggleCollapse(item: TreeItem) {
@@ -127,12 +128,12 @@ export class TreeviewWrapperComponent {
 
   onFilterTextChange() {
     if (!this.filterText) {
-      this.filteredItems = [...this.items];
+      this.filteredItems = [...this.items()];
       return;
     }
 
     const searchText = this.filterText.toLowerCase();
-    this.filteredItems = this.filterTreeItems(this.items, searchText);
+    this.filteredItems = this.filterTreeItems(this.items(), searchText);
   }
 
   private filterTreeItems(items: TreeItem[], searchText: string): TreeItem[] {

@@ -11,7 +11,7 @@
     <label
       class="radio-container mr-3"
       *ngFor="let plan of planOptions; let i = index"
-      [hidden]="plan.view !== planType"
+      [hidden]="plan.view !== planType()"
       >{{ plan.value }}
       <input
         type="radio"
@@ -50,7 +50,7 @@
                       class="far fa-question-circle ml-2"
                       placement="right"
                       [ngbTooltip]="getToolTip('metalLevel')"
-                      *ngIf="planType !== 'dental'"
+                      *ngIf="planType() !== 'dental'"
                     ></i>
                   </p>
                   <div
@@ -66,7 +66,7 @@
                     />
                     <label class="custom-control-label" for="checkbox-metal-{{ i }}"
                       >{{ metalLevel | titlecase }}
-                      <span class="count-text">{{ metalLevelCount(metalLevel, planType) }}</span></label
+                      <span class="count-text">{{ metalLevelCount(metalLevel, planType()) }}</span></label
                     >
                   </div>
                 </div>
@@ -238,7 +238,7 @@
                     class="fas fa-question-circle ml-2"
                     placement="right"
                     [ngbTooltip]="getToolTip('benefitCost')"
-                    *ngIf="!pdfView && planType !== 'dental'"
+                    *ngIf="!pdfView && planType() !== 'dental'"
                   ></i>
                 </th>
                 <th scope="col" (click)="sortData(getTableHeader('col-3')); setIcon('col-3')" class="clickable-header">
@@ -314,7 +314,7 @@
                   ></a>
                 </td>
                 <td>
-                  <span *ngIf="planType == 'health'">
+                  <span *ngIf="planType() == 'health'">
                     <p class="mb-0">
                       <strong>Hospital Stay -</strong>
                       {{
@@ -349,7 +349,7 @@
                     </p>
                   </span>
 
-                  <span *ngIf="planType == 'dental'">
+                  <span *ngIf="planType() == 'dental'">
                     <p class="mb-0">
                       <strong>Preventive Services -</strong>
                       {{ carrier['product_information']['preventive_dental_services'] }}
