@@ -4,12 +4,7 @@ import { DropdownTreeviewSelectComponent } from './dropdown-treeview-select.comp
 import { SelectedSicService } from '../services/selected-sic.service';
 import { FormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { TreeviewI18n, TreeviewI18nDefault, TreeviewModule } from 'ngx-treeview';
-
-// At the top of your file
-class MockTreeviewI18n extends TreeviewI18nDefault {
-  // Override any methods that your component calls
-}
+import { TreeviewWrapperComponent } from '../shared/treeview-wrapper/treeview-wrapper.component';
 
 describe('DropdownTreeviewSelectComponent', () => {
   let component: DropdownTreeviewSelectComponent;
@@ -18,11 +13,8 @@ describe('DropdownTreeviewSelectComponent', () => {
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        imports: [FormsModule, DropdownTreeviewSelectComponent, TreeviewModule.forRoot()],
-        providers: [
-          { provide: TreeviewI18n, useClass: MockTreeviewI18n },
-          { provide: SelectedSicService, useClass: SelectedSicService }
-        ],
+        imports: [FormsModule, DropdownTreeviewSelectComponent, TreeviewWrapperComponent],
+        providers: [SelectedSicService],
         schemas: [CUSTOM_ELEMENTS_SCHEMA]
       }).compileComponents();
     })

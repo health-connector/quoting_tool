@@ -1,47 +1,42 @@
 import { Component, OnInit } from '@angular/core';
 import { SelectedSicService } from '../services/selected-sic.service';
-import { TreeviewItem, TreeviewConfig, TreeviewModule } from 'ngx-treeview';
 import sicCodes from '../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
 import { NgIf } from '@angular/common';
+import { TreeviewWrapperComponent } from '../shared/treeview-wrapper/treeview-wrapper.component';
+
+interface TreeItem {
+  text: string;
+  value: any;
+  children?: TreeItem[];
+  collapsed?: boolean;
+}
 
 @Component({
-    selector: 'app-dropdown-treeview-select',
-    templateUrl: './dropdown-treeview-select.component.html',
-    styleUrls: ['./dropdown-treeview-select.component.css'],
-    standalone: true,
-    imports: [NgIf, FormsModule, TreeviewModule]
+  selector: 'app-dropdown-treeview-select',
+  template: `
+    <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)"></app-treeview-wrapper>
+  `,
+  standalone: true,
+  imports: [NgIf, FormsModule, TreeviewWrapperComponent]
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
-  items: TreeviewItem[] = [];
+  items: TreeItem[] = [];
   sicCodes: any[] = sicCodes;
 
-  config: TreeviewConfig = TreeviewConfig.create({
-    hasFilter: true,
-    hasCollapseExpand: false
-  });
-
-  constructor(private selectedSicService: SelectedSicService) { }
+  constructor(private selectedSicService: SelectedSicService) {}
 
   ngOnInit() {
     this.items = this.buildSicTree();
   }
 
-  onValueChange(value: number) {
-    console.log('Value Change:', value);
-  }
-
-  select(item: TreeviewItem) {
+  select(item: TreeItem) {
     if (!item.children) {
-      this.selectItem(item);
+      this.selectedSicService.changeMessage(item);
     }
   }
 
-  private selectItem(item: TreeviewItem) {
-    this.selectedSicService.changeMessage(item);
-  }
-
-  private buildSicTree(): TreeviewItem[] {
+  private buildSicTree(): TreeItem[] {
     const divisionLabels: string[] = [];
     const majorGroupLabels: { key: string; text: string; code: string; collapsed: boolean }[] = [];
     const industryGroupLabels: { key: string; text: string; value: string; collapsed: boolean }[] = [];
@@ -55,7 +50,7 @@ export class DropdownTreeviewSelectComponent implements OnInit {
       }
 
       // Collect unique Major Group Labels
-      if (!majorGroupLabels.some(mgl => mgl.text === sic['MajorGroup_Label'])) {
+      if (!majorGroupLabels.some((mgl) => mgl.text === sic['MajorGroup_Label'])) {
         majorGroupLabels.push({
           key: sic['Division_Label'],
           text: sic['MajorGroup_Label'],
@@ -65,7 +60,7 @@ export class DropdownTreeviewSelectComponent implements OnInit {
       }
 
       // Collect unique Industry Group Labels
-      if (!industryGroupLabels.some(igl => igl.text === sic['IndustryGroup_Label'])) {
+      if (!industryGroupLabels.some((igl) => igl.text === sic['IndustryGroup_Label'])) {
         industryGroupLabels.push({
           key: sic['MajorGroup_Label'],
           text: sic['IndustryGroup_Label'],
@@ -75,7 +70,7 @@ export class DropdownTreeviewSelectComponent implements OnInit {
       }
 
       // Collect unique Standard Industry Codes
-      if (!standardIndustryCodes.some(sicCode => sicCode.value === sic['StandardIndustryCode_Code'])) {
+      if (!standardIndustryCodes.some((sicCode) => sicCode.value === sic['StandardIndustryCode_Code'])) {
         standardIndustryCodes.push({
           key: sic['IndustryGroup_Label'],
           text: sic['StandardIndustryCode_Full'],
@@ -86,7 +81,7 @@ export class DropdownTreeviewSelectComponent implements OnInit {
     });
 
     // Build tree structure
-    const availableItems: TreeviewItem[] = [];
+    const availableItems: TreeItem[] = [];
 
     divisionLabels.forEach((divisionLabel, index) => {
       const divisionNode = {
@@ -98,28 +93,28 @@ export class DropdownTreeviewSelectComponent implements OnInit {
 
       // Add Major Group Labels
       divisionNode.children = majorGroupLabels
-        .filter(mgl => mgl.key === divisionLabel)
-        .map(mgl => ({
+        .filter((mgl) => mgl.key === divisionLabel)
+        .map((mgl) => ({
           ...mgl,
           children: []
         }));
 
       // Add Industry Group Labels
-      divisionNode.children.forEach(child => {
+      divisionNode.children.forEach((child) => {
         child.children = industryGroupLabels
-          .filter(igl => igl.key === child.text)
-          .map(igl => ({
+          .filter((igl) => igl.key === child.text)
+          .map((igl) => ({
             ...igl,
             children: []
           }));
 
         // Add Standard Industry Codes
-        child.children.forEach(kid => {
-          kid.children = standardIndustryCodes.filter(sic => sic.key === kid.text);
+        child.children.forEach((kid) => {
+          kid.children = standardIndustryCodes.filter((sic) => sic.key === kid.text);
         });
       });
 
-      availableItems.push(new TreeviewItem(divisionNode));
+      availableItems.push(divisionNode);
     });
 
     return availableItems;
