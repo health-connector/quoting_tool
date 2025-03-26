@@ -1,7 +1,15 @@
 import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { FormBuilder, Validators, FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { NgbModal, NgbAlert, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbInputDatepicker } from '@ng-bootstrap/ng-bootstrap';
+import {
+  NgbModal,
+  NgbAlert,
+  NgbDropdown,
+  NgbDropdownToggle,
+  NgbDropdownMenu,
+  NgbDropdownItem,
+  NgbInputDatepicker
+} from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateStruct, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
@@ -29,20 +37,41 @@ interface Alert {
 }
 
 @Component({
-    selector: 'app-employer-details',
-    templateUrl: './employer-details.component.html',
-    styleUrls: ['./employer-details.component.scss'],
-    providers: [NgbModal, EmployerDetailsService],
-    animations: [
-        trigger('fadeInOut', [
-            state('void', style({
-                opacity: 0
-            })),
-            transition('void <=> *', animate(400))
-        ])
-    ],
-    standalone: true,
-    imports: [NgIf, NgFor, NgbAlert, NavComponent, FormsModule, ReactiveFormsModule, AutocompleteLibModule, DropdownTreeviewSelectComponent, NgxDatatableModule, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu, NgbDropdownItem, NgbInputDatepicker, RouterLink, DatePipe, CoverageTypePipe]
+  selector: 'app-employer-details',
+  templateUrl: './employer-details.component.html',
+  styleUrls: ['./employer-details.component.scss'],
+  providers: [NgbModal, EmployerDetailsService],
+  animations: [
+    trigger('fadeInOut', [
+      state(
+        'void',
+        style({
+          opacity: 0
+        })
+      ),
+      transition('void <=> *', animate(400))
+    ])
+  ],
+  standalone: true,
+  imports: [
+    NgIf,
+    NgFor,
+    NgbAlert,
+    NavComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    AutocompleteLibModule,
+    DropdownTreeviewSelectComponent,
+    NgxDatatableModule,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    NgbInputDatepicker,
+    RouterLink,
+    DatePipe,
+    CoverageTypePipe
+  ]
 })
 export class EmployerDetailsComponent implements OnInit {
   rows = [];
@@ -83,7 +112,7 @@ export class EmployerDetailsComponent implements OnInit {
   relationOptions = [
     { key: 'Spouse', value: 'Spouse' },
     { key: 'Domestic Partner', value: 'Domestic Partner' },
-    { key: 'Child', value: 'Child' },
+    { key: 'Child', value: 'Child' }
   ];
 
   config = {
@@ -104,7 +133,6 @@ export class EmployerDetailsComponent implements OnInit {
     private dpConfig: NgbDatepickerConfig,
     private selectedSicService: SelectedSicService
   ) {
-
     this.setAlerts();
 
     this.quoteForm = this.fb.group({
@@ -192,12 +220,15 @@ export class EmployerDetailsComponent implements OnInit {
   }
 
   setAlerts() {
-    this.alerts = [{
-      type: 'warning',
-      feature: "Late rates",
-      enabled: true,
-      message: "Due to a delay, premiums for some coverage effective dates are not available yet. Please check again soon to see if this information has been updated. You can also contact Customer Service or your broker if you need help."
-    }];
+    this.alerts = [
+      {
+        type: 'warning',
+        feature: 'Late rates',
+        enabled: true,
+        message:
+          'Due to a delay, premiums for some coverage effective dates are not available yet. Please check again soon to see if this information has been updated. You can also contact Customer Service or your broker if you need help.'
+      }
+    ];
   }
 
   getZipCodes() {
@@ -216,7 +247,7 @@ export class EmployerDetailsComponent implements OnInit {
         'standardIndustryCodeCode'
       ];
       this.quoteForm.get('sic').setValue(sicValue);
-      this.showSicDetails = false
+      this.showSicDetails = false;
     }
   }
 

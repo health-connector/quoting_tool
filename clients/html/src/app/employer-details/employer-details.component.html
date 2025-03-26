@@ -4,7 +4,7 @@
   </ng-container>
 </ng-container>
 <div class="container mb-5 mt-3">
-  <app-nav [validForm]="showEmployeeRoster" myPath="Employer Details"></app-nav>
+  <app-nav [validForm]="showEmployeeRoster" myPath="Employer Details" />
   <div class="row pl-3 mt-4">
     <form [formGroup]="quoteForm">
       <div class="row mb-2">
@@ -39,8 +39,7 @@
         <div class="col-3">
           <div class="form-group">
             <label for="sicInput">SIC Code: <span class="required-field">*</span></label>
-            <ng-autocomplete
-              id="sicInput"
+            <ng-autocomplete id="sicInput"
               formControlName="sic"
               name="sic"
               [data]="sics"
@@ -50,8 +49,7 @@
               class="inout-fix"
               (selected)="updateSic($event)"
               (inputChanged)="updateChangedSic($event)"
-            >
-            </ng-autocomplete>
+             />
 
             <ng-template #sicTemplate let-item>
               <a [innerHTML]="item.standardIndustryCodeFull"></a>
@@ -68,8 +66,7 @@
         <div class="col-3">
           <div class="form-group">
             <label for="zip">Business ZIP Code: <span class="required-field">*</span></label>
-            <ng-autocomplete
-              formControlName="zip"
+            <ng-autocomplete formControlName="zip"
               id="zip"
               name="zip"
               debounceTime="800"
@@ -81,8 +78,7 @@
               [itemTemplate]="zipTemplate"
               [notFoundTemplate]="zipNotFoundTemplate"
               required
-            >
-            </ng-autocomplete>
+             />
 
             <ng-template #zipTemplate let-zip>
               <a [innerHTML]="zip"></a>
@@ -115,7 +111,7 @@
               <p>
                 You can use the browse or search through all the available code -- click a SIC code to make a selection
               </p>
-              <app-dropdown-treeview-select></app-dropdown-treeview-select>
+              <app-dropdown-treeview-select  />
             </div>
           </div>
         </div>

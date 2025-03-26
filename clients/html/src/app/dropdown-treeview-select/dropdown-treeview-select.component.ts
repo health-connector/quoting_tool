@@ -15,7 +15,7 @@ interface TreeItem {
 @Component({
   selector: 'app-dropdown-treeview-select',
   template: `
-    <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)"></app-treeview-wrapper>
+    <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)" />
   `,
   standalone: true,
   imports: [NgIf, FormsModule, TreeviewWrapperComponent]

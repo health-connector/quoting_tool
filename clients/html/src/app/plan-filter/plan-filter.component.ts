@@ -25,20 +25,37 @@ import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
-    selector: 'app-plan-filter',
-    templateUrl: './plan-filter.component.html',
-    styleUrls: ['./plan-filter.component.css'],
-    providers: [PlanProviderService],
-    animations: [
-        trigger('fadeInOut', [
-            state('void', style({
-                opacity: 0
-            })),
-            transition('void <=> *', animate(400))
-        ])
-    ],
-    standalone: true,
-    imports: [NgFor, NgIf, NgClass, NgbCollapse, NgbTooltip, FormsModule, NgStyle, RouterLink, TitleCasePipe, CurrencyPipe, DatePipe, PlanFilterPipe, OrderByPipe]
+  selector: 'app-plan-filter',
+  templateUrl: './plan-filter.component.html',
+  styleUrls: ['./plan-filter.component.css'],
+  providers: [PlanProviderService],
+  animations: [
+    trigger('fadeInOut', [
+      state(
+        'void',
+        style({
+          opacity: 0
+        })
+      ),
+      transition('void <=> *', animate(400))
+    ])
+  ],
+  standalone: true,
+  imports: [
+    NgFor,
+    NgIf,
+    NgClass,
+    NgbCollapse,
+    NgbTooltip,
+    FormsModule,
+    NgStyle,
+    RouterLink,
+    TitleCasePipe,
+    CurrencyPipe,
+    DatePipe,
+    PlanFilterPipe,
+    OrderByPipe
+  ]
 })
 export class PlanFilterComponent implements OnInit {
   public tooltips = tooltips[0];
@@ -93,7 +110,9 @@ export class PlanFilterComponent implements OnInit {
   filteredPlansByMetalLevel: any;
   filteredPlansByProductTypes: any;
   public availableProducts: any;
-  get sortFilter() { return this.sortDirection ? 'asc' : 'desc'; }
+  get sortFilter() {
+    return this.sortDirection ? 'asc' : 'desc';
+  }
 
   public planOptions = [
     { key: 'single_issuer', value: 'One Carrier', view: 'health' },
@@ -265,7 +284,12 @@ export class PlanFilterComponent implements OnInit {
 
   private calculator(date, contributionModel, isTiredCalculator?: boolean): QuoteCalculator {
     if (isTiredCalculator) {
-      const calc = new this.clientPreferences.tiered_quote_calculator(date, contributionModel, this.sponsorRoster, this.planType);
+      const calc = new this.clientPreferences.tiered_quote_calculator(
+        date,
+        contributionModel,
+        this.sponsorRoster,
+        this.planType
+      );
 
       return calc;
     } else {
@@ -284,7 +308,7 @@ export class PlanFilterComponent implements OnInit {
     switch (type) {
       case 'metalLevel':
         if (event.target.checked) {
-          this.selectedMetalLevels.push({key: 'metal_level', value: value});
+          this.selectedMetalLevels.push({ key: 'metal_level', value: value });
           this.filterKeysSelected.push(type);
         } else {
           this.selectedMetalLevels = this.selectedMetalLevels.filter((ml) => ml.value != value);
@@ -294,7 +318,7 @@ export class PlanFilterComponent implements OnInit {
         break;
       case 'productType':
         if (event.target.checked) {
-          this.selectedProductTypes.push({key: 'product_type', value: value});
+          this.selectedProductTypes.push({ key: 'product_type', value: value });
           this.filterKeysSelected.push(type);
         } else {
           this.selectedProductTypes = this.selectedProductTypes.filter((ml) => ml.value != value);
@@ -304,7 +328,7 @@ export class PlanFilterComponent implements OnInit {
         break;
       case 'insuranceCompany':
         if (event.target.checked) {
-          this.selectedInsuranceCompanies.push({key: 'provider_name', value: value});
+          this.selectedInsuranceCompanies.push({ key: 'provider_name', value: value });
           this.filterKeysSelected.push(type);
         } else {
           this.selectedInsuranceCompanies = this.selectedInsuranceCompanies.filter((ml) => ml.value != value);
@@ -314,7 +338,7 @@ export class PlanFilterComponent implements OnInit {
         break;
       case 'hsa':
         if (event.target.checked) {
-          this.selectedHSAs.push({key: 'hsa_eligible', value: value});
+          this.selectedHSAs.push({ key: 'hsa_eligible', value: value });
           this.filterKeysSelected.push(type);
         } else {
           this.selectedHSAs = this.selectedHSAs.filter((ml) => ml.value != value);
@@ -327,8 +351,7 @@ export class PlanFilterComponent implements OnInit {
   }
 
   combineArray(arr) {
-    return [].concat.apply([], arr)
-      .reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), []);
+    return [].concat.apply([], arr).reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), []);
   }
 
   filterCarriers() {
@@ -341,71 +364,75 @@ export class PlanFilterComponent implements OnInit {
     let filtered;
 
     if (this.selectedMetalLevels.length > 0) {
-      this.selectedMetalLevels.map(ml => {
-        mlArray.push(plans.filter(plan => plan['product_information'][ml.key] === ml.value));
+      this.selectedMetalLevels.map((ml) => {
+        mlArray.push(plans.filter((plan) => plan['product_information'][ml.key] === ml.value));
         selected = this.combineArray(mlArray);
       });
     }
 
     if (this.selectedProductTypes.length > 0) {
-      this.selectedProductTypes.map(pt => {
-        ptArray.push(plans.filter(plan => plan['product_information'][pt.key] === pt.value));
+      this.selectedProductTypes.map((pt) => {
+        ptArray.push(plans.filter((plan) => plan['product_information'][pt.key] === pt.value));
         selected = this.combineArray(ptArray);
       });
     }
 
     if (this.selectedInsuranceCompanies.length > 0) {
-      this.selectedInsuranceCompanies.map(ic => {
-        icArray.push(plans.filter(plan => plan['product_information'][ic.key] === ic.value));
+      this.selectedInsuranceCompanies.map((ic) => {
+        icArray.push(plans.filter((plan) => plan['product_information'][ic.key] === ic.value));
         selected = this.combineArray(icArray);
       });
     }
 
     if (this.selectedHSAs.length > 0) {
-      this.selectedHSAs.map(hsa => {
-        hsaArray.push(plans.filter(plan => plan['product_information'][hsa.key] === hsa.value));
+      this.selectedHSAs.map((hsa) => {
+        hsaArray.push(plans.filter((plan) => plan['product_information'][hsa.key] === hsa.value));
         selected = this.combineArray(hsaArray);
       });
     }
 
     if (this.selectedInsuranceCompanies.length > 0 && this.selectedProductTypes.length > 0) {
       selected = this.selectedProductTypes.reduce((currentValue, pt) => {
-        filtered = this.combineArray(icArray).filter(plan => plan['product_information'][pt.key] === pt.value);
+        filtered = this.combineArray(icArray).filter((plan) => plan['product_information'][pt.key] === pt.value);
         return [...currentValue, ...filtered];
       }, []);
     }
 
     if (this.selectedInsuranceCompanies.length > 0 && this.selectedHSAs.length > 0) {
       selected = this.selectedHSAs.reduce((currentValue, hsa) => {
-        filtered = this.combineArray(icArray).filter(plan => plan['product_information'][hsa.key] === hsa.value);
+        filtered = this.combineArray(icArray).filter((plan) => plan['product_information'][hsa.key] === hsa.value);
         return [...currentValue, ...filtered];
       }, []);
     }
 
     if (this.selectedMetalLevels.length > 0 && this.selectedInsuranceCompanies.length > 0) {
       selected = this.selectedInsuranceCompanies.reduce((currentValue, ic) => {
-        filtered = this.combineArray(mlArray).filter(plan => plan['product_information'][ic.key] === ic.value);
+        filtered = this.combineArray(mlArray).filter((plan) => plan['product_information'][ic.key] === ic.value);
         return [...currentValue, ...filtered];
       }, []);
     }
 
     if (this.selectedMetalLevels.length > 0 && this.selectedProductTypes.length > 0) {
       selected = this.selectedProductTypes.reduce((currentValue, pt) => {
-        filtered = this.combineArray(mlArray).filter(plan => plan['product_information'][pt.key] === pt.value);
+        filtered = this.combineArray(mlArray).filter((plan) => plan['product_information'][pt.key] === pt.value);
         return [...currentValue, ...filtered];
       }, []);
     }
 
     if (this.selectedMetalLevels.length > 0 && this.selectedHSAs.length > 0) {
       selected = this.selectedHSAs.reduce((currentValue, hsa) => {
-        filtered = this.combineArray(mlArray).filter(plan => plan['product_information'][hsa.key] === hsa.value);
+        filtered = this.combineArray(mlArray).filter((plan) => plan['product_information'][hsa.key] === hsa.value);
         return [...currentValue, ...filtered];
       }, []);
     }
 
-    if (this.selectedMetalLevels.length > 0 && this.selectedProductTypes.length > 0 && this.selectedInsuranceCompanies.length > 0) {
+    if (
+      this.selectedMetalLevels.length > 0 &&
+      this.selectedProductTypes.length > 0 &&
+      this.selectedInsuranceCompanies.length > 0
+    ) {
       selected = this.selectedInsuranceCompanies.reduce((currentValue, ic) => {
-        filtered = selected.filter(plan => plan['product_information'][ic.key] === ic.value);
+        filtered = selected.filter((plan) => plan['product_information'][ic.key] === ic.value);
         return [...currentValue, ...filtered];
       }, []);
     }
@@ -415,33 +442,43 @@ export class PlanFilterComponent implements OnInit {
     }
 
     if (this.yearlyMedicalDeductibleFrom && !this.yearlyMedicalDeductibleTo) {
-      selected = selected.filter(plan => parseInt(plan['product_information']['deductible']
-        .replace('$', '').replace(',', ''), 0) >= this.yearlyMedicalDeductibleFrom);
+      selected = selected.filter(
+        (plan) =>
+          parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) >=
+          this.yearlyMedicalDeductibleFrom
+      );
     }
 
     if (!this.yearlyMedicalDeductibleFrom && this.yearlyMedicalDeductibleTo) {
-       selected = selected.filter(plan => parseInt(plan['product_information']['deductible']
-        .replace('$', '').replace(',', ''), 0) <= this.yearlyMedicalDeductibleTo);
+      selected = selected.filter(
+        (plan) =>
+          parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) <=
+          this.yearlyMedicalDeductibleTo
+      );
     }
 
     if (this.yearlyMedicalDeductibleFrom && this.yearlyMedicalDeductibleTo) {
-       selected = selected.filter(plan => parseInt(plan['product_information']['deductible']
-        .replace('$', '').replace(',', ''), 0) >= this.yearlyMedicalDeductibleFrom && parseInt(plan['product_information']['deductible']
-        .replace('$', '').replace(',', ''), 0) <= this.yearlyMedicalDeductibleTo);
+      selected = selected.filter(
+        (plan) =>
+          parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) >=
+            this.yearlyMedicalDeductibleFrom &&
+          parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) <=
+            this.yearlyMedicalDeductibleTo
+      );
     }
 
     if (this.planPremiumsFrom && !this.planPremiumsTo) {
-       selected = selected.filter(plan => plan['total_cost'] >= this.planPremiumsFrom);
+      selected = selected.filter((plan) => plan['total_cost'] >= this.planPremiumsFrom);
     }
 
     if (!this.planPremiumsFrom && this.planPremiumsTo) {
-       selected = selected.filter(plan => plan['total_cost'] <= this.planPremiumsTo);
+      selected = selected.filter((plan) => plan['total_cost'] <= this.planPremiumsTo);
     }
 
     if (this.planPremiumsFrom && this.planPremiumsTo) {
-       selected = selected.filter(plan => plan['total_cost']
-        >= this.planPremiumsFrom && plan['total_cost']
-        <= this.planPremiumsTo);
+      selected = selected.filter(
+        (plan) => plan['total_cost'] >= this.planPremiumsFrom && plan['total_cost'] <= this.planPremiumsTo
+      );
     }
 
     this.filterCarriersResults = selected;
@@ -555,7 +592,7 @@ export class PlanFilterComponent implements OnInit {
   }
 
   validateNumber(event) {
-    const charCode = (event.which) ? event.which : event.keyCode;
+    const charCode = event.which ? event.which : event.keyCode;
     if (charCode > 31 && (charCode < 48 || charCode > 57)) {
       return false;
     }

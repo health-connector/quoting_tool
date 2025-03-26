@@ -5,11 +5,11 @@ import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
 import { NavComponent } from '../../nav/nav.component';
 
 @Component({
-    selector: 'app-employer-details-health',
-    templateUrl: './employer-details-health.component.html',
-    styleUrls: ['./employer-details-health.component.css'],
-    standalone: true,
-    imports: [NavComponent, PlanFilterComponent]
+  selector: 'app-employer-details-health',
+  templateUrl: './employer-details-health.component.html',
+  styleUrls: ['./employer-details-health.component.css'],
+  standalone: true,
+  imports: [NavComponent, PlanFilterComponent]
 })
 export class EmployerDetailsHealthComponent implements OnInit {
   public employerDetails: any;
