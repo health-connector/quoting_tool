@@ -7,7 +7,6 @@ File: scss
 // This is the extra scss
 // Tooltip for the sparkline charts
 html body {
-
   .jqstooltip,
   .flotTip {
     width: auto !important;
@@ -32,7 +31,7 @@ body .jqstooltip {
   padding: 10px 20px;
   background: $info;
   color: $white;
-  ext-align: center;
+  text-align: center;
   pointer-events: none;
   z-index: 1;
   -webkit-transition: opacity 0.2s linear;
@@ -42,7 +41,7 @@ body .jqstooltip {
 }
 
 .chartist-tooltip:before {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   left: 50%;
@@ -286,17 +285,17 @@ label {
   }
 }
 
-.dtp>.dtp-content>.dtp-date-view>header.dtp-header {
+.dtp > .dtp-content > .dtp-date-view > header.dtp-header {
   background: #1d50de;
 }
 
 .dtp div.dtp-date,
 .dtp div.dtp-time,
-.dtp table.dtp-picker-days tr>td>a.selected {
+.dtp table.dtp-picker-days tr > td > a.selected {
   background: $info;
 }
 
-.dtp .p10>a {
+.dtp .p10 > a {
   color: $white;
 }
 
@@ -417,7 +416,7 @@ Taskboard scss
   }
 
   .taskboard-task:after {
-    content: "";
+    content: '';
     position: absolute;
     border: 4px solid transparent;
     top: 0;
@@ -525,7 +524,7 @@ Notifier pages scss
   backface-visibility: hidden;
 }
 
-$notifier-shadow-color: rgba(0, 0, 0, .2) !default;
+$notifier-shadow-color: rgba(0, 0, 0, 0.2) !default;
 
 .notifier__notification--material {
   border-radius: 3px;
@@ -540,7 +539,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
   }
 
   .notifier__notification {
-
     &-message {
       display: inline-block;
 
@@ -557,8 +555,8 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
 
     &-button {
       display: inline-block;
-      transition: opacity .2s ease;
-      opacity: .5;
+      transition: opacity 0.2s ease;
+      opacity: 0.5;
 
       margin: {
         right: -10px;
@@ -566,7 +564,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
         top: -4px;
       }
 
-      ;
       outline: none;
       border: none;
       background: none;
@@ -582,14 +579,11 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
       }
 
       &:active {
-        transform: scale(.82); // Make me "feel" the click by a push back (#UX)
+        transform: scale(0.82); // Make me "feel" the click by a push back (#UX)
         opacity: 1;
       }
-
     }
-
   }
-
 }
 
 .notifier__notification--default {
@@ -600,7 +594,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
     // 16x16 fixed size
     fill: $white;
   }
-
 }
 
 .notifier__notification--info {
@@ -611,7 +604,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
     // 16x16 fixed size
     fill: $white;
   }
-
 }
 
 .notifier__notification--warning {
@@ -622,7 +614,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
     // 16x16 fixed size
     fill: $white;
   }
-
 }
 
 .notifier__notification--success {
@@ -633,7 +624,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
     // 16x16 fixed size
     fill: $white;
   }
-
 }
 
 .notifier__notification--error {
@@ -644,7 +634,6 @@ $notifier-shadow-color: rgba(0, 0, 0, .2) !default;
     // 16x16 fixed size
     fill: $white;
   }
-
 }
 
 /*******************
@@ -662,7 +651,7 @@ Ngx wizard pages scss
   &::before {
     height: 2px;
     background: $border-color;
-    content: "";
+    content: '';
     position: absolute;
     width: 75%;
     margin: 0 auto;
@@ -683,14 +672,13 @@ Ngx wizard pages scss
       z-index: 2;
       border: 1px solid $border-color;
       border-radius: 100%;
-
     }
 
-    >a {
+    > a {
       padding: 0.5rem 0;
     }
 
-    >a.active .round-tabs {
+    > a.active .round-tabs {
       background: $info;
       border-color: $info;
       color: $white;

@@ -7,9 +7,10 @@ import { EmployerDetailsComponent } from './employer-details.component';
 import { NavComponent } from '../nav/nav.component';
 import { ReactiveFormsModule, FormBuilder, FormArray } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { CoverageTypePipe } from './coverage-type.pipe';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('EmployerDetailsComponent', () => {
   let component: EmployerDetailsComponent;
@@ -21,16 +22,13 @@ describe('EmployerDetailsComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [
-        ReactiveFormsModule,
+    imports: [ReactiveFormsModule,
         NgbModule,
         RouterTestingModule,
-        HttpClientTestingModule,
         AutocompleteLibModule,
         BrowserAnimationsModule,
-        EmployerDetailsComponent, NavComponent, CoverageTypePipe
-    ],
-    providers: [{ provide: FormBuilder, useValue: formBuilder }]
+        EmployerDetailsComponent, NavComponent, CoverageTypePipe],
+    providers: [{ provide: FormBuilder, useValue: formBuilder }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
 }).compileComponents();
   }));
 

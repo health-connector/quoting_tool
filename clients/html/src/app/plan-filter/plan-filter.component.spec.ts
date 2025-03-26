@@ -5,9 +5,10 @@ import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlanFilterPipe } from './plan-filter.pipe';
 import { OrderByPipe } from './order-by.pipe';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 const data = {
   effectiveDate: 'October 2019',
@@ -75,34 +76,43 @@ describe('PlanFilterComponent', () => {
   let component: PlanFilterComponent;
   let fixture: ComponentFixture<PlanFilterComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-    imports: [NgbModule, BrowserAnimationsModule, RouterTestingModule, HttpClientTestingModule, FormsModule, PlanFilterComponent, PlanFilterPipe, OrderByPipe]
-}).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          NgbModule,
+          BrowserAnimationsModule,
+          RouterTestingModule,
+          FormsModule,
+          PlanFilterComponent,
+          PlanFilterPipe,
+          OrderByPipe
+        ],
+        providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PlanFilterComponent);
     component = fixture.componentInstance;
+    component.planType = 'health' as any;
     localStorage.setItem('employerDetails', JSON.stringify(data));
   });
 
   it('should create', () => {
-    component.planType = 'health';
     fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('Choose type should have One Carrier, One Plan, and One Level if health', () => {
-    component.planType = 'health';
     component.isLoading = false;
     fixture.detectChanges();
-    const options = component.planOptions.filter((plan) => plan.view === component.planType);
+    const options = component.planOptions.filter((plan) => plan.view === component.planType());
     expect(options.length).toEqual(3);
   });
 
   xit('should have the table headers for health if plan type health', () => {
-    component.planType = 'health';
     component.isLoading = false;
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
@@ -114,14 +124,12 @@ describe('PlanFilterComponent', () => {
   });
 
   xit('filter button should be disabled until a type is chosen', () => {
-    component.planType = 'health';
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector('.filter-btn');
     expect(button.disabled).toEqual(true);
   });
 
   xit('filter button should be enabled if a type is chosen', () => {
-    component.planType = 'health';
     fixture.detectChanges();
     const select = fixture.nativeElement.querySelector('select');
     const button = fixture.nativeElement.querySelector('.filter-btn');
@@ -132,14 +140,14 @@ describe('PlanFilterComponent', () => {
   });
 
   it('Choose type should have One Plan if dental', () => {
-    component.planType = 'dental';
+    component.planType = 'dental' as any;
     fixture.detectChanges();
-    const options = component.planOptions.filter((plan) => plan.view === component.planType);
+    const options = component.planOptions.filter((plan) => plan.view === component.planType());
     expect(options.length).toEqual(1);
   });
 
   xit('should have the table headers for dental if plan type dental', () => {
-    component.planType = 'dental';
+    component.planType = 'dental' as any;
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
     expect(headers[0].innerText).toEqual('Plan name');
