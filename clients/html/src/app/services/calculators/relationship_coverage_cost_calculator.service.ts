@@ -142,20 +142,19 @@ export class RelationshipCoverageCostCalculatorService {
     } else if (this.currentPackageKind === PackageTypes.SINGLE_ISSUER) {
       this.issuerBucket = new IssuerBucket();
     }
-    const calculator = this;
     const calculated_products = products.map(function(prod) {
-      return calculator.calculateQuote(prod);
+      return this.calculateQuote(prod);
     });
     if (this.currentPackageKind === PackageTypes.METAL_LEVEL) {
       const mlb = this.metalLevelBucket;
       calculated_products.forEach(function(q) {
         const cheapest = mlb.cheapestFor(q);
         if (cheapest != null) {
-          q.minimum_member_cost = calculator.reducedMemberCost(q, cheapest.family, cheapest.total);
+          q.minimum_member_cost = this.reducedMemberCost(q, cheapest.family, cheapest.total);
         }
         const mostExpensive = mlb.mostExpensiveFor(q);
         if (mostExpensive != null) {
-          q.maximum_member_cost = calculator.reducedMemberCost(q, mostExpensive.family, mostExpensive.total);
+          q.maximum_member_cost = this.reducedMemberCost(q, mostExpensive.family, mostExpensive.total);
         }
       });
     } else if (this.currentPackageKind === PackageTypes.SINGLE_ISSUER) {
@@ -163,11 +162,11 @@ export class RelationshipCoverageCostCalculatorService {
       calculated_products.forEach(function(q) {
         const cheapest = ilb.cheapestFor(q);
         if (cheapest != null) {
-          q.minimum_member_cost = calculator.reducedMemberCost(q, cheapest.family, cheapest.total);
+          q.minimum_member_cost = this.reducedMemberCost(q, cheapest.family, cheapest.total);
         }
         const mostExpensive = ilb.mostExpensiveFor(q);
         if (mostExpensive != null) {
-          q.maximum_member_cost = calculator.reducedMemberCost(q, mostExpensive.family, mostExpensive.total);
+          q.maximum_member_cost = this.reducedMemberCost(q, mostExpensive.family, mostExpensive.total);
         }
       });
     }
@@ -209,9 +208,8 @@ export class RelationshipCoverageCostCalculatorService {
     const gs_factor = product.group_size_factor('1');
     const pr_factor = product.participation_factor(this.participation);
     const sic_code_factor = product.sic_code_factor;
-    const calculator = this;
     const total = this.filteredRoster.reduce(function(current_total, re) {
-      return current_total.add(calculator.group_cost(product, re, sic_code_factor, gs_factor, pr_factor));
+      return current_total.add(this.group_cost(product, re, sic_code_factor, gs_factor, pr_factor));
     }, new ResultTotal(0.0, 0.0));
     return total;
   }
@@ -250,17 +248,16 @@ export class RelationshipCoverageCostCalculatorService {
     const subscriber_cost =
       product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
     const subscriber_sponsor_cost = subscriber_cost * (this.relContributions.get(ContributionRelationship.SELF) * 0.01);
-    const calculator = this;
     let members_in_threshold = 0;
     const sorted_dependents = roster_entry.roster_dependents.sort(function(a, b) {
-      const a_age = calculator.coverageAge(calculator.startDate, a.dob);
-      const b_age = calculator.coverageAge(calculator.startDate, b.dob);
+      const a_age = this.coverageAge(this.startDate, a.dob);
+      const b_age = this.coverageAge(this.startDate, b.dob);
       return b_age - a_age;
     });
     const total = sorted_dependents.reduce(function(current_total, rd) {
-      const age = calculator.coverageAge(calculator.startDate, rd.dob);
+      const age = this.coverageAge(this.startDate, rd.dob);
       let dependent_cost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
-      if (calculator.kind === 'health' && RelationshipDiscounts.relationship_discount) {
+      if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
           age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
           rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
@@ -271,7 +268,7 @@ export class RelationshipCoverageCostCalculatorService {
           }
         }
       }
-      const dependent_sponsor_cost = dependent_cost * (calculator.relContributions.get(rd.relationship) * 0.01);
+      const dependent_sponsor_cost = dependent_cost * (this.relContributions.get(rd.relationship) * 0.01);
       const dependent_total = new ResultTotal(dependent_cost, dependent_sponsor_cost);
       return current_total.add(dependent_total);
     }, new ResultTotal(subscriber_cost, subscriber_sponsor_cost));

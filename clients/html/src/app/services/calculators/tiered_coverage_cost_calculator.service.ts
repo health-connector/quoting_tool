@@ -1,6 +1,5 @@
 import { TieredContributionModel } from '../../data/contribution_models';
 import { RosterEntry, RosterDependent } from '../../data/sponsor_roster';
-import { PackageTypes } from '../../config/package_types';
 import { ContributionRelationship } from '../../config/contribution_relationship';
 import { ContributionTierName } from '../../config/contribution_tier_name';
 import { Product } from '../../data/products';
@@ -41,10 +40,9 @@ class FilteredRelationshipRosterEntry {
   }
 
   private kickTooOldChildren(start_date: Date, deps: Array<RosterDependent>) {
-    const age_calc = this;
     return deps.filter(function(rd) {
       if (rd.relationship === ContributionRelationship.CHILD) {
-        const age = age_calc.coverageAge(start_date, rd.dob);
+        const age = this.coverageAge(start_date, rd.dob);
         if (age > 26) {
           return false;
         }
@@ -260,25 +258,23 @@ export class TieredCoverageCostCalculatorService {
       });
   }
 
-  public quoteProducts(products: Array<Product>, pType: PackageTypes): Array<Quote> {
-    const calculator = this;
+  public quoteProducts(products: Array<Product>): Array<Quote> {
     return products.map(function(prod) {
-      return calculator.calculateQuote(prod);
+      return this.calculateQuote(prod);
     });
   }
 
   public calculateQuote(product: Product): Quote {
     const levels = this.calculateLevels(product);
-    const calculator = this;
     const total = this.filteredRoster.reduce(function(current, entry) {
-      return calculator.sumTotals(levels, entry, current);
+      return this.sumTotals(levels, entry, current);
     }, new ResultTotal(0.0, 0.0));
     const avg_member_cost = (total.total_cost - total.sponsor_cost) / parseFloat(this.groupSize);
     let maxMemberCost = 0.0;
     let minMemberCost = 100000000.0;
     const levelCosts = new Map<ContributionTierName, ContributionTierCost>();
     levels.forEach(function(val, k) {
-      const contribution_value = calculator.valueFromMapWithDefault(calculator.relContributions, k, 0.0);
+      const contribution_value = this.valueFromMapWithDefault(this.relContributions, k, 0.0);
       const contribution = val * contribution_value * 0.01;
       const mCost = val - contribution;
       levelCosts.set(k, {
@@ -323,9 +319,8 @@ export class TieredCoverageCostCalculatorService {
     const pr_factor = product.participation_factor(this.participation);
     const sic_code_factor = product.sic_code_factor;
     const level_totals = this.initialBucket();
-    const calculator = this;
     const bucket_result = this.filteredRoster.reduce(function(current, re) {
-      return calculator.group_cost(product, re, sic_code_factor, gs_factor, pr_factor, current);
+      return this.group_cost(product, re, sic_code_factor, gs_factor, pr_factor, current);
     }, level_totals);
     return bucket_result.toLevels(product);
   }
@@ -349,17 +344,16 @@ export class TieredCoverageCostCalculatorService {
   ) {
     const subscriber_cost =
       product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
-    const calculator = this;
     let members_in_threshold = 0;
     const sorted_dependents = roster_entry.roster_dependents.sort(function(a, b) {
-      const a_age = calculator.coverageAge(calculator.startDate, a.dob);
-      const b_age = calculator.coverageAge(calculator.startDate, b.dob);
+      const a_age = this.coverageAge(this.startDate, a.dob);
+      const b_age = this.coverageAge(this.startDate, b.dob);
       return b_age - a_age;
     });
     const total = sorted_dependents.reduce(function(current_total, rd) {
-      const age = calculator.coverageAge(calculator.startDate, rd.dob);
+      const age = this.coverageAge(this.startDate, rd.dob);
       let dependentCost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
-      if (calculator.kind === 'health' && RelationshipDiscounts.relationship_discount) {
+      if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
           age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
           rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind

@@ -1,10 +1,10 @@
-import { Component, OnInit, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgFor, NgClass } from '@angular/common';
 
 @Component({
-    selector: 'app-nav',
-    template: `
+  selector: 'app-nav',
+  template: `
     <div class="row">
       <div class="col-12">
         <ul class="nav">
@@ -23,10 +23,10 @@ import { NgFor, NgClass } from '@angular/common';
       </div>
     </div>
   `,
-    styleUrls: ['./nav.component.scss'],
-    imports: [NgFor, NgClass, RouterLink]
+  styleUrls: ['./nav.component.scss'],
+  imports: [NgFor, NgClass, RouterLink]
 })
-export class NavComponent implements OnInit {
+export class NavComponent {
   validForm = input<string>();
   myPath = input<string>();
 
@@ -35,8 +35,6 @@ export class NavComponent implements OnInit {
     { path: '/employer-details/health', name: 'Health' },
     { path: '/employer-details/dental', name: 'Dental' }
   ];
-
-  ngOnInit() {}
 
   isFormValid(name) {
     if (name === 'Health') {

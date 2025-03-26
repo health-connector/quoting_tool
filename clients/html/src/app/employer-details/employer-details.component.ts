@@ -37,38 +37,41 @@ interface Alert {
 }
 
 @Component({
-    selector: 'app-employer-details',
-    templateUrl: './employer-details.component.html',
-    styleUrls: ['./employer-details.component.scss'],
-    providers: [NgbModal, EmployerDetailsService],
-    animations: [
-        trigger('fadeInOut', [
-            state('void', style({
-                opacity: 0
-            })),
-            transition('void <=> *', animate(400))
-        ])
-    ],
-    imports: [
-        NgIf,
-        NgFor,
-        NgbAlert,
-        NavComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        AutocompleteLibModule,
-        DropdownTreeviewSelectComponent,
-        NgxDatatableModule,
-        NgbDropdown,
-        NgbDropdownToggle,
-        NgbDropdownMenu,
-        NgbDropdownItem,
-        NgbInputDatepicker,
-        RouterLink,
-        DatePipe,
-        CoverageTypePipe
-    ],
-    host: { '(window:beforeunload)': 'unloadHandler($event)' }
+  selector: 'app-employer-details',
+  templateUrl: './employer-details.component.html',
+  styleUrls: ['./employer-details.component.scss'],
+  providers: [NgbModal, EmployerDetailsService],
+  animations: [
+    trigger('fadeInOut', [
+      state(
+        'void',
+        style({
+          opacity: 0
+        })
+      ),
+      transition('void <=> *', animate(400))
+    ])
+  ],
+  imports: [
+    NgIf,
+    NgFor,
+    NgbAlert,
+    NavComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    AutocompleteLibModule,
+    DropdownTreeviewSelectComponent,
+    NgxDatatableModule,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
+    NgbInputDatepicker,
+    RouterLink,
+    DatePipe,
+    CoverageTypePipe
+  ],
+  host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class EmployerDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -462,6 +465,8 @@ export class EmployerDetailsComponent implements OnInit {
   }
 
   onFocused(event) {
+    const input = event.target;
+    input.style.border = '1px solid #000';
     // do something when input is focused
   }
 
@@ -545,7 +550,7 @@ export class EmployerDetailsComponent implements OnInit {
     this.showEditHousehold = true;
     const employee = this.rows[rowIndex];
     const employeeForm = this.editEmployeeForm;
-    const currentContext = this;
+
     employeeForm.patchValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
@@ -555,7 +560,7 @@ export class EmployerDetailsComponent implements OnInit {
     employeeForm.controls.dependents = this.fb.array([]);
     employee.dependents.forEach(function(dependent) {
       (<FormArray>employeeForm.controls.dependents).push(
-        currentContext.fb.group({
+        this.fb.group({
           firstName: [dependent.firstName],
           lastName: [dependent.lastName],
           dob: [new Date(Date.parse(dependent.dob)), Validators.required],

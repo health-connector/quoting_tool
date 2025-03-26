@@ -16,11 +16,11 @@ export class ApiRequestService {
   private cataract_api = environment.cataract_api;
 
   // Get the full URL to the API
-  private getFullPath(url: any) {
+  private getFullPath(url: string) {
     return `${this.api}/api/v${this.version}/${url}`;
   }
 
-  private getCataractFullPath(url: any) {
+  private getCataractFullPath(url: string) {
     return `${this.cataract_api}/api/v${this.version}/${url}`;
   }
 

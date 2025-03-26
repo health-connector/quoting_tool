@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { SelectedSicService } from '../services/selected-sic.service';
 import sicCodes from '../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
-import { NgIf } from '@angular/common';
 import { TreeviewWrapperComponent } from '../shared/treeview-wrapper/treeview-wrapper.component';
 
 interface TreeItem {

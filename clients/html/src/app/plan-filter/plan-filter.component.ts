@@ -25,34 +25,37 @@ import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
-    selector: 'app-plan-filter',
-    templateUrl: './plan-filter.component.html',
-    styleUrls: ['./plan-filter.component.css'],
-    providers: [PlanProviderService],
-    animations: [
-        trigger('fadeInOut', [
-            state('void', style({
-                opacity: 0
-            })),
-            transition('void <=> *', animate(400))
-        ])
-    ],
-    imports: [
-        NgFor,
-        NgIf,
-        NgClass,
-        NgbCollapse,
-        NgbTooltip,
-        FormsModule,
-        NgStyle,
-        RouterLink,
-        TitleCasePipe,
-        CurrencyPipe,
-        DatePipe,
-        PlanFilterPipe,
-        OrderByPipe
-    ],
-    host: { '(window:beforeunload)': 'unloadHandler($event)' }
+  selector: 'app-plan-filter',
+  templateUrl: './plan-filter.component.html',
+  styleUrls: ['./plan-filter.component.css'],
+  providers: [PlanProviderService],
+  animations: [
+    trigger('fadeInOut', [
+      state(
+        'void',
+        style({
+          opacity: 0
+        })
+      ),
+      transition('void <=> *', animate(400))
+    ])
+  ],
+  imports: [
+    NgFor,
+    NgIf,
+    NgClass,
+    NgbCollapse,
+    NgbTooltip,
+    FormsModule,
+    NgStyle,
+    RouterLink,
+    TitleCasePipe,
+    CurrencyPipe,
+    DatePipe,
+    PlanFilterPipe,
+    OrderByPipe
+  ],
+  host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class PlanFilterComponent implements OnInit {
   private planService = inject(PlanProviderService);
@@ -143,7 +146,6 @@ export class PlanFilterComponent implements OnInit {
     }
 
     if (this.employerDetails) {
-      const consumer = this;
       this.isLoading = true;
       const startDate = this.employerDetails['effectiveDate'];
       this.planService.getPlansFor(
@@ -154,12 +156,12 @@ export class PlanFilterComponent implements OnInit {
         this.employerDetails['county'],
         this.employerDetails['zip'],
         this.planType(),
-        consumer
+        this
       );
       this.employerDetails.employees.forEach(function(employee) {
         const employeeJson = {
           dob: new Date(employee.dob),
-          will_enroll: consumer.will_enroll(employee.coverageKind),
+          will_enroll: this.will_enroll(employee.coverageKind),
           roster_dependents: []
         };
 
@@ -170,7 +172,7 @@ export class PlanFilterComponent implements OnInit {
           });
         });
 
-        consumer.sponsorRoster.push(employeeJson);
+        this.sponsorRoster.push(employeeJson);
       });
 
       const formattedStartDate = new Date(startDate);
@@ -347,7 +349,7 @@ export class PlanFilterComponent implements OnInit {
   }
 
   combineArray(arr) {
-    return [].concat.apply([], arr).reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), []);
+    return [...arr].reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), []);
   }
 
   filterCarriers() {
@@ -502,7 +504,7 @@ export class PlanFilterComponent implements OnInit {
 
     const checkboxes = document.getElementsByClassName('checkbox-input');
     for (let i = 0; i < checkboxes.length; i++) {
-      // @ts-ignore
+      //@ts-expect-error checkboxes is a HTMLCollection
       checkboxes[i].checked = false;
     }
   }

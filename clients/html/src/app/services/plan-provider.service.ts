@@ -2,7 +2,6 @@ import { Injectable, inject } from '@angular/core';
 import { ProductDataLoader } from './product-data-loader.service';
 import { Product, ProductData } from '../data/products';
 import { ApiRequestService } from './api-request.service';
-import { saveAs } from 'file-saver';
 
 interface ProductListUser {
   onProductsLoaded(products: Array<Product>): void;

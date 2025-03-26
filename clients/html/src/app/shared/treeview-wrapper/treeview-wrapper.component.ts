@@ -1,10 +1,10 @@
 import { Component, output, input, OnInit } from '@angular/core';
-import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
+import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 interface TreeItem {
   text: string;
-  value: any;
+  value: string;
   children?: TreeItem[];
   collapsed?: boolean;
 }
@@ -142,7 +142,7 @@ export class TreeviewWrapperComponent implements OnInit {
       if (item.children?.length) {
         const filteredChildren = this.filterTreeItems(item.children, searchText);
         if (filteredChildren.length) {
-          const clonedItem = { ...item, children: filteredChildren };
+          // const clonedItem = { ...item, children: filteredChildren };
           return true;
         }
       }

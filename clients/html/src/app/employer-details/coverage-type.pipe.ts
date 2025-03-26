@@ -1,12 +1,11 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-    name: 'coverageType',
-    standalone: true
+  name: 'coverageType',
+  standalone: true
 })
 export class CoverageTypePipe implements PipeTransform {
-
-  transform(value: any, ...args: any[]): any {
+  transform(value: any): any {
     let name: any;
     switch (value) {
       case 'both':
@@ -21,5 +20,4 @@ export class CoverageTypePipe implements PipeTransform {
     }
     return name;
   }
-
 }
