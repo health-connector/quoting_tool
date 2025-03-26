@@ -2,7 +2,22 @@ import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
-  templateUrl: './footer.component.html',
+  template: `
+    <div class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-6">
+            <i class="far fa-copyright"></i> 2017-2019 Massachusetts Health Connector. All Rights Reserved.
+          </div>
+          <div class="col-6">
+            <ul class="list-unstyled list-inline float-right">
+              <li><i class="fas fa-envelope"></i> smallbusiness&#64;mahealthconnector.org</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  `,
   styleUrls: ['./footer.component.scss'],
   standalone: true
 })

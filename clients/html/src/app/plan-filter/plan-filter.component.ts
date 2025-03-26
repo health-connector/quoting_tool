@@ -56,7 +56,7 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
     PlanFilterPipe,
     OrderByPipe
   ],
-    host: { '(window:beforeunload)': 'unloadHandler($event)' }
+  host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class PlanFilterComponent implements OnInit {
   private planService = inject(PlanProviderService);

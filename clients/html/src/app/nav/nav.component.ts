@@ -4,7 +4,25 @@ import { NgFor, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
-  templateUrl: './nav.component.html',
+  template: `
+    <div class="row">
+      <div class="col-12">
+        <ul class="nav">
+          <li class="nav-item" *ngFor="let link of navLinks">
+            <a
+              class="nav-link"
+              [ngClass]="{
+                disabled: isFormValid(link.name),
+                active: isLinkActive(link.name)
+              }"
+              [routerLink]="link.path"
+              >{{ link.name }}</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  `,
   styleUrls: ['./nav.component.scss'],
   standalone: true,
   imports: [NgFor, NgClass, RouterLink]
