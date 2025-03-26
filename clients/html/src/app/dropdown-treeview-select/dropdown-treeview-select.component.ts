@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { SelectedSicService } from '../services/selected-sic.service';
 import sicCodes from '../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
@@ -21,10 +21,9 @@ interface TreeItem {
   imports: [NgIf, FormsModule, TreeviewWrapperComponent]
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
+  private selectedSicService = inject(SelectedSicService);
   items: TreeItem[] = [];
   sicCodes: any[] = sicCodes;
-
-  constructor(private selectedSicService: SelectedSicService) {}
 
   ngOnInit() {
     this.items = this.buildSicTree();

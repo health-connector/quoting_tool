@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
@@ -6,9 +6,8 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ApiRequestService {
+  private http = inject(HttpClient);
   headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-  constructor(private http: HttpClient) {}
-
   // The API version
   public version = 1.0;
 

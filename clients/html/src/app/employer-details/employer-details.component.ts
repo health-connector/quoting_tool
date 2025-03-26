@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, HostListener, inject } from '@angular/core';
 import { FormBuilder, Validators, FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import {
@@ -74,6 +74,11 @@ interface Alert {
   ]
 })
 export class EmployerDetailsComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private modalService = inject(NgbModal);
+  private employerDetailsService = inject(EmployerDetailsService);
+  private dpConfig = inject(NgbDatepickerConfig);
+  private selectedSicService = inject(SelectedSicService);
   rows = [];
   alerts: Alert[];
   model: NgbDateStruct;
@@ -126,13 +131,7 @@ export class EmployerDetailsComponent implements OnInit {
     event.returnValue = false;
   }
 
-  constructor(
-    private fb: FormBuilder,
-    private modalService: NgbModal,
-    private employerDetailsService: EmployerDetailsService,
-    private dpConfig: NgbDatepickerConfig,
-    private selectedSicService: SelectedSicService
-  ) {
+  constructor() {
     this.setAlerts();
 
     this.quoteForm = this.fb.group({

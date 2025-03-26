@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener } from '@angular/core';
+import { Component, OnInit, Input, HostListener, inject } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import tooltips from '../../data/tooltips.json';
 import tableHeaders from '../../data/tableHeaders.json';
@@ -58,6 +58,7 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
   ]
 })
 export class PlanFilterComponent implements OnInit {
+  private planService = inject(PlanProviderService);
   public tooltips = tooltips[0];
   public isCollapsed: any;
   public metalLevelOptions: any;
@@ -127,8 +128,6 @@ export class PlanFilterComponent implements OnInit {
   @HostListener('window:beforeunload', ['$event']) unloadHandler(event: Event) {
     event.returnValue = false;
   }
-
-  constructor(private planService: PlanProviderService) {}
 
   ngOnInit() {
     this.isLoading = false;

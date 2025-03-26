@@ -1,5 +1,5 @@
 import { Product, ProductData } from '../data/products';
-import { PackageTypes} from '../config/package_types';
+import { PackageTypes } from '../config/package_types';
 import { ContributionTierName } from '../config/contribution_tier_name';
 
 interface LoadedProductList {

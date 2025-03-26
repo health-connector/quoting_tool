@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ProductDataLoader } from './product-data-loader.service';
 import { Product, ProductData } from '../data/products';
 import { ApiRequestService } from './api-request.service';
@@ -12,9 +12,10 @@ interface ProductListUser {
   providedIn: 'root'
 })
 export class PlanProviderService {
+  private api_request = inject(ApiRequestService);
   public dataLoader: ProductDataLoader;
 
-  constructor(private api_request: ApiRequestService) {
+  constructor() {
     this.dataLoader = new ProductDataLoader();
   }
 
@@ -36,7 +37,7 @@ export class PlanProviderService {
 
     const blob = new Blob(byteArrays, { type: contentType });
     return blob;
-  }
+  };
 
   public getPlansFor(
     consumer: ProductListUser,

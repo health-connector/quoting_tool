@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import carriers from '../../../data/qdp.json';
 import { Router } from '@angular/router';
 import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
@@ -12,13 +12,12 @@ import { NavComponent } from '../../nav/nav.component';
   imports: [NavComponent, PlanFilterComponent]
 })
 export class EmployerDetailsDentalComponent implements OnInit {
+  private router = inject(Router);
   public employerDetails: any;
   public effectiveDate: any;
   public erEmployees: any;
   public costShownText: any;
   public carriers = carriers;
-
-  constructor(private router: Router) {}
 
   ngOnInit() {
     const erDetails = localStorage.getItem('employerDetails');

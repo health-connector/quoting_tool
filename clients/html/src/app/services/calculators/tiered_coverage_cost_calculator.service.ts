@@ -124,8 +124,10 @@ class FilteredRelationshipRosterEntry {
     }
     if (
       remain_to_pick.indexOf(ContributionTierName.EMPLOYEE_AND_DEPENDENTS) > -1 &&
-      !(rels.indexOf(ContributionRelationship.SPOUSE) > -1 ||
-        rels.indexOf(ContributionRelationship.DOMESTIC_PARTNER) > -1)
+      !(
+        rels.indexOf(ContributionRelationship.SPOUSE) > -1 ||
+        rels.indexOf(ContributionRelationship.DOMESTIC_PARTNER) > -1
+      )
     ) {
       return ContributionTierName.EMPLOYEE_AND_DEPENDENTS;
     }
@@ -147,14 +149,8 @@ class BucketCount {
 
   public add(entry: FilteredRelationshipRosterEntry, price: number) {
     const current_count = this.valueFromMapWithDefault(this.counts, entry.bucket, 0);
-     this.counts.set(
-       entry.bucket,
-       current_count + 1
-     );
-     return new BucketCount(
-       this.counts,
-       this.total + price
-     );
+    this.counts.set(entry.bucket, current_count + 1);
+    return new BucketCount(this.counts, this.total + price);
   }
 
   public toLevels(product) {
@@ -249,17 +245,19 @@ export class TieredCoverageCostCalculatorService {
   private filterRoster(start_d: Date, contributionModel: TieredContributionModel, roster: Array<RosterEntry>) {
     const rel_map = this.tierOfferedMap(contributionModel);
     const allowedTiers = this.allowedTiers(contributionModel);
-    return roster.filter((re) => re.will_enroll).map(function(re) {
-      const filteredMember = new FilteredRelationshipRosterEntry(
-        start_d,
-        rel_map,
-        allowedTiers,
-        re.dob,
-        re.roster_dependents,
-        re.will_enroll
-      );
-      return filteredMember;
-    });
+    return roster
+      .filter((re) => re.will_enroll)
+      .map(function(re) {
+        const filteredMember = new FilteredRelationshipRosterEntry(
+          start_d,
+          rel_map,
+          allowedTiers,
+          re.dob,
+          re.roster_dependents,
+          re.will_enroll
+        );
+        return filteredMember;
+      });
   }
 
   public quoteProducts(products: Array<Product>, pType: PackageTypes): Array<Quote> {
@@ -276,21 +274,18 @@ export class TieredCoverageCostCalculatorService {
       return calculator.sumTotals(levels, entry, current);
     }, new ResultTotal(0.0, 0.0));
     const avg_member_cost = (total.total_cost - total.sponsor_cost) / parseFloat(this.groupSize);
-    let maxMemberCost = 0.00;
-    let minMemberCost = 100000000.00;
+    let maxMemberCost = 0.0;
+    let minMemberCost = 100000000.0;
     const levelCosts = new Map<ContributionTierName, ContributionTierCost>();
     levels.forEach(function(val, k) {
       const contribution_value = calculator.valueFromMapWithDefault(calculator.relContributions, k, 0.0);
       const contribution = val * contribution_value * 0.01;
       const mCost = val - contribution;
-      levelCosts.set(
-        k,
-        {
-          sponsor_cost: contribution,
-          total_cost: val,
-          member_cost: mCost
-        }
-      );
+      levelCosts.set(k, {
+        sponsor_cost: contribution,
+        total_cost: val,
+        member_cost: mCost
+      });
       if (mCost < minMemberCost) {
         minMemberCost = mCost;
       }
@@ -320,12 +315,7 @@ export class TieredCoverageCostCalculatorService {
     const cost = this.valueFromMapWithDefault(levels, entry.bucket, 0.0);
     const contribution_value = this.valueFromMapWithDefault(this.relContributions, entry.bucket, 0.0);
     const contribution = cost * contribution_value * 0.01;
-    return current_total.add(
-      new ResultTotal(
-        cost,
-        contribution
-      )
-    );
+    return current_total.add(new ResultTotal(cost, contribution));
   }
 
   private calculateLevels(product: Product) {
@@ -368,18 +358,15 @@ export class TieredCoverageCostCalculatorService {
     });
     const total = sorted_dependents.reduce(function(current_total, rd) {
       const age = calculator.coverageAge(calculator.startDate, rd.dob);
-      let dependentCost = product.cost(age.toFixed(0)) *
-          sic_factor *
-          gs_factor *
-          pr_factor;
+      let dependentCost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
       if (calculator.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
-          (age < RelationshipDiscounts.relationship_discount.relationship_threshold_age) &&
-          (rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind)
-          ) {
+          age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
+          rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
+        ) {
           members_in_threshold = members_in_threshold + 1;
           if (members_in_threshold >= RelationshipDiscounts.relationship_discount.relationship_threshold) {
-            dependentCost = 0.00;
+            dependentCost = 0.0;
           }
         }
       }

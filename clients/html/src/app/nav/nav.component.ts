@@ -19,8 +19,6 @@ export class NavComponent implements OnInit {
     { path: '/employer-details/dental', name: 'Dental' }
   ];
 
-  constructor() {}
-
   ngOnInit() {}
 
   isFormValid(name) {

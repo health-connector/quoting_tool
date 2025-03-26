@@ -75,7 +75,12 @@ export class RelationshipCoverageCostCalculatorService {
   private currentPackageKind: PackageTypes | null = null;
   private kind: string;
 
-  constructor(startDate: Date, contributionModel: RelationshipContributionModel, roster: Array<RosterEntry>, kind: string) {
+  constructor(
+    startDate: Date,
+    contributionModel: RelationshipContributionModel,
+    roster: Array<RosterEntry>,
+    kind: string
+  ) {
     this.startDate = startDate;
     this.groupSize = this.calculateGroupSize(roster);
     this.participation = this.calculateParticipation(roster);
@@ -116,16 +121,18 @@ export class RelationshipCoverageCostCalculatorService {
 
   private filterRoster(start_d: Date, contributionModel: RelationshipContributionModel, roster: Array<RosterEntry>) {
     const rel_map = this.relationshipOfferedMap(contributionModel);
-    return roster.filter((re) => re.will_enroll).map(function(re) {
-      const filteredMember = new FilteredRelationshipRosterEntry(
-        start_d,
-        rel_map,
-        re.dob,
-        re.roster_dependents,
-        re.will_enroll
-      );
-      return filteredMember;
-    });
+    return roster
+      .filter((re) => re.will_enroll)
+      .map(function(re) {
+        const filteredMember = new FilteredRelationshipRosterEntry(
+          start_d,
+          rel_map,
+          re.dob,
+          re.roster_dependents,
+          re.will_enroll
+        );
+        return filteredMember;
+      });
   }
 
   public quoteProducts(products: Array<Product>, pType: PackageTypes): Array<Quote> {
@@ -252,19 +259,15 @@ export class RelationshipCoverageCostCalculatorService {
     });
     const total = sorted_dependents.reduce(function(current_total, rd) {
       const age = calculator.coverageAge(calculator.startDate, rd.dob);
-      let dependent_cost =
-        product.cost(age.toFixed(0)) *
-        sic_factor *
-        gs_factor *
-        pr_factor;
+      let dependent_cost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
       if (calculator.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
-          (age < RelationshipDiscounts.relationship_discount.relationship_threshold_age) &&
-          (rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind)
-          ) {
+          age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
+          rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
+        ) {
           members_in_threshold = members_in_threshold + 1;
           if (members_in_threshold >= RelationshipDiscounts.relationship_discount.relationship_threshold) {
-            dependent_cost = 0.00;
+            dependent_cost = 0.0;
           }
         }
       }
