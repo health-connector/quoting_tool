@@ -1,4 +1,4 @@
-import { Component, output, input } from '@angular/core';
+import { Component, output, input, OnInit } from '@angular/core';
 import { NgIf, NgTemplateOutlet, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -102,7 +102,7 @@ interface TreeItem {
   ],
   imports: [NgIf, NgFor, FormsModule]
 })
-export class TreeviewWrapperComponent {
+export class TreeviewWrapperComponent implements OnInit {
   items = input<TreeItem[]>([]);
   showFilter = input<boolean>(true);
   valueChange = output<TreeItem>();
