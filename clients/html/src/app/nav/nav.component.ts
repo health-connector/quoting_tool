@@ -4,6 +4,7 @@ import { NgFor, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
+  standalone: true,
   template: `
     <div class="row">
       <div class="col-12">
@@ -27,7 +28,7 @@ import { NgFor, NgClass } from '@angular/common';
   imports: [NgFor, NgClass, RouterLink]
 })
 export class NavComponent {
-  validForm = input<string>();
+  validForm = input<boolean>();
   myPath = input<string>();
 
   navLinks = [

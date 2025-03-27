@@ -274,7 +274,7 @@
                 <th
                   [ngStyle]="{ width: '17%' }"
                   scope="col"
-                  *ngIf="this.planFilter === 'single_product' && this.planType !== 'dental'"
+                  *ngIf="this.planFilter === 'single_product' && this.planType() !== 'dental'"
                 >
                   {{ getTableHeader('col-5') }}
                   <i
@@ -366,7 +366,7 @@
                 </td>
                 <td>{{ carrier['group_deductible'] }}</td>
                 <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
-                <td *ngIf="this.planFilter === 'single_product' && this.planType !== 'dental'">
+                <td *ngIf="this.planFilter === 'single_product' && this.planType() !== 'dental'">
                   <p class="mb-0">
                     <strong>Employee -</strong>
                     {{ carrier.tier_costs.get('Employee Only').sponsor_cost | currency }}

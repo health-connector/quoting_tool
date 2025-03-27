@@ -26,6 +26,7 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
 
 @Component({
   selector: 'app-plan-filter',
+  standalone: true,
   templateUrl: './plan-filter.component.html',
   styleUrls: ['./plan-filter.component.css'],
   providers: [PlanProviderService],

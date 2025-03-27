@@ -11,6 +11,7 @@ interface TreeItem {
 
 @Component({
   selector: 'app-treeview-wrapper',
+  standalone: true,
   template: `
     <div class="treeview">
       <div class="treeview-header" *ngIf="showFilter()">

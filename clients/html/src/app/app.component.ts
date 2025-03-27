@@ -9,6 +9,7 @@ import { NgIf } from '@angular/common';
 @Component({
   providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
   selector: 'app-root',
+  standalone: true,
   template: `
 <ng-container *ngIf="!blockIEBrowser; else blockIE">
   <app-header  />
