@@ -1,5 +1,5 @@
 import { Component, output, input, OnInit } from '@angular/core';
-import { NgIf, NgFor } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 interface TreeItem {
@@ -14,60 +14,68 @@ interface TreeItem {
   standalone: true,
   template: `
     <div class="treeview">
-      <div class="treeview-header" *ngIf="showFilter()">
-        <div class="form-group">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search..."
-            [(ngModel)]="filterText"
-            (ngModelChange)="onFilterTextChange()"
-          />
+      @if (showFilter()) {
+        <div class="treeview-header">
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search..."
+              [(ngModel)]="filterText"
+              (ngModelChange)="onFilterTextChange()"
+              />
+          </div>
         </div>
-      </div>
+      }
       <div class="treeview-items">
-        <ng-container *ngFor="let item of filteredItems">
+        @for (item of filteredItems; track item) {
           <div class="treeview-item">
             <div class="item-content">
-              <i
-                *ngIf="item.children?.length"
-                class="fa"
-                [class.fa-caret-right]="item.collapsed"
-                [class.fa-caret-down]="!item.collapsed"
-                (click)="toggleCollapse(item)"
-              ></i>
+              @if (item.children?.length) {
+                <i
+                  class="fa"
+                  [class.fa-caret-right]="item.collapsed"
+                  [class.fa-caret-down]="!item.collapsed"
+                  (click)="toggleCollapse(item)"
+                ></i>
+              }
               <span class="item-text" (click)="select(item)">{{ item.text }}</span>
             </div>
-            <div class="item-children" *ngIf="item.children?.length && !item.collapsed">
-              <ng-container *ngFor="let child of item.children">
-                <div class="treeview-item">
-                  <div class="item-content">
-                    <i
-                      *ngIf="child.children?.length"
-                      class="fa"
-                      [class.fa-caret-right]="child.collapsed"
-                      [class.fa-caret-down]="!child.collapsed"
-                      (click)="toggleCollapse(child)"
-                    ></i>
-                    <span class="item-text" (click)="select(child)">{{ child.text }}</span>
-                  </div>
-                  <div class="item-children" *ngIf="child.children?.length && !child.collapsed">
-                    <ng-container *ngFor="let grandChild of child.children">
-                      <div class="treeview-item">
-                        <div class="item-content">
-                          <span class="item-text" (click)="select(grandChild)">{{ grandChild.text }}</span>
-                        </div>
+            @if (item.children?.length && !item.collapsed) {
+              <div class="item-children">
+                @for (child of item.children; track child) {
+                  <div class="treeview-item">
+                    <div class="item-content">
+                      @if (child.children?.length) {
+                        <i
+                          class="fa"
+                          [class.fa-caret-right]="child.collapsed"
+                          [class.fa-caret-down]="!child.collapsed"
+                          (click)="toggleCollapse(child)"
+                        ></i>
+                      }
+                      <span class="item-text" (click)="select(child)">{{ child.text }}</span>
+                    </div>
+                    @if (child.children?.length && !child.collapsed) {
+                      <div class="item-children">
+                        @for (grandChild of child.children; track grandChild) {
+                          <div class="treeview-item">
+                            <div class="item-content">
+                              <span class="item-text" (click)="select(grandChild)">{{ grandChild.text }}</span>
+                            </div>
+                          </div>
+                        }
                       </div>
-                    </ng-container>
+                    }
                   </div>
-                </div>
-              </ng-container>
-            </div>
+                }
+              </div>
+            }
           </div>
-        </ng-container>
+        }
       </div>
     </div>
-  `,
+    `,
   styles: [
     `
       .treeview {
@@ -101,7 +109,7 @@ interface TreeItem {
       }
     `
   ],
-  imports: [NgIf, NgFor, FormsModule]
+  imports: [FormsModule]
 })
 export class TreeviewWrapperComponent implements OnInit {
   items = input<TreeItem[]>([]);

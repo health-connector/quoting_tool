@@ -22,7 +22,7 @@ import { PlanFilterPipe } from './plan-filter.pipe';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-plan-filter',
@@ -42,8 +42,6 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
     ])
   ],
   imports: [
-    NgFor,
-    NgIf,
     NgClass,
     NgbCollapse,
     NgbTooltip,
@@ -55,7 +53,7 @@ import { NgFor, NgIf, NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } 
     DatePipe,
     PlanFilterPipe,
     OrderByPipe
-  ],
+],
   host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class PlanFilterComponent implements OnInit {

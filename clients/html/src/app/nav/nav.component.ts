@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { NgFor, NgClass } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
@@ -9,23 +9,25 @@ import { NgFor, NgClass } from '@angular/common';
     <div class="row">
       <div class="col-12">
         <ul class="nav">
-          <li class="nav-item" *ngFor="let link of navLinks">
-            <a
-              class="nav-link"
+          @for (link of navLinks; track link) {
+            <li class="nav-item">
+              <a
+                class="nav-link"
               [ngClass]="{
                 disabled: isFormValid(link.name),
                 active: isLinkActive(link.name)
               }"
-              [routerLink]="link.path"
-              >{{ link.name }}</a
-            >
-          </li>
-        </ul>
+                [routerLink]="link.path"
+                >{{ link.name }}</a
+                >
+              </li>
+            }
+          </ul>
+        </div>
       </div>
-    </div>
-  `,
+    `,
   styleUrls: ['./nav.component.scss'],
-  imports: [NgFor, NgClass, RouterLink]
+  imports: [NgClass, RouterLink]
 })
 export class NavComponent {
   validForm = input<boolean>();

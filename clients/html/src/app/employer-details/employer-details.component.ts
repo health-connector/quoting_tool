@@ -25,7 +25,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { DropdownTreeviewSelectComponent } from '../dropdown-treeview-select/dropdown-treeview-select.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NavComponent } from '../nav/nav.component';
-import { NgIf, NgFor, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 
 type AOA = any[][];
 
@@ -54,8 +54,6 @@ interface Alert {
     ])
   ],
   imports: [
-    NgIf,
-    NgFor,
     NgbAlert,
     NavComponent,
     FormsModule,
@@ -71,7 +69,7 @@ interface Alert {
     RouterLink,
     DatePipe,
     CoverageTypePipe
-  ],
+],
   host: { '(window:beforeunload)': 'unloadHandler($event)' }
 })
 export class EmployerDetailsComponent implements OnInit {
