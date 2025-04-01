@@ -1,4 +1,4 @@
-ResourceRegistry.configure do
+ResourceRegistry::Registry.new.configure do
   {
     application: {
       config: {
@@ -21,5 +21,3 @@ ResourceRegistry.configure do
     }
   }
 end
-
-ResourceRegistry.create

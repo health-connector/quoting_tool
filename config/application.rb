@@ -43,6 +43,9 @@ module App
       end
     end
 
+    # Disable static file serving from Rails, which is causing compatibility issues with Ruby 3.1.6
+    config.public_file_server.enabled = false
+
     config.api_only = true
   end
 end
