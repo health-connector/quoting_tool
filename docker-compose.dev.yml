@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./.docker/development/app/Dockerfile
       args:
-        RUBY_VERSION: '2.6.3'
+        RUBY_VERSION: '3.1.6'
         BUNDLER_VERSION: '2.0.2'
         NODE_MAJOR: '11'
         YARN_VERSION: '1.17.3'

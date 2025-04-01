@@ -65,7 +65,7 @@ $ docker-compose stop
 
 ## Configuration
 
-- Ruby 2.6.3
+- Ruby 3.1.6
 - Rails 6.0 w/options:
   - --skip-action-cable
   - --skip-active-record

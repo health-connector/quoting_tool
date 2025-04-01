@@ -66,3 +66,8 @@ node_modules/
 
 # Ignore .idea (e.g, rubymine)
 .idea
+
+spec/models/.DS_Store
+spec/controllers/.DS_Store
+spec/.DS_Store
+.DS_Store

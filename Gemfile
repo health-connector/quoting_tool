@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.6.3'
+ruby '3.1.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.0'
@@ -23,22 +23,23 @@ gem 'aws-sdk'
 # Use to dry up responses
 gem 'responders'
 
+gem 'matrix'
+
 # MongoDB NoSQL database ORM
 # gem 'mongoid',                  '~> 7.0'
 gem 'mongoid',  git: 'https://github.com/mongodb/mongoid.git', branch: 'master'
 
 # Settings, validation and dependency injection
-gem 'resource_registry',  git:  'https://github.com/ideacrew/resource_registry.git', branch: 'master'
+gem 'resource_registry',  git:  'https://github.com/ideacrew/resource_registry.git', tag: 'v0.10.1'
 gem 'fast_jsonapi'
 gem 'roo', '~> 2.1'
 gem 'virtus', '~> 1.0'
-gem 'nokogiri',                 '~> 1.10'
+gem 'nokogiri',                 '~> 1.18.6'
 gem 'nokogiri-happymapper',     '~> 0.8.0', :require => 'happymapper'
 gem 'money-rails',              '~> 1.13'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  # gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'rspec-rails', '~> 3.8'
   gem 'yard' #,                   '~> 0.9.12',  require: false
   gem 'climate_control' #
