@@ -18,7 +18,8 @@ ENV BUNDLER_VERSION=$BUNDLER_VERSION
 # Only install what's needed that isn't in the base image (per `app list --installed`)
 RUN apt-get update \
     && apt-get -yq dist-upgrade \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates \
       fontconfig \
       libsodium23 \
       libxext6 \
@@ -27,11 +28,11 @@ RUN apt-get update \
       sshpass \
       unzip \
       zip \
-      zlibc \
+      zlib1g \
       libjemalloc2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && truncate -s 0 /var/log/*log
+    && truncate -s 0 /var/log/*log || true
 
 # Configure bundler and PATH, install bundler version
 ENV GEM_HOME=/usr/local/bundle
