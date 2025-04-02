@@ -1,0 +1,55 @@
+name: Quality Workbench
+on: 
+  push:
+    branches:
+      - 'master'
+  workflow_dispatch:
+  pull_request:
+
+concurrency:
+  group: qb-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  RAILS_ENV: test
+  MONGODB_URL: 127.0.0.1
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          rubygems: latest
+      - name: Run rubocop
+        run: bundle exec rubocop
+  rspec:
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:4.2
+        ports:
+          - 27017:27017
+        options: >-
+          --name "mongodb"
+          --health-cmd mongo
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          rubygems: latest
+
+      # Need this step in order to access the mongodb server
+      # - name: set etc host
+      #   run: sudo bash -c "echo '127.0.0.1 rabbitmq mongodb' >> /etc/hosts"
+      - name: run tests
+        run: bundle exec rspec
