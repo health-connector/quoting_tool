@@ -1,6 +1,7 @@
 module Operations
   class QhpBuilder
     include Dry::Transaction::Operation
+    include Dry::Monads[:result]
 
     INVALID_PLAN_IDS = ["88806MA0020005", "88806MA0040005", "88806MA0020051", "18076MA0010001", "80538MA0020001", "80538MA0020002", "11821MA0020001", "11821MA0040001"]
 
