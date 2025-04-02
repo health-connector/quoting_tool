@@ -27,6 +27,9 @@ module App
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    # Disable static file serving from Rails which is causing compatibility issues with Ruby 3.1.6
+    config.public_file_server.enabled = false
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
@@ -42,9 +45,6 @@ module App
         resource '*', :headers => :any, :methods => [:get, :post, :options, :put, :delete], :expose => ['Link', 'Total']
       end
     end
-
-    # Disable static file serving from Rails, which is causing compatibility issues with Ruby 3.1.6
-    config.public_file_server.enabled = false
 
     config.api_only = true
   end
