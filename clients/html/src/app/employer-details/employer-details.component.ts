@@ -20,7 +20,6 @@ import {
   NgbDateStruct,
   NgbDatepickerConfig,
 } from '@ng-bootstrap/ng-bootstrap';
-import { NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
@@ -289,20 +288,8 @@ export class EmployerDetailsComponent implements OnInit {
     this.employeeRoster = localStorage.getItem('employerDetails');
     if (this.employeeRoster) {
       this.showEmployeeRoster = true;
-      const storedDetails: any = JSON.parse(this.employeeRoster);
-
-      this.employerDetails = {
-        ...storedDetails,
-        effectiveDate: this.convertNgbDateStructToISO(storedDetails.effectiveDate),
-        employees: storedDetails.employees.map((emp: any) => ({
-          ...emp,
-          dob: this.convertNgbDateStructToISO(emp.dob),
-          dependents: emp.dependents.map((dep: any) => ({
-            ...dep,
-            dob: this.convertNgbDateStructToISO(dep.dob),
-          })),
-        })),
-      } as EmployerDetails;
+      const storedDetails: EmployerDetails = JSON.parse(this.employeeRoster);
+      this.employerDetails = storedDetails;
 
       this.quoteForm.patchValue({
         effectiveDate: this.employerDetails.effectiveDate,
@@ -357,8 +344,8 @@ export class EmployerDetailsComponent implements OnInit {
     this.quoteForm.get('county').setValue(value);
   }
 
-  setSicFromTree(item) {
-    if (item !== 'default item') {
+  setSicFromTree(item: SicTreeItem | string) {
+    if (item !== 'default item' && typeof item !== 'string') {
       const sicValue = this.sics.filter((sic) => sic['standardIndustryCodeFull'] === item.text)[0][
         'standardIndustryCodeCode'
       ];
