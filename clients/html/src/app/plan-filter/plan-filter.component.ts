@@ -43,6 +43,9 @@ interface ProductInformation {
 interface QuotedProduct {
   product_information: ProductInformation;
   total_cost: number;
+  // Add fields expected by OrderByPipe/SortablePlan and template
+  deductible: string;
+  sponsor_cost: number;
   // Allow index signature if other properties are accessed dynamically in template
   [key: string]: unknown;
 }
@@ -235,7 +238,7 @@ export class PlanFilterComponent implements OnInit {
     return false;
   }
 
-  loadData() {
+  public loadData() {
     // Explicitly type the accumulator in reduce
     this.metalLevelOptions = this.filteredCarriers
       .map((plan) => plan.product_information.metal_level)
@@ -256,25 +259,40 @@ export class PlanFilterComponent implements OnInit {
 
     this.filterLength = this.filteredCarriers.length;
     this.filterSelected = true;
+    console.log('[PlanFilterComponent] loadData finished. filterLength:', this.filterLength); // Added log
   }
 
-  // onProductsLoaded already correctly typed
   public onProductsLoaded(products: Array<Product>): void {
-    this.planFilter = null;
-    this.hasRelationshipCompatibleType = false;
-    this.hasTierCompatibleType = false;
+    console.log('[PlanFilterComponent] onProductsLoaded received products:', products); // Added log
+
     this.sponsorProducts = products;
-    this.kindFilteredProducts = products;
-    this.filteredProducts = products;
-    // Recalculate and load data if products are loaded after initial filter setup
-    if (this.defaultCarriers.length > 0) {
-      this.recalculate();
+    this.kindFilteredProducts = products; // Start with all received products
+
+    // TODO: Revisit compatibility checks and filtering once Product/ClientPreferences structures are clear
+    // For now, assume calculators can handle the products received.
+    // this.hasTierCompatibleType = products.some(...)
+    // this.hasRelationshipCompatibleType = products.some(...)
+
+    // Initial filtering - simplified: Assume products received are for the current plan type
+    // or recalculate will handle it.
+    console.log('[PlanFilterComponent] kindFilteredProducts (before recalculate):', this.kindFilteredProducts); // Added log
+
+    // Trigger recalculation and data loading if needed
+    if (this.kindFilteredProducts.length > 0) {
+      this.recalculate(); // Recalculate costs
+    } else {
+      this.filteredCarriers = []; // Clear carriers if no products match
+      this.defaultCarriers = [];
+      this.loadData(); // Still call loadData to update filters/counts
     }
+
+    this.showPlansTable = true;
   }
 
-  changePackageFilter(newVal: PackageTypes | null) {
-    // Type the parameter directly
-    this.planFilter = newVal;
+  changePackageFilter(newVal: string | null) {
+    // Type the parameter directly - changed from PackageTypes to string
+    // Assert if needed later: this.planFilter = newVal as PackageTypes;
+    this.planFilter = newVal as PackageTypes; // Assuming string values match PackageTypes enum/type for now
     this.hasTierCompatibleType = false;
     this.hasRelationshipCompatibleType = false;
     if (newVal != null) {
@@ -297,33 +315,65 @@ export class PlanFilterComponent implements OnInit {
 
   recalculate() {
     const currentPlanType = this.planType();
+    console.log(
+      '[PlanFilterComponent] recalculate started. kindFilteredProducts:',
+      this.kindFilteredProducts,
+      'planFilter:',
+      this.planFilter,
+    ); // Added log
+
     if (!currentPlanType || this.kindFilteredProducts.length === 0) {
-      // Don't recalculate if planType isn't set or no products to filter
+      console.log('[PlanFilterComponent] recalculate skipped (no plan type or products).');
+      this.filteredCarriers = []; // Ensure carriers are cleared if skipping
+      this.defaultCarriers = [];
+      this.loadData();
       return;
     }
+
+    // Determine the correct calculator
     const calculator = this.hasRelationshipCompatibleType ? this.relationshipCalculator : this.tieredCalculator;
-    // Ensure calculator is initialized
+
     if (!calculator) {
-      console.error('Calculator not initialized');
+      console.error('[PlanFilterComponent] recalculate failed: Calculator not initialized');
       return;
     }
-    // Map the results to convert deductible from number to string
+
+    console.log(
+      '[PlanFilterComponent] recalculate using calculator:',
+      this.hasRelationshipCompatibleType ? 'relationship' : 'tiered',
+    ); // Added log
+
+    // Get quotes
     const quotesFromCalculator = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter);
+    console.log('[PlanFilterComponent] recalculate got quotesFromCalculator:', quotesFromCalculator); // Added log
+
+    // Map quotes to ensure deductible is a string and match QuotedProduct interface
     const newQuotes: QuotedProduct[] = quotesFromCalculator.map((quote) => ({
       ...quote,
       product_information: {
         ...quote.product_information,
-        deductible: String(quote.product_information.deductible), // Convert number to string
+        // Ensure deductible is string, handle potential null/undefined
+        deductible: String(quote.product_information.deductible ?? ''),
       },
+      // Add fields expected by OrderByPipe (SortablePlan) and template
+      deductible: String(quote.product_information.deductible ?? ''), // Top-level deductible for sorting
+      sponsor_cost: quote.total_cost, // Assuming total_cost is used for sponsor_cost sorting
     }));
-    const fProductsForCompare = this.filteredProducts.map((fp) => fp.name + fp.provider_name);
-    const filteredQuotes = newQuotes.filter((nq) =>
-      fProductsForCompare.includes(nq.product_information.name + nq.product_information.provider_name),
-    );
-    this.filteredCarriers = filteredQuotes;
+
+    // This filtering step seems redundant if kindFilteredProducts was already filtered?
+    // Commenting out for now, as it might be causing issues if product names/providers mismatch.
+    // const fProductsForCompare = this.filteredProducts.map((fp) => fp.name + fp.provider_name);
+    // const filteredQuotes = newQuotes.filter((nq) =>
+    //   fProductsForCompare.includes(nq.product_information.name + nq.product_information.provider_name),
+    // );
+    // this.filteredCarriers = filteredQuotes;
+
+    // Directly assign the processed quotes
+    this.filteredCarriers = newQuotes;
     this.defaultCarriers = [...this.filteredCarriers]; // Create a copy for default state
-    this.filterLength = filteredQuotes.length;
-    this.filterSelected = true;
+
+    console.log('[PlanFilterComponent] recalculate finished. filteredCarriers:', this.filteredCarriers); // Added log
+
     this.loadData(); // Load filter options based on new data
   }
 
@@ -501,13 +551,13 @@ export class PlanFilterComponent implements OnInit {
     });
   }
 
-  getToolTip(type: string): string[] {
+  getToolTip(type: string): string | undefined {
     // Type the parameter
     const currentPlanType = this.planType();
-    if (!currentPlanType || !this.tooltips[currentPlanType]) return []; // Handle missing planType
+    if (!currentPlanType || !this.tooltips[currentPlanType]) return undefined; // Handle missing planType
     // Find the tooltip object for the given type
     const tooltipObj = this.tooltips[currentPlanType].find((item) => item[type]);
-    return tooltipObj ? [tooltipObj[type]] : []; // Return array with the tooltip string or empty array
+    return tooltipObj ? tooltipObj[type] : undefined; // Return string or undefined
   }
 
   getTableHeader(col: string): string[] {
