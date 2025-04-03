@@ -45,8 +45,14 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
       expect(Products::Product.all.size).to eq 0
     end
 
-    it "should raise an error" do
-      expect {subject}.to raise_error(Mongoid::Errors::Validations)
+    it "should still process plans but with empty service area" do
+      result = subject
+      expect(result.success?).to eq true
+      expect(result.success[:message]).to eq "Plans Succesfully Created"
+      products = Products::Product.all
+      products.each do |product|
+        expect(product.service_area_id).to be_nil
+      end
     end
   end
 end

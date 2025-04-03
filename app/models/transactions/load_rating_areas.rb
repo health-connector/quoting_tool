@@ -50,31 +50,33 @@ module Transactions
 
         location_ids = locations.map do |loc_record|
           county_zip = Locations::CountyZip.where({
-            zip: loc_record['zip'],
-            county_name: loc_record['county_name']
-          }).first
+                                                    zip: loc_record['zip'],
+                                                    county_name: loc_record['county_name']
+                                                  }).first
           county_zip._id
         end
 
         rating_area = Locations::RatingArea.where({
-          active_year: year,
-          exchange_provided_code: rating_area_id,
-        }).first
+                                                    active_year: year,
+                                                    exchange_provided_code: rating_area_id,
+                                                  }).first
 
         if rating_area.present?
           rating_area.county_zip_ids = location_ids
-          unless rating_area.save
-            Failure({message: "Failed to Save Rating Area record for #{rating_area.id}"})
+          begin
+            rating_area.save!
+          rescue => e
+            return Failure({message: "Failed to Save Rating Area record for #{rating_area.id}"})
           end
         else
-          rating_area = Locations::RatingArea.new({
-            active_year: year,
-            exchange_provided_code: rating_area_id,
-            county_zip_ids: location_ids
-          })
-
-          unless rating_area.save
-            return Failure({message: "Failed to Create Rating Area record for #{rating_area_id}"})
+          rating_area = Locations::RatingArea.new
+          rating_area.active_year = year
+          rating_area.exchange_provided_code = rating_area_id
+          rating_area.county_zip_ids = location_ids
+          begin
+            rating_area.save
+          rescue => e
+            return Failure({message: "Error creating Rating Area record for #{rating_area_id}"})
           end
         end
       end

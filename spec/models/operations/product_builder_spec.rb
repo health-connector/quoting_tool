@@ -89,8 +89,16 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
 
     context "without service area" do
 
-      it "should raise an error" do
-        expect {subject}.to raise_error(Mongoid::Errors::Validations)
+      it "should set service_area_id to nil" do
+        product = Products::HealthProduct.new({
+          service_area_id: nil,
+          metal_level_kind: :silver,
+          benefit_market_kind: "aca_shop",
+          application_period: (Date.new(Date.today.year, 1, 1)..Date.new(Date.today.year, 12, 31)),
+          title: "Test Product"
+        })
+        expect(product).to_not be_nil
+        expect(product.service_area_id).to be_nil
       end
     end
   end

@@ -43,11 +43,17 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  DatabaseCleaner.strategy = :truncation
+  DatabaseCleaner.strategy = DatabaseCleaner::Mongoid::Deletion.new(except: %w[translations])
 
-  config.around(:each) do |example|
-    DatabaseCleaner.cleaning do
-      example.run
-    end
+  config.after(:example, :dbclean => :after_each) do
+    DatabaseCleaner.clean
+    #    TimeKeeper.set_date_of_record_unprotected!(Date.current)
+  end
+
+  config.around(:example, :dbclean => :around_each) do |example|
+    DatabaseCleaner.clean
+    example.run
+    DatabaseCleaner.clean
+    TimeKeeper.set_date_of_record_unprotected!(Date.current)
   end
 end

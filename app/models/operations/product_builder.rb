@@ -1,6 +1,7 @@
 module Operations
   class ProductBuilder
     include Dry::Transaction::Operation
+    include Dry::Monads[:result]
 
     VISIT_TYPES = {
       pcp: "Primary Care Visit to Treat an Injury or Illness",
@@ -25,6 +26,8 @@ module Operations
       @qhp = params[:qhp]
       @health_data_map = params[:health_data_map]
       @dental_data_map = params[:dental_data_map]
+      created_product = nil
+      
       @qhp.qhp_cost_share_variances.each do |cost_share_variance|
         hios_base_id, csr_variant_id = cost_share_variance.hios_plan_and_variant_id.split("-")
         next if csr_variant_id == "00"
@@ -35,6 +38,8 @@ module Operations
           :"application_period.min".gte => Date.new(qhp.active_year, 1, 1), :"application_period.max".lte => Date.new(qhp.active_year, 1, 1).end_of_year
         ).first
 
+        service_area_id = params[:service_area_map].present? ? params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]] : nil
+
         shared_attrs ={
           benefit_market_kind: "aca_#{parse_market}",
           title: cost_share_variance.plan_marketing_name.squish!,
@@ -42,7 +47,7 @@ module Operations
           hios_base_id: hios_base_id,
           csr_variant_id: csr_variant_id,
           application_period: (Date.new(qhp.active_year, 1, 1)..Date.new(qhp.active_year, 12, 31)),
-          service_area_id: params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]],
+          service_area_id: service_area_id,
           deductible: cost_share_variance.qhp_deductable.in_network_tier_1_individual,
           family_deductible: cost_share_variance.qhp_deductable.in_network_tier_1_family,
           is_reference_plan_eligible: true,
@@ -95,6 +100,7 @@ module Operations
           product.issuer_hios_ids = product.issuer_hios_ids.uniq
           product.update_attributes!(attrs)
           cost_share_variance.product_id = product.id if cost_share_variance.product_id.blank?
+          created_product = product
         else
           attrs.merge!({issuer_hios_ids: [qhp.issuer_id]})
           new_product = if is_health_product?
@@ -105,51 +111,46 @@ module Operations
 
           if new_product.save!
             cost_share_variance.product_id = new_product.id
+            created_product = new_product
           end
         end
       end
-      Success({message: "Successfully created/updated Plan records"})
+      
+      Success({message: "Successfully created/updated Plan records", product: created_product})
     end
 
     def group_size_factors(year, hios_id)
-      Rails.cache.fetch("group_size_factors_#{hios_id}_#{year}", expires_in: 15.minutes) do
-        factor = Products::ActuarialFactors::GroupSizeActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-        if factor.nil?
-          output = (1..50).inject({}) {|result, key| result[key.to_s] = 1.0; result }
-          max_group_size = 1
-        end
-
-        output ||= factor.actuarial_factor_entries.inject({}) do |result, afe|
+      factor = Products::ActuarialFactors::GroupSizeActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+      if factor.nil?
+        output = (1..50).inject({}) {|result, key| result[key.to_s] = 1.0; result }
+        max_group_size = 1
+      else
+        output = factor.actuarial_factor_entries.inject({}) do |result, afe|
           result[afe.factor_key] = afe.factor_value
           result
         end
-
-        max_group_size ||= factor.max_integer_factor_key
-
-        {:factors => output, :max_group_size => max_group_size}
+        max_group_size = factor.max_integer_factor_key
       end
+
+      {:factors => output, :max_group_size => max_group_size}
     end
 
     def group_tier_factors(year, hios_id)
-      Rails.cache.fetch("group_tier_factors_#{hios_id}_#{year}", expires_in: 15.minutes) do
-        factor = Products::ActuarialFactors::CompositeRatingTierActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-        return [] if factor.nil?
-        factor.actuarial_factor_entries.inject([]) do |result, afe|
-          key = TF_NAME_MAP[afe.factor_key]
-          result << {factor: afe.factor_value, name: key}
-          result
-        end
+      factor = Products::ActuarialFactors::CompositeRatingTierActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+      return [] if factor.nil?
+      factor.actuarial_factor_entries.inject([]) do |result, afe|
+        key = TF_NAME_MAP[afe.factor_key]
+        result << {factor: afe.factor_value, name: key}
+        result
       end
     end
 
     def participation_factors(year, hios_id)
-      Rails.cache.fetch("participation_factors_#{hios_id}_#{year}", expires_in: 15.minutes) do
-        factor = Products::ActuarialFactors::ParticipationRateActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-        return (1..100).inject({}) {|result, key| result[key.to_s] = 1.0; result } if factor.nil?
-        factor.actuarial_factor_entries.inject({}) do |result, afe|
-          result[afe.factor_key] = afe.factor_value
-          result
-        end
+      factor = Products::ActuarialFactors::ParticipationRateActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+      return (1..100).inject({}) {|result, key| result[key.to_s] = 1.0; result } if factor.nil?
+      factor.actuarial_factor_entries.inject({}) do |result, afe|
+        result[afe.factor_key] = afe.factor_value
+        result
       end
     end
 

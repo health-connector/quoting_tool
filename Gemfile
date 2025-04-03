@@ -24,6 +24,8 @@ gem 'aws-sdk'
 gem 'responders'
 
 gem 'matrix'
+# gem 'i18n', '~> 1.5'
+gem 'rails-i18n', '7.0.9'
 
 # MongoDB NoSQL database ORM
 gem 'mongoid', '7.5.4'
@@ -62,7 +64,7 @@ group :development do
 end
 
 group :test do
-  gem 'database_cleaner'
+  gem 'database_cleaner-mongoid', '~> 2.0', '>= 2.0.1'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

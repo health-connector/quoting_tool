@@ -47,6 +47,10 @@ jobs:
         with:
           bundler-cache: true
           rubygems: latest
+      - name: Update bundler
+        run: |
+          gem update --system
+          gem install bundler -v 2.4.22
 
       # Need this step in order to access the mongodb server
       # - name: set etc host
