@@ -3,11 +3,10 @@ require 'rails_helper'
 RSpec.describe Transactions::LoadRatingAreas, type: :transaction do
 
   let!(:county_zip) { FactoryBot.create(:county_zip, zip: "12345", county_name: "County 1")}
-  let!(:subject) {Transactions::LoadRatingAreas.new.call(file)}
-
+  
   context "succesful" do
-
     let(:file) {File.join(Rails.root, "spec/test_data/rating_areas.xlsx")}
+    let!(:subject) {Transactions::LoadRatingAreas.new.call(file)}
 
     it "should be success" do
       expect(subject.success?).to eq true
@@ -23,8 +22,13 @@ RSpec.describe Transactions::LoadRatingAreas, type: :transaction do
   end
 
   context "failure" do
-
+    # Ensure we have a clean database for this context
+    before do
+      Locations::RatingArea.delete_all
+    end
+    
     let(:file) {File.join(Rails.root, "spec/test_data/invalid_rating_areas.xlsx")}
+    let!(:subject) {Transactions::LoadRatingAreas.new.call(file)}
 
     it "should be failure" do
       expect(subject.failure?).to eq true

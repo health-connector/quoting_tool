@@ -38,7 +38,11 @@ module Operations
           :"application_period.min".gte => Date.new(qhp.active_year, 1, 1), :"application_period.max".lte => Date.new(qhp.active_year, 1, 1).end_of_year
         ).first
 
-        service_area_id = params[:service_area_map].present? ? params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]] : nil
+        service_area_id = if params[:service_area_map].present?
+          params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]]
+        else
+          nil
+        end
 
         shared_attrs ={
           benefit_market_kind: "aca_#{parse_market}",
@@ -120,37 +124,43 @@ module Operations
     end
 
     def group_size_factors(year, hios_id)
-      factor = Products::ActuarialFactors::GroupSizeActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-      if factor.nil?
-        output = (1..50).inject({}) {|result, key| result[key.to_s] = 1.0; result }
-        max_group_size = 1
-      else
-        output = factor.actuarial_factor_entries.inject({}) do |result, afe|
-          result[afe.factor_key] = afe.factor_value
-          result
+      Rails.cache.fetch("group_size_factors_#{year}_#{hios_id}", expires_in: 15.minutes) do
+        factor = Products::ActuarialFactors::GroupSizeActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+        if factor.nil?
+          output = (1..50).inject({}) {|result, key| result[key.to_s] = 1.0; result }
+          max_group_size = 1
+        else
+          output = factor.actuarial_factor_entries.inject({}) do |result, afe|
+            result[afe.factor_key] = afe.factor_value
+            result
+          end
+          max_group_size = factor.max_integer_factor_key
         end
-        max_group_size = factor.max_integer_factor_key
-      end
 
-      {:factors => output, :max_group_size => max_group_size}
+        {:factors => output, :max_group_size => max_group_size}
+      end
     end
 
     def group_tier_factors(year, hios_id)
-      factor = Products::ActuarialFactors::CompositeRatingTierActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-      return [] if factor.nil?
-      factor.actuarial_factor_entries.inject([]) do |result, afe|
-        key = TF_NAME_MAP[afe.factor_key]
-        result << {factor: afe.factor_value, name: key}
-        result
+      Rails.cache.fetch("group_tier_factors_#{year}_#{hios_id}", expires_in: 15.minutes) do
+        factor = Products::ActuarialFactors::CompositeRatingTierActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+        return [] if factor.nil?
+        factor.actuarial_factor_entries.inject([]) do |result, afe|
+          key = TF_NAME_MAP[afe.factor_key]
+          result << {factor: afe.factor_value, name: key}
+          result
+        end
       end
     end
 
     def participation_factors(year, hios_id)
-      factor = Products::ActuarialFactors::ParticipationRateActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
-      return (1..100).inject({}) {|result, key| result[key.to_s] = 1.0; result } if factor.nil?
-      factor.actuarial_factor_entries.inject({}) do |result, afe|
-        result[afe.factor_key] = afe.factor_value
-        result
+      Rails.cache.fetch("participation_factors_#{year}_#{hios_id}", expires_in: 15.minutes) do
+        factor = Products::ActuarialFactors::ParticipationRateActuarialFactor.where(:"active_year" => year, :"issuer_hios_id" => hios_id).first
+        return (1..100).inject({}) {|result, key| result[key.to_s] = 1.0; result } if factor.nil?
+        factor.actuarial_factor_entries.inject({}) do |result, afe|
+          result[afe.factor_key] = afe.factor_value
+          result
+        end
       end
     end
 
