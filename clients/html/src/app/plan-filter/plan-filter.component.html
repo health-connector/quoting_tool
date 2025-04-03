@@ -320,7 +320,8 @@
                 </thead>
                 <tbody>
                   @for (
-                    carrier of filteredCarriers | orderBy: sortFilter : planType : planFilter : sortKind;
+                    carrier of $any(filteredCarriers)
+                      | orderBy: sortFilter : planType() : planFilter : getTableHeader(iconSelected);
                     track carrier
                   ) {
                     <tr>
@@ -374,26 +375,7 @@
                       </td>
                       <td>{{ carrier['group_deductible'] }}</td>
                       <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
-                      @if (this.planFilter === 'single_product' && this.planType() !== 'dental') {
-                        <td>
-                          <p class="mb-0">
-                            <strong>Employee -</strong>
-                            {{ carrier.tier_costs.get('Employee Only').sponsor_cost | currency }}
-                          </p>
-                          <p class="mb-0">
-                            <strong>Emp & Spouse -</strong>
-                            {{ carrier.tier_costs.get('Employee and Spouse').sponsor_cost | currency }}
-                          </p>
-                          <p class="mb-0">
-                            <strong>Emp & Children -</strong>
-                            {{ carrier.tier_costs.get('Employee and Dependents').sponsor_cost | currency }}
-                          </p>
-                          <p class="mb-0">
-                            <strong>Family -</strong>
-                            {{ carrier.tier_costs.get('Family').sponsor_cost | currency }}
-                          </p>
-                        </td>
-                      }
+
                       <td>{{ carrier['sponsor_cost'] | currency }}</td>
                     </tr>
                   }
