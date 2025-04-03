@@ -17,8 +17,10 @@ import {
   NgbDropdownMenu,
   NgbDropdownItem,
   NgbInputDatepicker,
+  NgbDateStruct,
+  NgbDatepickerConfig,
 } from '@ng-bootstrap/ng-bootstrap';
-import { NgbDateStruct, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepicker } from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
@@ -103,7 +105,7 @@ interface SicTreeItem {
 interface EmployeeFormGroup {
   firstName: FormControl<string | null>;
   lastName: FormControl<string | null>;
-  dob: FormControl<Date | null>;
+  dob: FormControl<NgbDateStruct | null>;
   coverageKind: FormControl<string | null>;
   dependents: FormArray<FormGroup<DependentFormGroup>>;
 }
@@ -111,7 +113,7 @@ interface EmployeeFormGroup {
 interface DependentFormGroup {
   firstName: FormControl<string | null>;
   lastName: FormControl<string | null>;
-  dob: FormControl<Date | null>;
+  dob: FormControl<NgbDateStruct | null>;
   relationship: FormControl<string | null>;
 }
 
@@ -239,7 +241,7 @@ export class EmployerDetailsComponent implements OnInit {
     this.editEmployeeForm = this.fb.group({
       firstName: new FormControl<string | null>('', Validators.required),
       lastName: new FormControl<string | null>('', Validators.required),
-      dob: new FormControl<Date | null>(null, Validators.required),
+      dob: new FormControl<NgbDateStruct | null>(null, Validators.required),
       coverageKind: new FormControl<string | null>('', Validators.required),
       dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
     });
@@ -247,7 +249,7 @@ export class EmployerDetailsComponent implements OnInit {
     this.addNewEmployeeForm = this.fb.group({
       firstName: new FormControl<string | null>('', Validators.required),
       lastName: new FormControl<string | null>('', Validators.required),
-      dob: new FormControl<Date | null>(null, Validators.required),
+      dob: new FormControl<NgbDateStruct | null>(null, Validators.required),
       coverageKind: new FormControl<string | null>('', Validators.required),
       dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
     });
@@ -287,20 +289,30 @@ export class EmployerDetailsComponent implements OnInit {
     this.employeeRoster = localStorage.getItem('employerDetails');
     if (this.employeeRoster) {
       this.showEmployeeRoster = true;
-      this.employerDetails = JSON.parse(this.employeeRoster) as EmployerDetails;
-      this.employerDetails.effectiveDate = new Date(this.employerDetails.effectiveDate);
-      this.employerDetails.employees.forEach((emp) => {
-        emp.dob = new Date(emp.dob);
-        emp.dependents.forEach((dep) => (dep.dob = new Date(dep.dob)));
-      });
+      const storedDetails: any = JSON.parse(this.employeeRoster);
+
+      this.employerDetails = {
+        ...storedDetails,
+        effectiveDate: this.convertNgbDateStructToISO(storedDetails.effectiveDate),
+        employees: storedDetails.employees.map((emp: any) => ({
+          ...emp,
+          dob: this.convertNgbDateStructToISO(emp.dob),
+          dependents: emp.dependents.map((dep: any) => ({
+            ...dep,
+            dob: this.convertNgbDateStructToISO(dep.dob),
+          })),
+        })),
+      } as EmployerDetails;
+
       this.quoteForm.patchValue({
         effectiveDate: this.employerDetails.effectiveDate,
         zip: this.employerDetails.zip,
         sic: this.employerDetails.sic?.standardIndustryCodeCode || '',
         county: this.employerDetails.county,
       });
-      this.counties = this.availableCounties.filter((county) => county.zipCode === this.employerDetails.zip);
-      if (this.counties.length > 0) {
+
+      this.counties = this.availableCounties.filter((county) => county.zipCode === this.employerDetails?.zip);
+      if (this.counties.length > 0 && this.employerDetails) {
         this.quoteForm.get('county')?.setValue(this.employerDetails.county);
       }
       this.loadEmployeesFromStorage();
@@ -385,7 +397,7 @@ export class EmployerDetailsComponent implements OnInit {
       this.fb.group<EmployeeFormGroup>({
         firstName: new FormControl<string | null>('', Validators.required),
         lastName: new FormControl<string | null>('', Validators.required),
-        dob: new FormControl<Date | null>(null, Validators.required),
+        dob: new FormControl<NgbDateStruct | null>(null, Validators.required),
         coverageKind: new FormControl<string | null>('', Validators.required),
         dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
       }),
@@ -406,7 +418,7 @@ export class EmployerDetailsComponent implements OnInit {
       this.fb.group<DependentFormGroup>({
         firstName: new FormControl<string | null>('', Validators.required),
         lastName: new FormControl<string | null>('', Validators.required),
-        dob: new FormControl<Date | null>(null, Validators.required),
+        dob: new FormControl<NgbDateStruct | null>(null, Validators.required),
         relationship: new FormControl<string | null>('', Validators.required),
       }),
     );
@@ -633,104 +645,150 @@ export class EmployerDetailsComponent implements OnInit {
   parseResults(excelArray) {
     this.modalService.dismissAll();
     let count = 0;
+    const employeesControl = this.quoteForm.controls.employees as FormArray<FormGroup<EmployeeFormGroup>>;
 
-    excelArray.map((data) => {
-      const control = <FormArray>this.quoteForm.controls.employees;
+    excelArray.forEach((data) => {
+      // Convert DOB to ISO string immediately
+      const dobString = this.convertNgbDateStructToISO(data.dob);
+      // Convert ISO string to NgbDateStruct for the form control
+      const dobStruct = this.convertISOToNgbDateStruct(dobString);
+
       if (data.relation === 'Employee') {
         count++;
-        control.push(
-          this.fb.group<EmployeeFormGroup>({
+        employeesControl.push(
+          this.fb.group({
             firstName: new FormControl(data.firstName, Validators.required),
             lastName: new FormControl(data.lastName, Validators.required),
-            dob: new FormControl(
-              new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
-              Validators.required,
-            ),
+            dob: new FormControl(dobStruct, Validators.required), // Store as NgbDateStruct
             coverageKind: new FormControl('both', Validators.required),
             dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
           }),
         );
       } else {
-        // Add dependents to employee if dependents
-        const employeeGroup = control.controls[count - 1] as FormGroup<EmployeeFormGroup>;
-        const dependentsArray = employeeGroup.controls.dependents;
-        dependentsArray.push(
-          this.fb.group<DependentFormGroup>({
-            firstName: new FormControl(data.firstName, Validators.required),
-            lastName: new FormControl(data.lastName, Validators.required),
-            dob: new FormControl(
-              new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
-              Validators.required,
-            ),
-            relationship: new FormControl(data.relation, Validators.required),
-          }),
-        );
+        if (count > 0) {
+          const employeeGroup = employeesControl.controls[count - 1];
+          const dependentsArray = employeeGroup.controls.dependents as FormArray<FormGroup<DependentFormGroup>>;
+          dependentsArray.push(
+            this.fb.group({
+              firstName: new FormControl(data.firstName, Validators.required),
+              lastName: new FormControl(data.lastName, Validators.required),
+              dob: new FormControl(dobStruct, Validators.required), // Store as NgbDateStruct
+              relationship: new FormControl(data.relation, Validators.required),
+            }),
+          );
+        } else {
+          console.warn('Found dependent data before any employee data in Excel sheet:', data);
+          // Handle case where dependent appears before employee if necessary
+        }
       }
     });
+    // Update rows with the form values which now contain NgbDateStruct for DOBs
+    // Note: This might cause issues if other parts expect ISO strings in `rows`.
+    // Consider if `rows` should store strings and only forms use NgbDateStruct.
+    // For now, align rows with form structure:
   }
 
   createRoster() {
-    // Adds the uploaded roster to localStorage
-    localStorage.setItem('employerDetails', JSON.stringify(this.quoteForm.value));
+    const formValue = this.quoteForm.value;
+    const detailsToSave = {
+      ...formValue,
+      effectiveDate: this.convertNgbDateStructToISO(formValue.effectiveDate),
+      employees: (formValue.employees || []).map((emp) => ({
+        ...emp,
+        dob: this.convertNgbDateStructToISO(emp.dob),
+        dependents: (emp.dependents || []).map((dep) => ({
+          ...dep,
+          dob: this.convertNgbDateStructToISO(dep.dob),
+        })),
+      })),
+    };
+
+    localStorage.setItem('employerDetails', JSON.stringify(detailsToSave));
     this.showHouseholds = false;
     this.ngOnInit();
   }
 
   saveNewEmployee() {
     const form = this.employerDetails;
+    if (!form) {
+      console.error('Cannot save new employee: employerDetails is null.');
+      return; // Exit if employerDetails isn't loaded
+    }
+
     const employees = form.employees;
-    const newEmployee = this.addNewEmployeeForm.value as Employee;
-    employees.push(newEmployee);
+    const rawFormValue = this.addNewEmployeeForm.value;
+
+    // Convert NgbDateStruct to ISO string before creating the Employee object
+    const newEmployee: Employee = {
+      firstName: rawFormValue.firstName ?? '',
+      lastName: rawFormValue.lastName ?? '',
+      dob: this.convertNgbDateStructToISO(rawFormValue.dob), // Convert here
+      coverageKind: rawFormValue.coverageKind ?? '',
+      dependents: (rawFormValue.dependents || []).map((dep) => ({
+        firstName: dep.firstName ?? '',
+        lastName: dep.lastName ?? '',
+        dob: this.convertNgbDateStructToISO(dep.dob), // Convert dependent DOB here
+        relationship: dep.relationship ?? '',
+      })),
+    };
+
+    employees.push(newEmployee); // Push the correctly typed object
     localStorage.setItem('employerDetails', JSON.stringify(form));
-    this.rows = employees;
+
+    // Update rows directly from the modified employerDetails
+    this.loadEmployeesFromStorage(); // This will use the updated employerDetails with string dates
+
     this.showNewEmployee = false;
     this.addNewEmployeeForm.reset();
-    this.ngOnInit();
+    // No need to call ngOnInit() here, loadEmployeesFromStorage updates the rows
   }
 
   resetForm() {
-    // Removes the roster from localStorage
     localStorage.removeItem('employerDetails');
     this.showEmployeeRoster = false;
     this.quoteForm.reset();
   }
 
   loadEmployeesFromStorage() {
-    // Loads the roster from localStorage if present
-    const roster = JSON.parse(this.employeeRoster);
-    this.employees = roster;
-    this.rows = roster.employees;
+    if (this.employerDetails && this.employerDetails.employees) {
+      this.rows = JSON.parse(JSON.stringify(this.employerDetails.employees));
+    } else {
+      this.rows = [];
+    }
   }
 
   removeEmployeeFromRoster(rowIndex) {
     this.rows.splice(rowIndex, 1);
     this.employerDetails.employees.splice(rowIndex, 1);
     localStorage.setItem('employerDetails', JSON.stringify(this.employerDetails));
+    this.loadEmployeesFromStorage();
   }
 
   editEmployee(rowIndex) {
-    // this.editEmployeeForm.reset();
     this.editEmployeeIndex = rowIndex;
     this.showEditHousehold = true;
-    const employee = this.rows[rowIndex];
+    const employee = JSON.parse(JSON.stringify(this.rows[rowIndex]));
     const employeeForm = this.editEmployeeForm;
+
+    const employeeDobStruct = this.convertISOToNgbDateStruct(employee.dob as string);
 
     employeeForm.patchValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
-      dob: employee.dob instanceof Date ? employee.dob : new Date(employee.dob),
+      dob: employeeDobStruct,
       coverageKind: employee.coverageKind,
     });
-    employeeForm.controls.dependents = this.fb.array<FormGroup<DependentFormGroup>>([]);
+
+    const dependentsArray = employeeForm.controls.dependents as FormArray<FormGroup<DependentFormGroup>>;
+    dependentsArray.clear();
+
     employee.dependents.forEach((dependent) => {
-      (<FormArray>employeeForm.controls.dependents).push(
-        this.fb.group<DependentFormGroup>({
+      const dependentDobStruct = this.convertISOToNgbDateStruct(dependent.dob as string);
+      dependentsArray.push(
+        this.fb.group({
           firstName: new FormControl(dependent.firstName, Validators.required),
           lastName: new FormControl(dependent.lastName, Validators.required),
-          dob: new FormControl(
-            dependent.dob instanceof Date ? dependent.dob : new Date(dependent.dob),
-            Validators.required,
-          ),
+          dob: new FormControl(dependentDobStruct, Validators.required),
           relationship: new FormControl(dependent.relationship, Validators.required),
         }),
       );
@@ -742,18 +800,71 @@ export class EmployerDetailsComponent implements OnInit {
     return employeeFrom.invalid || employeeFrom.controls.dependents.invalid;
   }
 
+  private convertNgbDateStructToISO(date: NgbDateStruct | Date | string | null): string | null {
+    if (!date) {
+      return null;
+    }
+    if (date instanceof Date) {
+      if (!isNaN(date.getTime())) {
+        return date.toISOString().split('T')[0];
+      } else {
+        return null;
+      }
+    }
+    if (typeof date === 'string') {
+      const parsedDate = new Date(date);
+      if (!isNaN(parsedDate.getTime())) {
+        return parsedDate.toISOString().split('T')[0];
+      }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date;
+      }
+      return null;
+    }
+    if (typeof date === 'object' && date !== null && 'year' in date && 'month' in date && 'day' in date) {
+      if (date.year && date.month && date.day) {
+        const year = date.year;
+        const month = date.month.toString().padStart(2, '0');
+        const day = date.day.toString().padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } else {
+        return null;
+      }
+    }
+    console.warn('Could not convert date value:', date);
+    return null;
+  }
+
   updateEmployee() {
     this.showEditHousehold = false;
-    const updatedEmployee = this.editEmployeeForm.value as Employee;
-    this.rows[this.editEmployeeIndex] = updatedEmployee;
-    this.employerDetails.employees[this.editEmployeeIndex] = updatedEmployee;
-    if (this.editEmployeeForm.controls.dependents.value) {
-      this.employerDetails.employees[this.editEmployeeIndex].dependents = this.editEmployeeForm.controls.dependents
-        .value as Dependent[];
+    const formValue = this.editEmployeeForm.value;
+
+    const updatedEmployee: Employee = {
+      firstName: formValue.firstName ?? '',
+      lastName: formValue.lastName ?? '',
+      dob: this.convertNgbDateStructToISO(formValue.dob),
+      coverageKind: formValue.coverageKind ?? '',
+      dependents: (formValue.dependents || []).map((dep) => ({
+        firstName: dep.firstName ?? '',
+        lastName: dep.lastName ?? '',
+        dob: this.convertNgbDateStructToISO(dep.dob),
+        relationship: dep.relationship ?? '',
+      })),
+    };
+
+    if (this.editEmployeeIndex !== null) {
+      this.rows[this.editEmployeeIndex] = { ...updatedEmployee };
+
+      if (this.employerDetails && this.employerDetails.employees) {
+        this.employerDetails.employees[this.editEmployeeIndex] = { ...updatedEmployee };
+        localStorage.setItem('employerDetails', JSON.stringify(this.employerDetails));
+      }
+
+      this.editEmployeeIndex = null;
+      this.rows = [...this.rows];
+    } else {
+      console.error('editEmployeeIndex is null, cannot update employee.');
     }
-    localStorage.setItem('employerDetails', JSON.stringify(this.employerDetails));
-    this.editEmployeeIndex = null;
-    this.rows = [...this.rows];
   }
 
   validateMonthDate(str, max) {
@@ -786,5 +897,23 @@ export class EmployerDetailsComponent implements OnInit {
       return v.length === 2 && i < 2 ? v + ' / ' : v;
     });
     e.target.value = output.join('').substr(0, 14);
+  }
+
+  private convertISOToNgbDateStruct(isoDate: string | null): NgbDateStruct | null {
+    if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+      return null;
+    }
+    try {
+      const date = new Date(isoDate + 'T00:00:00Z');
+      if (isNaN(date.getTime())) return null;
+      return {
+        year: date.getUTCFullYear(),
+        month: date.getUTCMonth() + 1,
+        day: date.getUTCDate(),
+      };
+    } catch (e) {
+      console.error('Error converting ISO string to NgbDateStruct:', isoDate, e);
+      return null;
+    }
   }
 }
