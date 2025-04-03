@@ -2,11 +2,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'coverageType',
-  standalone: true
+  standalone: true,
 })
 export class CoverageTypePipe implements PipeTransform {
-  transform(value: any): any {
-    let name: any;
+  transform(value: string): string {
+    let name: string;
     switch (value) {
       case 'both':
         name = 'Both';

@@ -36,7 +36,7 @@ interface ProductInformation {
   sic_code_factor?: number; // Explicitly define sic_code_factor
   group_size_factor?: (group_size: string) => number; // Explicitly define group_size_factor
   // Allow index signature for dynamic access in filterCarriers
-  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((arg: any) => any); // Add function type
+  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((arg: unknown) => unknown); // Add function type
 }
 
 // Represents a product after quoting/calculation
@@ -44,7 +44,7 @@ interface QuotedProduct {
   product_information: ProductInformation;
   total_cost: number;
   // Allow index signature if other properties are accessed dynamically in template
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface SicInfo {
@@ -573,14 +573,14 @@ export class PlanFilterComponent implements OnInit {
       imageType: 'image/png',
       output: `./pdf/${currentPlanType}.pdf`, // Use stored plan type
     })
-      .then((pdf: any) => {
+      .then((pdf: unknown) => {
         // Add type for pdf if available from jspdf types
-        pdf.save();
+        (pdf as { save: () => void }).save(); // Type assertion needed to call save
         Swal.close();
         // Ensure pdfView is reset even after success
         this.pdfView = false;
       })
-      .catch((error: any) => {
+      .catch((error: unknown) => {
         // Add error handling
         console.error('PDF generation failed:', error);
         Swal.fire('Error', 'PDF generation failed. Please try again.', 'error');

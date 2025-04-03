@@ -21,15 +21,23 @@ describe('EmployerDetailsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [ReactiveFormsModule,
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [
+        ReactiveFormsModule,
         NgbModule,
         RouterTestingModule,
         AutocompleteLibModule,
         BrowserAnimationsModule,
-        EmployerDetailsComponent, NavComponent, CoverageTypePipe],
-    providers: [{ provide: FormBuilder, useValue: formBuilder }, provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-}).compileComponents();
+        EmployerDetailsComponent,
+        NavComponent,
+        CoverageTypePipe,
+      ],
+      providers: [
+        { provide: FormBuilder, useValue: formBuilder },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -68,18 +76,13 @@ describe('EmployerDetailsComponent', () => {
   });
 
   it('should have valid quote form if required fields are filled in', () => {
-    component.quoteForm = formBuilder.group({
-      effectiveDate: 'October 2019',
-      sic: {
-        industryGroupLabel: 'Cash Grains',
-        standardIndustryCode: '0111',
-        standardIndustryCodeFull: '0111: Wheat',
-        standardIndustryCodeLabel: 'Wheat'
-      },
-      zip: { zipCode: '01001', county: 'Hampden' },
-      employees: formBuilder.array([])
-    });
-    // Adds employees to form
+    // Set controls with appropriate string values
+    component.quoteForm.controls.effectiveDate.setValue('October 2019');
+    component.quoteForm.controls.sic.setValue('0111'); // Use SIC code string
+    component.quoteForm.controls.zip.setValue('01001'); // Use Zip code string
+    component.quoteForm.controls.county.setValue('Hampden'); // Set county value
+
+    // Adds employees to form for validation
     const control = <FormArray>component.quoteForm.controls.employees;
     control.push(
       formBuilder.group({
@@ -87,8 +90,8 @@ describe('EmployerDetailsComponent', () => {
         lastName: ['Doe'],
         dob: ['2000-10-02'],
         coverageKind: ['both'],
-        dependents: formBuilder.array([])
-      })
+        dependents: formBuilder.array([]),
+      }),
     );
 
     expect(component.quoteForm.valid).toBeTruthy();

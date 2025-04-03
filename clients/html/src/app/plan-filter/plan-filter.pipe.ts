@@ -2,10 +2,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'planFilter',
-  standalone: true
+  standalone: true,
 })
 export class PlanFilterPipe implements PipeTransform {
-  transform(value: any): any {
+  transform(value: boolean | null | undefined): string {
     if (value === true) {
       return 'Yes';
     } else {

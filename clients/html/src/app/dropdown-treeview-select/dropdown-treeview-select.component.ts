@@ -4,9 +4,20 @@ import sicCodes from '../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
 import { TreeviewWrapperComponent } from '../shared/treeview-wrapper/treeview-wrapper.component';
 
+// Define the structure for SIC code entries imported from JSON
+interface SicCodeEntry {
+  Division_Label: string;
+  MajorGroup_Label: string;
+  MajorGroup_Code: string;
+  IndustryGroup_Label: string;
+  IndustryGroup_Code: string;
+  StandardIndustryCode_Code: number;
+  StandardIndustryCode_Full: string;
+}
+
 interface TreeItem {
   text: string;
-  value: any;
+  value: string;
   children?: TreeItem[];
   collapsed?: boolean;
 }
@@ -14,15 +25,13 @@ interface TreeItem {
 @Component({
   selector: 'app-dropdown-treeview-select',
   standalone: true,
-  template: `
-    <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)" />
-  `,
-  imports: [FormsModule, TreeviewWrapperComponent]
+  template: ` <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)" /> `,
+  imports: [FormsModule, TreeviewWrapperComponent],
 })
 export class DropdownTreeviewSelectComponent implements OnInit {
   private selectedSicService = inject(SelectedSicService);
   items: TreeItem[] = [];
-  sicCodes: any[] = sicCodes;
+  sicCodes: SicCodeEntry[] = sicCodes; // Use the defined interface
 
   ngOnInit() {
     this.items = this.buildSicTree();
@@ -53,7 +62,7 @@ export class DropdownTreeviewSelectComponent implements OnInit {
           key: sic['Division_Label'],
           text: sic['MajorGroup_Label'],
           code: sic['MajorGroup_Code'].split(' ')[2],
-          collapsed: true
+          collapsed: true,
         });
       }
 
@@ -63,17 +72,17 @@ export class DropdownTreeviewSelectComponent implements OnInit {
           key: sic['MajorGroup_Label'],
           text: sic['IndustryGroup_Label'],
           value: sic['IndustryGroup_Code'].split(' ')[2],
-          collapsed: true
+          collapsed: true,
         });
       }
 
       // Collect unique Standard Industry Codes
-      if (!standardIndustryCodes.some((sicCode) => sicCode.value === sic['StandardIndustryCode_Code'])) {
+      if (!standardIndustryCodes.some((sicCode) => sicCode.value === String(sic['StandardIndustryCode_Code']))) {
         standardIndustryCodes.push({
           key: sic['IndustryGroup_Label'],
           text: sic['StandardIndustryCode_Full'],
-          value: sic['StandardIndustryCode_Code'],
-          collapsed: true
+          value: String(sic['StandardIndustryCode_Code']),
+          collapsed: true,
         });
       }
     });
@@ -82,11 +91,11 @@ export class DropdownTreeviewSelectComponent implements OnInit {
     const availableItems: TreeItem[] = [];
 
     divisionLabels.forEach((divisionLabel, index) => {
-      const divisionNode = {
+      const divisionNode: TreeItem = {
         text: divisionLabel,
-        value: index,
+        value: String(index),
         collapsed: true,
-        children: []
+        children: [],
       };
 
       // Add Major Group Labels
@@ -94,7 +103,8 @@ export class DropdownTreeviewSelectComponent implements OnInit {
         .filter((mgl) => mgl.key === divisionLabel)
         .map((mgl) => ({
           ...mgl,
-          children: []
+          value: mgl.code,
+          children: [],
         }));
 
       // Add Industry Group Labels
@@ -103,7 +113,8 @@ export class DropdownTreeviewSelectComponent implements OnInit {
           .filter((igl) => igl.key === child.text)
           .map((igl) => ({
             ...igl,
-            children: []
+            value: igl.value,
+            children: [],
           }));
 
         // Add Standard Industry Codes

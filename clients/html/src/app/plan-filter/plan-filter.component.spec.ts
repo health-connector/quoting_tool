@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { signal } from '@angular/core';
 
 import { PlanFilterComponent } from './plan-filter.component';
 import { FormsModule } from '@angular/forms';

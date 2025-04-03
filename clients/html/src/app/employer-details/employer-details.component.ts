@@ -7,8 +7,6 @@ import {
   FormsModule,
   ReactiveFormsModule,
   FormControl,
-  AbstractControl,
-  ValidationErrors,
 } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import {
@@ -117,6 +115,12 @@ interface DependentFormGroup {
   relationship: FormControl<string | null>;
 }
 
+// Define interface for effective date options
+interface EffectiveDateOption {
+  value: string;
+  disabled: boolean;
+}
+
 const zipcodes: ZipCodeData[] = zipcodesData as ZipCodeData[];
 const sics: SimpleSicCode[] = sicsData as SimpleSicCode[];
 const sicCodes: DetailedSicCode[] = sicCodesData as unknown as DetailedSicCode[];
@@ -195,7 +199,7 @@ export class EmployerDetailsComponent implements OnInit {
   public showHouseholds = true;
   public employeeRoster: string | null = null;
   public employees: Employee[] = [];
-  public effectiveDateOptions: string[] = [];
+  public effectiveDateOptions: EffectiveDateOption[] = [];
   public months: string[];
   public todaysDate = new Date();
   public employeeRosterDetails: string[];
@@ -302,14 +306,17 @@ export class EmployerDetailsComponent implements OnInit {
       this.loadEmployeesFromStorage();
     }
 
-    let dates = [];
+    let dates: string[] = [];
     let is_late_rate = false;
     this.employerDetailsService.getStartOnDates().subscribe((response) => {
-      dates = response['dates'].map((date) => dates.push(date));
-      is_late_rate = response['is_late_rate'];
+      dates = response['dates'] as string[];
+      is_late_rate = response['is_late_rate'] as boolean;
       this.isLateRates = is_late_rate;
+      this.effectiveDateOptions = dates.map((dateStr) => ({
+        value: dateStr,
+        disabled: is_late_rate,
+      }));
     });
-    this.effectiveDateOptions = dates;
   }
 
   close(alert: Alert) {
@@ -348,17 +355,27 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  isSelected(date) {
-    if (this.employerDetails && date.toString() === this.employerDetails.effectiveDate) {
-      return true;
+  isSelected(dateValue: string): boolean {
+    if (this.employerDetails?.effectiveDate) {
+      const storedDate =
+        this.employerDetails.effectiveDate instanceof Date
+          ? this.employerDetails.effectiveDate.toISOString().split('T')[0]
+          : String(this.employerDetails.effectiveDate);
+      const optionDate = dateValue;
+      return storedDate === optionDate;
     } else {
       return false;
     }
   }
 
-  checkFilePresence(file) {
-    if (file.files.length) {
-      document.getElementById('file-upload-btn').removeAttribute('disabled');
+  checkFilePresence(file: HTMLInputElement) {
+    const uploadBtn = document.getElementById('file-upload-btn');
+    if (uploadBtn) {
+      if (file.files && file.files.length) {
+        uploadBtn.removeAttribute('disabled');
+      } else {
+        uploadBtn.setAttribute('disabled', 'true');
+      }
     }
   }
 
@@ -425,9 +442,15 @@ export class EmployerDetailsComponent implements OnInit {
     this.employerDetailsService.postUpload(input).subscribe();
     // Below is used to display in the UI
     const reader: FileReader = new FileReader();
-    reader.onload = (e: any) => {
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      const target = e.target as FileReader;
+      if (typeof target.result !== 'string') {
+        Swal.fire('Error', 'Failed to read file content.', 'error');
+        console.error('FileReader result is not a string:', target.result);
+        return;
+      }
       /* read workbook */
-      const bstr: string = e.target.result;
+      const bstr: string = target.result;
       const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
 
       /* grab first sheet */
@@ -435,11 +458,40 @@ export class EmployerDetailsComponent implements OnInit {
       const ws: XLSX.WorkSheet = wb.Sheets[wsname];
 
       /* save data */
-      const data = <AOA>XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const dataFromArray = [];
-      data.map((d, i) => {
-        if (i > 2 && d.length > 0) {
-          dataFromArray.push({ relation: d[1], lastName: d[2], firstName: d[3], dob: this.getJsDateFromExcel(d[8]) });
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as AOA;
+      const dataFromArray: ParsedExcelRow[] = [];
+      data.forEach((d, i) => {
+        // Skip header rows (assuming first 3 rows are headers) and empty rows
+        if (i > 2 && d.length > 8) {
+          // Check length before accessing index 8
+          const relation = d[1];
+          const lastName = d[2];
+          const firstName = d[3];
+          const dobExcel = d[8];
+
+          // Validate types before processing
+          if (
+            typeof relation === 'string' &&
+            typeof lastName === 'string' &&
+            typeof firstName === 'string' &&
+            typeof dobExcel === 'number' // Check if dob is a number (Excel date)
+          ) {
+            try {
+              const dob = this.getJsDateFromExcel(dobExcel);
+              // Check if the date is valid after conversion
+              if (!isNaN(dob.getTime())) {
+                dataFromArray.push({ relation, lastName, firstName, dob });
+              } else {
+                console.warn(`Invalid date calculated for row ${i + 1}:`, dobExcel);
+                // Optionally notify the user about the specific row
+              }
+            } catch (dateError) {
+              console.error(`Error processing date for row ${i + 1}:`, dobExcel, dateError);
+            }
+          } else {
+            console.warn(`Skipping row ${i + 1} due to unexpected data types:`, d);
+            // Optionally notify the user about skipped rows
+          }
         }
       });
       this.excelArray = dataFromArray;
@@ -470,13 +522,15 @@ export class EmployerDetailsComponent implements OnInit {
     this.quoteForm.get('county')?.setValue(this.counties[0].county);
   }
 
-  updateEffectiveDate(event) {
+  updateEffectiveDate(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
     if (this.showEmployeeRoster) {
-      this.updateFormValue(event, 'effectiveDate');
+      this.updateFormValue(value, 'effectiveDate');
     }
   }
 
-  updateSic(event) {
+  updateSic(event: SimpleSicCode) {
     if (this.showEmployeeRoster) {
       this.updateFormValue(event, 'sic');
     }
@@ -492,22 +546,23 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  updateFormValue(event, type) {
-    if (type === 'zipCode') {
-      const form = JSON.parse(localStorage.getItem('employerDetails'));
+  updateFormValue(event: string | SimpleSicCode, type: 'zipCode' | 'effectiveDate' | 'sic') {
+    const detailsStr = localStorage.getItem('employerDetails');
+    if (!detailsStr) return;
+    const form = JSON.parse(detailsStr) as EmployerDetails;
+
+    if (type === 'zipCode' && typeof event === 'string') {
       form.zip = event;
       this.counties = this.availableCounties.filter((zipcode) => zipcode.zipCode === event);
-      form.county = this.counties[0].county;
+      if (this.counties.length > 0) {
+        form.county = this.counties[0].county;
+      }
       localStorage.setItem('employerDetails', JSON.stringify(form));
       this.enableCounty();
-    }
-    if (type === 'effectiveDate') {
-      const form = JSON.parse(localStorage.getItem('employerDetails'));
+    } else if (type === 'effectiveDate' && typeof event === 'string') {
       form.effectiveDate = event;
       localStorage.setItem('employerDetails', JSON.stringify(form));
-    }
-    if (type === 'sic') {
-      const form = JSON.parse(localStorage.getItem('employerDetails'));
+    } else if (type === 'sic' && typeof event !== 'string') {
       form.sic = event;
       localStorage.setItem('employerDetails', JSON.stringify(form));
     }
@@ -529,14 +584,17 @@ export class EmployerDetailsComponent implements OnInit {
     this.enableCounty();
   }
 
-  updateCounty(event) {
+  updateCounty(event: Event) {
+    const target = event.target as HTMLSelectElement;
     if (this.showEmployeeRoster) {
-      const form = JSON.parse(localStorage.getItem('employerDetails'));
-      const selectedCounty = this.availableCounties.filter(
-        (c) => c.county === event.target.value && c.zipCode === form.zip,
-      );
-      form.county = selectedCounty[0].county;
-      localStorage.setItem('employerDetails', JSON.stringify(form));
+      const detailsStr = localStorage.getItem('employerDetails');
+      if (!detailsStr) return;
+      const form = JSON.parse(detailsStr) as EmployerDetails;
+      const selectedCounty = this.availableCounties.find((c) => c.county === target.value && c.zipCode === form.zip);
+      if (selectedCounty) {
+        form.county = selectedCounty.county;
+        localStorage.setItem('employerDetails', JSON.stringify(form));
+      }
     }
   }
 

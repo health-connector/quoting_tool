@@ -6,12 +6,24 @@ import { defaultRelationshipContributionModel } from './../../config/client_conf
 function createMockDependent(rel: ContributionRelationship, dob: Date): RosterDependent {
   return {
     dob: dob,
-    relationship: rel
+    relationship: rel,
   };
 }
 
 class MockRosterEntry {
-  constructor(public dob: Date, public will_enroll: boolean, public roster_dependents: Array<RosterDependent>) {}
+  public dependents: Array<{ dob: string | Date; relationship: string }>;
+
+  constructor(
+    public dob: Date,
+    public will_enroll: boolean,
+    public roster_dependents: Array<RosterDependent>,
+    public coverageKind: string,
+  ) {
+    this.dependents = roster_dependents.map((dep) => ({
+      dob: dep.dob,
+      relationship: dep.relationship.toString(),
+    }));
+  }
 }
 
 export function getDefaultValue<K, V>(m: Map<K, V>, k: K, default_value: V) {
@@ -50,7 +62,7 @@ class MockCalculationProduct {
     public major_dental_services: string,
     public basic_dental_services: string,
     public out_of_pocket_in_network: string,
-    public id: string
+    public id: string,
   ) {}
 
   public group_tier_factor(): number {
@@ -122,19 +134,19 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
     '20%',
     '20%',
     '20%',
-    '1'
+    '1',
   );
 
   it('calculates the product quote', () => {
     const dependents = [];
 
-    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents);
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'health');
 
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'health'
+      'health',
     );
     const quote = service.calculateQuote(product);
     expect(quote.total_cost).not.toBe(0.0);
@@ -145,15 +157,15 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
-      createMockDependent(ContributionRelationship.CHILD, new Date())
+      createMockDependent(ContributionRelationship.CHILD, new Date()),
     ];
 
-    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents);
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'health');
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'health'
+      'health',
     );
     const quote = service.calculateQuote(product);
     expect(quote.total_cost).toBe(4.0);
@@ -164,15 +176,15 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
-      createMockDependent(ContributionRelationship.CHILD, new Date())
+      createMockDependent(ContributionRelationship.CHILD, new Date()),
     ];
 
-    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents);
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'dental');
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'dental'
+      'dental',
     );
     const quote = service.calculateQuote(product);
     expect(quote.total_cost).toBe(5.0);
