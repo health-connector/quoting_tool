@@ -11,7 +11,7 @@ import {
   ClientPreferences,
   CLIENT_PREFERENCES,
   defaultRelationshipContributionModel,
-  defaultTieredContributionModel
+  defaultTieredContributionModel,
 } from '../config/client_configuration';
 import { PlanProviderService } from '../services/plan-provider.service';
 import { Product } from '../data/products';
@@ -35,11 +35,11 @@ import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angula
       state(
         'void',
         style({
-          opacity: 0
-        })
+          opacity: 0,
+        }),
       ),
-      transition('void <=> *', animate(400))
-    ])
+      transition('void <=> *', animate(400)),
+    ]),
   ],
   imports: [
     NgClass,
@@ -52,9 +52,9 @@ import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angula
     CurrencyPipe,
     DatePipe,
     PlanFilterPipe,
-    OrderByPipe
-],
-  host: { '(window:beforeunload)': 'unloadHandler($event)' }
+    OrderByPipe,
+  ],
+  host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
 export class PlanFilterComponent implements OnInit {
   private planService = inject(PlanProviderService);
@@ -118,7 +118,7 @@ export class PlanFilterComponent implements OnInit {
     { key: 'single_issuer', value: 'One Carrier', view: 'health' },
     { key: 'metal_level', value: 'One Level', view: 'health' },
     { key: 'single_product', value: 'One Plan', view: 'health' },
-    { key: 'single_product', value: 'One Plan', view: 'dental' }
+    { key: 'single_product', value: 'One Plan', view: 'dental' },
   ];
 
   carrierPlans = input<any>();
@@ -155,19 +155,19 @@ export class PlanFilterComponent implements OnInit {
         this.employerDetails['county'],
         this.employerDetails['zip'],
         this.planType(),
-        this
+        this,
       );
-      this.employerDetails.employees.forEach(function(employee) {
+      this.employerDetails.employees.forEach((employee) => {
         const employeeJson = {
           dob: new Date(employee.dob),
           will_enroll: this.will_enroll(employee.coverageKind),
-          roster_dependents: []
+          roster_dependents: [],
         };
 
-        employee.dependents.forEach(function(dependent) {
+        employee.dependents.forEach((dependent) => {
           employeeJson.roster_dependents.push({
             dob: new Date(dependent.dob),
-            relationship: dependent.relationship
+            relationship: dependent.relationship,
           });
         });
 
@@ -244,7 +244,7 @@ export class PlanFilterComponent implements OnInit {
     const packageKinds = this.planFilter;
     this.kindFilteredProducts = this.sponsorProducts;
     if (packageKinds != null) {
-      this.kindFilteredProducts = this.sponsorProducts.filter(function(p) {
+      this.kindFilteredProducts = this.sponsorProducts.filter(function (p) {
         return p.package_kinds.includes(packageKinds);
       });
     }
@@ -258,10 +258,10 @@ export class PlanFilterComponent implements OnInit {
   recalculate() {
     const calculator = this.hasRelationshipCompatibleType ? this.relationshipCalculator : this.tieredCalculator;
     const newQuotes = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter);
-    const fProductsForCompare = this.filteredProducts.map(function(fp) {
+    const fProductsForCompare = this.filteredProducts.map(function (fp) {
       return fp.name + fp.provider_name;
     });
-    const filteredQuotes = newQuotes.filter(function(nq) {
+    const filteredQuotes = newQuotes.filter(function (nq) {
       return fProductsForCompare.includes(nq.product_information.name + nq.product_information.provider_name);
     });
     this.filteredCarriers = filteredQuotes;
@@ -285,7 +285,7 @@ export class PlanFilterComponent implements OnInit {
         date,
         contributionModel,
         this.sponsorRoster,
-        this.planType()
+        this.planType(),
       );
 
       return calc;
@@ -294,7 +294,7 @@ export class PlanFilterComponent implements OnInit {
         date,
         contributionModel,
         this.sponsorRoster,
-        this.planType()
+        this.planType(),
       );
 
       return calculator;
@@ -442,7 +442,7 @@ export class PlanFilterComponent implements OnInit {
       selected = selected.filter(
         (plan) =>
           parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) >=
-          this.yearlyMedicalDeductibleFrom
+          this.yearlyMedicalDeductibleFrom,
       );
     }
 
@@ -450,7 +450,7 @@ export class PlanFilterComponent implements OnInit {
       selected = selected.filter(
         (plan) =>
           parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) <=
-          this.yearlyMedicalDeductibleTo
+          this.yearlyMedicalDeductibleTo,
       );
     }
 
@@ -460,7 +460,7 @@ export class PlanFilterComponent implements OnInit {
           parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) >=
             this.yearlyMedicalDeductibleFrom &&
           parseInt(plan['product_information']['deductible'].replace('$', '').replace(',', ''), 0) <=
-            this.yearlyMedicalDeductibleTo
+            this.yearlyMedicalDeductibleTo,
       );
     }
 
@@ -474,7 +474,7 @@ export class PlanFilterComponent implements OnInit {
 
     if (this.planPremiumsFrom && this.planPremiumsTo) {
       selected = selected.filter(
-        (plan) => plan['total_cost'] >= this.planPremiumsFrom && plan['total_cost'] <= this.planPremiumsTo
+        (plan) => plan['total_cost'] >= this.planPremiumsFrom && plan['total_cost'] <= this.planPremiumsTo,
       );
     }
 
@@ -541,7 +541,7 @@ export class PlanFilterComponent implements OnInit {
       showConfirmButton: false,
       showCancelButton: false,
       backdrop: true,
-      allowOutsideClick: false
+      allowOutsideClick: false,
     });
   }
 
@@ -552,14 +552,14 @@ export class PlanFilterComponent implements OnInit {
     this.html2PDF(table, {
       jsPDF: {
         unit: 'pt',
-        format: 'a4'
+        format: 'a4',
       },
       imageType: 'image/png',
       output: `./pdf/${this.planType()}.pdf`,
-      success: function(pdf) {
+      success: function (pdf) {
         pdf.save();
         Swal.close();
-      }
+      },
     });
     setTimeout(() => {
       this.pdfView = false;

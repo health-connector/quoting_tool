@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { signal } from '@angular/core';
 
 import { PlanFilterComponent } from './plan-filter.component';
 import { FormsModule } from '@angular/forms';
@@ -16,7 +17,7 @@ const data = {
     industryGroupLabel: 'Cash Grains',
     standardIndustryCodeFull: '0112: Rice',
     standardIndustryCodeCode: '0112',
-    standardIndustryCodeLabel: 'Rice'
+    standardIndustryCodeLabel: 'Rice',
   },
   zip: { zipCode: '01001', county: 'Hampden' },
   county: 'Hampden',
@@ -31,15 +32,15 @@ const data = {
           firstName: 'Sue',
           lastName: 'Smith',
           dob: '2004-11-01T05:00:00.000Z',
-          relationship: 'spouse'
+          relationship: 'spouse',
         },
         {
           firstName: 'James',
           lastName: 'Smith',
           dob: '1954-12-19T05:00:00.000Z',
-          relationship: 'child'
-        }
-      ]
+          relationship: 'child',
+        },
+      ],
     },
     {
       firstName: 'Jane',
@@ -51,70 +52,66 @@ const data = {
           firstName: 'John',
           lastName: 'Brown',
           dob: '2000-11-01T05:00:00.000Z',
-          relationship: 'spouse'
-        }
-      ]
+          relationship: 'spouse',
+        },
+      ],
     },
     {
       firstName: 'Sean ',
       lastName: 'King',
       dob: '2001-02-01T05:00:00.000Z',
       coverageKind: 'both',
-      dependents: []
+      dependents: [],
     },
     {
       firstName: 'Lauren',
       lastName: 'Morris',
       dob: '1995-08-01T04:00:00.000Z',
       coverageKind: 'both',
-      dependents: []
-    }
-  ]
+      dependents: [],
+    },
+  ],
 };
 
 describe('PlanFilterComponent', () => {
   let component: PlanFilterComponent;
   let fixture: ComponentFixture<PlanFilterComponent>;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [
-          NgbModule,
-          BrowserAnimationsModule,
-          RouterTestingModule,
-          FormsModule,
-          PlanFilterComponent,
-          PlanFilterPipe,
-          OrderByPipe
-        ],
-        providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
-      }).compileComponents();
-    })
-  );
+  beforeEach(waitForAsync(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        NgbModule,
+        BrowserAnimationsModule,
+        RouterTestingModule,
+        FormsModule,
+        PlanFilterComponent,
+        PlanFilterPipe,
+        OrderByPipe,
+      ],
+      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()],
+    }).compileComponents();
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(PlanFilterComponent);
     component = fixture.componentInstance;
-    component.planType = 'health' as any;
     localStorage.setItem('employerDetails', JSON.stringify(data));
+    fixture.componentRef.setInput('planType', 'health');
+    fixture.detectChanges();
   });
 
   it('should create', () => {
-    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('Choose type should have One Carrier, One Plan, and One Level if health', () => {
     component.isLoading = false;
-    fixture.detectChanges();
     const options = component.planOptions.filter((plan) => plan.view === component.planType());
     expect(options.length).toEqual(3);
   });
 
   xit('should have the table headers for health if plan type health', () => {
     component.isLoading = false;
-    fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
     expect(headers[0].innerText).toEqual('Plan name/Summary of Benefits');
     expect(headers[1].innerText).toEqual('Benefit Cost');
@@ -140,14 +137,14 @@ describe('PlanFilterComponent', () => {
   });
 
   it('Choose type should have One Plan if dental', () => {
-    component.planType = 'dental' as any;
+    fixture.componentRef.setInput('planType', 'dental');
     fixture.detectChanges();
     const options = component.planOptions.filter((plan) => plan.view === component.planType());
     expect(options.length).toEqual(1);
   });
 
   xit('should have the table headers for dental if plan type dental', () => {
-    component.planType = 'dental' as any;
+    fixture.componentRef.setInput('planType', 'dental');
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
     expect(headers[0].innerText).toEqual('Plan name');

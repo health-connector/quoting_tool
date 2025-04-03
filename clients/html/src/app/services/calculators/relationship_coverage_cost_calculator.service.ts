@@ -22,7 +22,7 @@ class FilteredRelationshipRosterEntry {
     rel_map: Map<ContributionRelationship, boolean>,
     dob: Date,
     deps: Array<RosterDependent>,
-    will_enroll: boolean
+    will_enroll: boolean,
   ) {
     this.dob = dob;
     this.will_enroll = will_enroll;
@@ -43,7 +43,7 @@ class FilteredRelationshipRosterEntry {
   private filterDependents(
     start_date: Date,
     deps: Array<RosterDependent>,
-    rel_map: Map<ContributionRelationship, boolean>
+    rel_map: Map<ContributionRelationship, boolean>,
   ) {
     return deps.filter((rd) => {
       if (rd.relationship === ContributionRelationship.CHILD) {
@@ -79,14 +79,14 @@ export class RelationshipCoverageCostCalculatorService {
     startDate: Date,
     contributionModel: RelationshipContributionModel,
     roster: Array<RosterEntry>,
-    kind: string
+    kind: string,
   ) {
     this.startDate = startDate;
     this.groupSize = this.calculateGroupSize(roster);
     this.participation = this.calculateParticipation(roster);
     this.filteredRoster = this.filterRoster(startDate, contributionModel, roster);
     const relCMap = new Map<ContributionRelationship, number>();
-    contributionModel.levels.forEach(function(cl) {
+    contributionModel.levels.forEach((cl) => {
       relCMap.set(cl.name, cl.contribution);
     });
     this.relContributions = relCMap;
@@ -94,7 +94,7 @@ export class RelationshipCoverageCostCalculatorService {
   }
 
   private calculateParticipation(roster: Array<RosterEntry>) {
-    const will_enroll = roster.filter(function(re) {
+    const will_enroll = roster.filter((re) => {
       return re.will_enroll;
     });
     const percentage = (will_enroll.length / roster.length) * 100.0;
@@ -102,7 +102,7 @@ export class RelationshipCoverageCostCalculatorService {
   }
 
   private calculateGroupSize(roster: Array<RosterEntry>) {
-    const will_enroll = roster.filter(function(re) {
+    const will_enroll = roster.filter((re) => {
       return re.will_enroll;
     });
     if (will_enroll.length < 1) {
@@ -113,7 +113,7 @@ export class RelationshipCoverageCostCalculatorService {
 
   private relationshipOfferedMap(contributionModel: RelationshipContributionModel) {
     const rel_map = new Map<ContributionRelationship, boolean>();
-    contributionModel.levels.forEach(function(cl) {
+    contributionModel.levels.forEach((cl) => {
       rel_map.set(cl.name, cl.offered);
     });
     return rel_map;
@@ -123,13 +123,13 @@ export class RelationshipCoverageCostCalculatorService {
     const rel_map = this.relationshipOfferedMap(contributionModel);
     return roster
       .filter((re) => re.will_enroll)
-      .map(function(re) {
+      .map((re) => {
         const filteredMember = new FilteredRelationshipRosterEntry(
           start_d,
           rel_map,
           re.dob,
           re.roster_dependents,
-          re.will_enroll
+          re.will_enroll,
         );
         return filteredMember;
       });
@@ -142,12 +142,12 @@ export class RelationshipCoverageCostCalculatorService {
     } else if (this.currentPackageKind === PackageTypes.SINGLE_ISSUER) {
       this.issuerBucket = new IssuerBucket();
     }
-    const calculated_products = products.map(function(prod) {
+    const calculated_products = products.map((prod) => {
       return this.calculateQuote(prod);
     });
     if (this.currentPackageKind === PackageTypes.METAL_LEVEL) {
       const mlb = this.metalLevelBucket;
-      calculated_products.forEach(function(q) {
+      calculated_products.forEach((q) => {
         const cheapest = mlb.cheapestFor(q);
         if (cheapest != null) {
           q.minimum_member_cost = this.reducedMemberCost(q, cheapest.family, cheapest.total);
@@ -159,7 +159,7 @@ export class RelationshipCoverageCostCalculatorService {
       });
     } else if (this.currentPackageKind === PackageTypes.SINGLE_ISSUER) {
       const ilb = this.issuerBucket;
-      calculated_products.forEach(function(q) {
+      calculated_products.forEach((q) => {
         const cheapest = ilb.cheapestFor(q);
         if (cheapest != null) {
           q.minimum_member_cost = this.reducedMemberCost(q, cheapest.family, cheapest.total);
@@ -200,7 +200,7 @@ export class RelationshipCoverageCostCalculatorService {
       avg_member_cost,
       this.minMemberCost,
       this.maxMemberCost,
-      emptyTierMap
+      emptyTierMap,
     );
   }
 
@@ -208,9 +208,12 @@ export class RelationshipCoverageCostCalculatorService {
     const gs_factor = product.group_size_factor('1');
     const pr_factor = product.participation_factor(this.participation);
     const sic_code_factor = product.sic_code_factor;
-    const total = this.filteredRoster.reduce(function(current_total, re) {
-      return current_total.add(this.group_cost(product, re, sic_code_factor, gs_factor, pr_factor));
-    }, new ResultTotal(0.0, 0.0));
+    const total = this.filteredRoster.reduce(
+      (current_total, re) => {
+        return current_total.add(this.group_cost(product, re, sic_code_factor, gs_factor, pr_factor));
+      },
+      new ResultTotal(0.0, 0.0),
+    );
     return total;
   }
 
@@ -219,7 +222,7 @@ export class RelationshipCoverageCostCalculatorService {
     roster_entry: RosterEntry,
     sic_factor: number,
     gs_factor: number,
-    pr_factor: number
+    pr_factor: number,
   ) {
     const total = this.resultTotalFor(product, roster_entry, sic_factor, gs_factor, pr_factor);
     const memberCost = total.total_cost - total.sponsor_cost;
@@ -243,35 +246,38 @@ export class RelationshipCoverageCostCalculatorService {
     roster_entry: RosterEntry,
     sic_factor: number,
     gs_factor: number,
-    pr_factor: number
+    pr_factor: number,
   ) {
     const subscriber_cost =
       product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
     const subscriber_sponsor_cost = subscriber_cost * (this.relContributions.get(ContributionRelationship.SELF) * 0.01);
     let members_in_threshold = 0;
-    const sorted_dependents = roster_entry.roster_dependents.sort(function(a, b) {
+    const sorted_dependents = roster_entry.roster_dependents.sort((a, b) => {
       const a_age = this.coverageAge(this.startDate, a.dob);
       const b_age = this.coverageAge(this.startDate, b.dob);
       return b_age - a_age;
     });
-    const total = sorted_dependents.reduce(function(current_total, rd) {
-      const age = this.coverageAge(this.startDate, rd.dob);
-      let dependent_cost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
-      if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
-        if (
-          age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
-          rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
-        ) {
-          members_in_threshold = members_in_threshold + 1;
-          if (members_in_threshold >= RelationshipDiscounts.relationship_discount.relationship_threshold) {
-            dependent_cost = 0.0;
+    const total = sorted_dependents.reduce(
+      (current_total, rd) => {
+        const age = this.coverageAge(this.startDate, rd.dob);
+        let dependent_cost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
+          if (
+            age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
+            rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
+          ) {
+            members_in_threshold = members_in_threshold + 1;
+            if (members_in_threshold >= RelationshipDiscounts.relationship_discount.relationship_threshold) {
+              dependent_cost = 0.0;
+            }
           }
         }
-      }
-      const dependent_sponsor_cost = dependent_cost * (this.relContributions.get(rd.relationship) * 0.01);
-      const dependent_total = new ResultTotal(dependent_cost, dependent_sponsor_cost);
-      return current_total.add(dependent_total);
-    }, new ResultTotal(subscriber_cost, subscriber_sponsor_cost));
+        const dependent_sponsor_cost = dependent_cost * (this.relContributions.get(rd.relationship) * 0.01);
+        const dependent_total = new ResultTotal(dependent_cost, dependent_sponsor_cost);
+        return current_total.add(dependent_total);
+      },
+      new ResultTotal(subscriber_cost, subscriber_sponsor_cost),
+    );
     return total;
   }
 
