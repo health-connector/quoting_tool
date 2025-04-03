@@ -18,33 +18,31 @@ RSpec.describe Api::V1::ProductsController do
       }
     end
     
-    # Mock data for responses
     let(:health_metal_level) { "platinum" }
     let(:dental_metal_level) { "high" }
     let(:health_data) { [{'metal_level' => health_metal_level}] }
     let(:dental_data) { [{'metal_level' => dental_metal_level}] }
     
-    # Setup shared controller mocks
     before do
       allow(Rails.cache).to receive(:read).and_return(nil)
       allow(Rails.cache).to receive(:write).and_return(true)
     end
     
     context "when requesting health plans" do
+      let(:product_serializer) { instance_double(ProductSerializer) }
+      
       before do
-        # Mock the controller's interactions with the database
         allow(controller).to receive(:plans).and_call_original
         allow(controller).to receive(:service_area_ids).and_return([BSON::ObjectId.new])
         allow(controller).to receive(:rating_area_id).and_return(BSON::ObjectId.new)
         allow(controller).to receive(:county_zips).and_return([BSON::ObjectId.new])
         
-        # Mock Products::Product.where
         health_products = [double('HealthProduct')]
         allow(Products::Product).to receive(:where).and_return(health_products)
         
-        # Mock the serializer
         serialized_data = {data: {attributes: {'metal_level' => health_metal_level}}}
-        allow_any_instance_of(ProductSerializer).to receive(:serializable_hash).and_return(serialized_data)
+        allow(ProductSerializer).to receive(:new).and_return(product_serializer)
+        allow(product_serializer).to receive(:serializable_hash).and_return(serialized_data)
         
         get :plans, params: base_params.merge(kind: "health")
       end
@@ -65,20 +63,20 @@ RSpec.describe Api::V1::ProductsController do
     end
     
     context "when requesting dental plans" do
+      let(:product_serializer) { instance_double(ProductSerializer) }
+      
       before do
-        # Mock the controller's interactions with the database
         allow(controller).to receive(:plans).and_call_original
         allow(controller).to receive(:service_area_ids).and_return([BSON::ObjectId.new])
         allow(controller).to receive(:rating_area_id).and_return(BSON::ObjectId.new)
         allow(controller).to receive(:county_zips).and_return([BSON::ObjectId.new])
         
-        # Mock Products::Product.where
         dental_products = [double('DentalProduct')]
         allow(Products::Product).to receive(:where).and_return(dental_products)
         
-        # Mock the serializer
         serialized_data = {data: {attributes: {'metal_level' => dental_metal_level}}}
-        allow_any_instance_of(ProductSerializer).to receive(:serializable_hash).and_return(serialized_data)
+        allow(ProductSerializer).to receive(:new).and_return(product_serializer)
+        allow(product_serializer).to receive(:serializable_hash).and_return(serialized_data)
         
         get :plans, params: base_params.merge(kind: "dental")
       end
@@ -100,10 +98,16 @@ RSpec.describe Api::V1::ProductsController do
   end
   
   describe "#sbc_document" do
+    let(:sbc_document_transaction) { instance_double(Transactions::SbcDocument) }
+    
+    before do
+      allow(Transactions::SbcDocument).to receive(:new).and_return(sbc_document_transaction)
+    end
+    
     context "when successful" do
       before do
         success_result = Dry::Monads::Success.new({document: "sample_data"})
-        allow_any_instance_of(Transactions::SbcDocument).to receive(:call).and_return(success_result)
+        allow(sbc_document_transaction).to receive(:call).and_return(success_result)
         get :sbc_document, params: {key: "some_key"}
       end
       
@@ -121,7 +125,7 @@ RSpec.describe Api::V1::ProductsController do
     context "when unsuccessful" do
       before do
         failure_result = Dry::Monads::Failure.new("error")
-        allow_any_instance_of(Transactions::SbcDocument).to receive(:call).and_return(failure_result)
+        allow(sbc_document_transaction).to receive(:call).and_return(failure_result)
         get :sbc_document, params: {key: "invalid_key"}
       end
       

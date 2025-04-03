@@ -95,8 +95,10 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
       allow(product_builder).to receive(:out_of_pocket_in_network).and_return("10000")
       allow(product_builder).to receive(:service_visit_co_insurance).and_return("20")
       
-      # Mock saving the product
-      allow_any_instance_of(Products::HealthProduct).to receive(:save!).and_return(true)
+      # Mock saving the product - use a double instead of any_instance_of
+      health_product = instance_double(Products::HealthProduct, save!: true, id: BSON::ObjectId.new)
+      allow(Products::HealthProduct).to receive(:new).and_return(health_product)
+      allow(health_product).to receive(:issuer_hios_ids=)
       
       # Mock the product lookup to be empty (so it creates a new one)
       allow(Products::Product).to receive(:where).and_return([])
