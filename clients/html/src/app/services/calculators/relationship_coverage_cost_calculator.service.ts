@@ -124,14 +124,19 @@ export class RelationshipCoverageCostCalculatorService {
     return roster
       .filter((re) => re.will_enroll)
       .map((re) => {
-        const filteredMember = new FilteredRelationshipRosterEntry(
+        const dobDate = typeof re.dob === 'string' ? new Date(re.dob) : re.dob;
+        const filteredMemberHelper = new FilteredRelationshipRosterEntry(
           start_d,
           rel_map,
-          re.dob,
+          dobDate,
           re.roster_dependents,
           re.will_enroll,
         );
-        return filteredMember;
+        return {
+          ...re,
+          dob: dobDate,
+          roster_dependents: filteredMemberHelper.roster_dependents,
+        } as RosterEntry;
       });
   }
 
@@ -224,14 +229,38 @@ export class RelationshipCoverageCostCalculatorService {
     gs_factor: number,
     pr_factor: number,
   ) {
-    const total = this.resultTotalFor(product, roster_entry, sic_factor, gs_factor, pr_factor);
-    const memberCost = total.total_cost - total.sponsor_cost;
-    if (memberCost < this.minMemberCost) {
-      this.minMemberCost = memberCost;
-    }
-    if (memberCost > this.maxMemberCost) {
-      this.maxMemberCost = memberCost;
-    }
+    const employeeAge = this.coverageAge(this.startDate, roster_entry.dob);
+    const subscriber_cost = product.cost(employeeAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+    const sponsor_rel_contribution = this.relContributions.get(ContributionRelationship.SELF) || 0.0;
+    const subscriber_sponsor_cost = subscriber_cost * (sponsor_rel_contribution * 0.01);
+    let members_in_threshold = 0;
+    const sorted_dependents = roster_entry.roster_dependents.sort((a, b) => {
+      const a_age = this.coverageAge(this.startDate, a.dob);
+      const b_age = this.coverageAge(this.startDate, b.dob);
+      return b_age - a_age;
+    });
+    const total = sorted_dependents.reduce(
+      (current_total, rd) => {
+        const depAge = this.coverageAge(this.startDate, rd.dob);
+        let dependent_cost = product.cost(depAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        const sponsor_dep_rel_contribution = this.relContributions.get(rd.relationship) || 0.0;
+        if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
+          if (
+            depAge < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
+            rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
+          ) {
+            members_in_threshold = members_in_threshold + 1;
+            if (members_in_threshold >= RelationshipDiscounts.relationship_discount.relationship_threshold) {
+              dependent_cost = 0.0;
+            }
+          }
+        }
+        const dependent_sponsor_cost = dependent_cost * (sponsor_dep_rel_contribution * 0.01);
+        const dependent_total = new ResultTotal(dependent_cost, dependent_sponsor_cost);
+        return current_total.add(dependent_total);
+      },
+      new ResultTotal(subscriber_cost, subscriber_sponsor_cost),
+    );
     if (this.currentPackageKind === PackageTypes.METAL_LEVEL) {
       this.metalLevelBucket.add(product, roster_entry, total.total_cost);
     }
@@ -248,9 +277,10 @@ export class RelationshipCoverageCostCalculatorService {
     gs_factor: number,
     pr_factor: number,
   ) {
-    const subscriber_cost =
-      product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
-    const subscriber_sponsor_cost = subscriber_cost * (this.relContributions.get(ContributionRelationship.SELF) * 0.01);
+    const employeeAge = this.coverageAge(this.startDate, roster_entry.dob);
+    const subscriber_cost = product.cost(employeeAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+    const sponsor_rel_contribution = this.relContributions.get(ContributionRelationship.SELF) || 0.0;
+    const subscriber_sponsor_cost = subscriber_cost * (sponsor_rel_contribution * 0.01);
     let members_in_threshold = 0;
     const sorted_dependents = roster_entry.roster_dependents.sort((a, b) => {
       const a_age = this.coverageAge(this.startDate, a.dob);
@@ -259,11 +289,12 @@ export class RelationshipCoverageCostCalculatorService {
     });
     const total = sorted_dependents.reduce(
       (current_total, rd) => {
-        const age = this.coverageAge(this.startDate, rd.dob);
-        let dependent_cost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        const depAge = this.coverageAge(this.startDate, rd.dob);
+        let dependent_cost = product.cost(depAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        const sponsor_dep_rel_contribution = this.relContributions.get(rd.relationship) || 0.0;
         if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
           if (
-            age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
+            depAge < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&
             rd.relationship === RelationshipDiscounts.relationship_discount.relationship_kind
           ) {
             members_in_threshold = members_in_threshold + 1;
@@ -272,7 +303,7 @@ export class RelationshipCoverageCostCalculatorService {
             }
           }
         }
-        const dependent_sponsor_cost = dependent_cost * (this.relContributions.get(rd.relationship) * 0.01);
+        const dependent_sponsor_cost = dependent_cost * (sponsor_dep_rel_contribution * 0.01);
         const dependent_total = new ResultTotal(dependent_cost, dependent_sponsor_cost);
         return current_total.add(dependent_total);
       },
@@ -281,13 +312,14 @@ export class RelationshipCoverageCostCalculatorService {
     return total;
   }
 
-  private coverageAge(coverageDate: Date, dob: Date) {
-    const year_diff = coverageDate.getFullYear() - dob.getFullYear();
+  private coverageAge(coverageDate: Date, dob: Date | string) {
+    const dobDate = typeof dob === 'string' ? new Date(dob) : dob;
+    const year_diff = coverageDate.getFullYear() - dobDate.getFullYear();
     let offset = 0;
-    if (dob.getMonth() > coverageDate.getMonth()) {
+    if (dobDate.getMonth() > coverageDate.getMonth()) {
       offset = -1;
-    } else if (dob.getMonth() === coverageDate.getMonth()) {
-      offset = dob.getDate() > coverageDate.getDate() ? -1 : 0;
+    } else if (dobDate.getMonth() === coverageDate.getMonth()) {
+      offset = dobDate.getDate() > coverageDate.getDate() ? -1 : 0;
     }
     return year_diff + offset;
   }

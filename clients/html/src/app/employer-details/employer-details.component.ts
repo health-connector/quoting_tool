@@ -1,5 +1,15 @@
 import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
-import { FormBuilder, Validators, FormArray, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  Validators,
+  FormArray,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  FormControl,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import {
   NgbModal,
@@ -8,16 +18,16 @@ import {
   NgbDropdownToggle,
   NgbDropdownMenu,
   NgbDropdownItem,
-  NgbInputDatepicker
+  NgbInputDatepicker,
 } from '@ng-bootstrap/ng-bootstrap';
 import { NgbDateStruct, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
 import { EmployerDetailsService } from './../services/employer-details.service';
-import zipcodes from '../../data/zipCode.json';
-import sics from '../../data/sic.json';
-import sicCodes from '../../data/sicCodes.json';
+import zipcodesData from '../../data/zipCode.json';
+import sicsData from '../../data/sic.json';
+import sicCodesData from '../../data/sicCodes.json';
 import { SelectedSicService } from '../services/selected-sic.service';
 import { CoverageTypePipe } from './coverage-type.pipe';
 import { RouterLink } from '@angular/router';
@@ -27,7 +37,58 @@ import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { NavComponent } from '../nav/nav.component';
 import { DatePipe } from '@angular/common';
 
-type AOA = any[][];
+interface ZipCodeData {
+  zipCode: string;
+  county: string;
+}
+
+interface SimpleSicCode {
+  standardIndustryCodeCode: string;
+  standardIndustryCodeFull?: string;
+}
+
+interface DetailedSicCode {
+  StandardIndustryCode_Code: number;
+  StandardIndustryCode_Full: string;
+}
+
+interface SicCodeInternal {
+  standardIndustryCodeCode: string;
+  standardIndustryCodeFull?: string;
+}
+
+interface Dependent {
+  firstName: string;
+  lastName: string;
+  dob: Date | string;
+  relationship: string;
+}
+
+interface Employee {
+  firstName: string;
+  lastName: string;
+  dob: Date | string;
+  coverageKind: string;
+  dependents: Dependent[];
+}
+
+interface EmployerDetails {
+  effectiveDate: Date | string;
+  sic: SicCodeInternal;
+  zip: string;
+  county: string;
+  employees: Employee[];
+}
+
+interface ParsedExcelRow {
+  relation: string;
+  lastName: string;
+  firstName: string;
+  dob: Date;
+}
+
+type ExcelRowData = (string | number | null)[];
+type AOA = ExcelRowData[];
 
 interface Alert {
   type: string;
@@ -35,6 +96,30 @@ interface Alert {
   enabled: boolean;
   message: string;
 }
+
+interface SicTreeItem {
+  text: string;
+  value: unknown;
+}
+
+interface EmployeeFormGroup {
+  firstName: FormControl<string | null>;
+  lastName: FormControl<string | null>;
+  dob: FormControl<Date | null>;
+  coverageKind: FormControl<string | null>;
+  dependents: FormArray<FormGroup<DependentFormGroup>>;
+}
+
+interface DependentFormGroup {
+  firstName: FormControl<string | null>;
+  lastName: FormControl<string | null>;
+  dob: FormControl<Date | null>;
+  relationship: FormControl<string | null>;
+}
+
+const zipcodes: ZipCodeData[] = zipcodesData as ZipCodeData[];
+const sics: SimpleSicCode[] = sicsData as SimpleSicCode[];
+const sicCodes: DetailedSicCode[] = sicCodesData as unknown as DetailedSicCode[];
 
 @Component({
   selector: 'app-employer-details',
@@ -47,11 +132,11 @@ interface Alert {
       state(
         'void',
         style({
-          opacity: 0
-        })
+          opacity: 0,
+        }),
       ),
-      transition('void <=> *', animate(400))
-    ])
+      transition('void <=> *', animate(400)),
+    ]),
   ],
   imports: [
     NgbAlert,
@@ -68,9 +153,9 @@ interface Alert {
     NgbInputDatepicker,
     RouterLink,
     DatePipe,
-    CoverageTypePipe
-],
-  host: { '(window:beforeunload)': 'unloadHandler($event)' }
+    CoverageTypePipe,
+  ],
+  host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
 export class EmployerDetailsComponent implements OnInit {
   private fb = inject(FormBuilder);
@@ -78,85 +163,89 @@ export class EmployerDetailsComponent implements OnInit {
   private employerDetailsService = inject(EmployerDetailsService);
   private dpConfig = inject(NgbDatepickerConfig);
   private selectedSicService = inject(SelectedSicService);
-  rows = [];
+
+  rows: Employee[] = [];
   alerts: Alert[];
   model: NgbDateStruct;
   date: { months: number; day: number; year: number };
   sicKeyword = 'standardIndustryCodeCode';
   zipKeyword = 'zipCode';
-  sics = sics;
-  zipcodes = zipcodes;
-  availableCounties = zipcodes;
-  defaultSelect: boolean;
-  uploadData: any;
-  employee: any;
-  employeeIndex: any;
-  employerDetails: any;
-  showEditHousehold: any;
-  sicCodes = sicCodes;
-  isLateRates: boolean;
+  sics: SimpleSicCode[] = sics;
+  zipcodes: string[] = [];
+  availableCounties: ZipCodeData[] = zipcodes;
+  defaultSelect: boolean = false;
+  employerDetails: EmployerDetails | null = null;
+  showEditHousehold: boolean = false;
+  sicCodesForTree: DetailedSicCode[] = sicCodes;
+  isLateRates: boolean = false;
 
-  public counties: any;
-  public quoteForm: FormGroup;
-  public editEmployeeForm: FormGroup;
-  public addNewEmployeeForm: FormGroup;
-  public editEmployeeIndex: any;
+  public counties: ZipCodeData[] = [];
+  public quoteForm: FormGroup<{
+    effectiveDate: FormControl<string | Date | null>;
+    sic: FormControl<string | null>;
+    zip: FormControl<string | null>;
+    county: FormControl<string | null>;
+    employees: FormArray<FormGroup<EmployeeFormGroup>>;
+  }>;
+  public editEmployeeForm: FormGroup<EmployeeFormGroup>;
+  public addNewEmployeeForm: FormGroup<EmployeeFormGroup>;
+
+  public editEmployeeIndex: number | null = null;
   public showEmployeeRoster = false;
   public showHouseholds = true;
-  public employeeRoster: any;
-  public employees: any;
-  public effectiveDateOptions: any;
-  public months: any;
+  public employeeRoster: string | null = null;
+  public employees: Employee[] = [];
+  public effectiveDateOptions: string[] = [];
+  public months: string[];
   public todaysDate = new Date();
-  public employeeRosterDetails: any;
+  public employeeRosterDetails: string[];
   public showSicDetails: boolean = false;
   showNewEmployee = false;
-  excelArray: any;
+  excelArray: ParsedExcelRow[] = [];
 
   relationOptions = [
     { key: 'Spouse', value: 'Spouse' },
     { key: 'Domestic Partner', value: 'Domestic Partner' },
-    { key: 'Child', value: 'Child' }
+    { key: 'Child', value: 'Child' },
   ];
 
   config = {
     hasFilter: true,
-    decoupleChildFromParent: true
+    decoupleChildFromParent: true,
   };
 
-  file = viewChild<ElementRef>('file');
+  file = viewChild<ElementRef<HTMLInputElement>>('file');
 
-  unloadHandler(event: Event) {
-    event.returnValue = false;
+  unloadHandler(event: BeforeUnloadEvent) {
+    event.preventDefault();
+    event.returnValue = '';
   }
 
   constructor() {
     this.setAlerts();
 
     this.quoteForm = this.fb.group({
-      effectiveDate: ['', Validators.required],
-      sic: ['', Validators.required],
-      zip: ['', Validators.required],
-      county: [''],
-      employees: this.fb.array([], Validators.required)
+      effectiveDate: new FormControl<Date | string | null>(null, Validators.required),
+      sic: new FormControl<string | null>('', Validators.required),
+      zip: new FormControl<string | null>('', Validators.required),
+      county: new FormControl<string | null>(''),
+      employees: this.fb.array<FormGroup<EmployeeFormGroup>>([], Validators.required),
     });
 
-    this.showEditHousehold = false;
-
     this.editEmployeeForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      dob: ['', Validators.required],
-      coverageKind: ['', Validators.required],
-      dependents: this.fb.array([])
+      firstName: new FormControl<string | null>('', Validators.required),
+      lastName: new FormControl<string | null>('', Validators.required),
+      dob: new FormControl<Date | null>(null, Validators.required),
+      coverageKind: new FormControl<string | null>('', Validators.required),
+      dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
     });
 
     this.addNewEmployeeForm = this.fb.group({
-      firstName: [''],
-      lastName: [''],
-      dob: ['', Validators.required],
-      coverageKind: ['', Validators.required],
-      dependents: this.fb.array([])
+      firstName: new FormControl<string | null>('', Validators.required),
+      lastName: new FormControl<string | null>('', Validators.required),
+      dob: new FormControl<Date | null>(null, Validators.required),
+      coverageKind: new FormControl<string | null>('', Validators.required),
+      dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
     });
 
     this.months = [
@@ -171,7 +260,7 @@ export class EmployerDetailsComponent implements OnInit {
       'September',
       'October',
       'November',
-      'December'
+      'December',
     ];
 
     this.employeeRosterDetails = [
@@ -179,7 +268,7 @@ export class EmployerDetailsComponent implements OnInit {
       'Date of Birth',
       'Dependent Name(s), if any',
       'Dependent Relationship(s)',
-      'Dependent Date of Birth(s)'
+      'Dependent Date of Birth(s)',
     ];
 
     const year = new Date().getFullYear();
@@ -190,16 +279,26 @@ export class EmployerDetailsComponent implements OnInit {
 
   ngOnInit() {
     this.getZipCodes();
-    this.selectedSicService.currentMessage.subscribe((message) => this.setSicFromTree(message));
+    this.selectedSicService.currentMessage.subscribe((item: SicTreeItem | string) => this.setSicFromTree(item));
     this.employeeRoster = localStorage.getItem('employerDetails');
     if (this.employeeRoster) {
       this.showEmployeeRoster = true;
-      this.employerDetails = JSON.parse(this.employeeRoster);
-      this.quoteForm.get('effectiveDate').setValue(new Date(this.employerDetails.effectiveDate));
-      this.quoteForm.get('zip').setValue(this.employerDetails.zip);
-      this.quoteForm.get('sic').setValue(this.employerDetails.sic.standardIndustryCodeCode);
-      this.quoteForm.get('county').setValue(this.employerDetails.county);
-      this.counties = this.availableCounties.filter((county) => county.county === this.employerDetails.county);
+      this.employerDetails = JSON.parse(this.employeeRoster) as EmployerDetails;
+      this.employerDetails.effectiveDate = new Date(this.employerDetails.effectiveDate);
+      this.employerDetails.employees.forEach((emp) => {
+        emp.dob = new Date(emp.dob);
+        emp.dependents.forEach((dep) => (dep.dob = new Date(dep.dob)));
+      });
+      this.quoteForm.patchValue({
+        effectiveDate: this.employerDetails.effectiveDate,
+        zip: this.employerDetails.zip,
+        sic: this.employerDetails.sic?.standardIndustryCodeCode || '',
+        county: this.employerDetails.county,
+      });
+      this.counties = this.availableCounties.filter((county) => county.zipCode === this.employerDetails.zip);
+      if (this.counties.length > 0) {
+        this.quoteForm.get('county')?.setValue(this.employerDetails.county);
+      }
       this.loadEmployeesFromStorage();
     }
 
@@ -224,8 +323,8 @@ export class EmployerDetailsComponent implements OnInit {
         feature: 'Late rates',
         enabled: true,
         message:
-          'Due to a delay, premiums for some coverage effective dates are not available yet. Please check again soon to see if this information has been updated. You can also contact Customer Service or your broker if you need help.'
-      }
+          'Due to a delay, premiums for some coverage effective dates are not available yet. Please check again soon to see if this information has been updated. You can also contact Customer Service or your broker if you need help.',
+      },
     ];
   }
 
@@ -266,13 +365,13 @@ export class EmployerDetailsComponent implements OnInit {
   addEmployee() {
     const control = <FormArray>this.quoteForm.controls.employees;
     control.push(
-      this.fb.group({
-        firstName: [''],
-        lastName: [''],
-        dob: ['', Validators.required],
-        coverageKind: ['', Validators.required],
-        dependents: this.fb.array([])
-      })
+      this.fb.group<EmployeeFormGroup>({
+        firstName: new FormControl<string | null>('', Validators.required),
+        lastName: new FormControl<string | null>('', Validators.required),
+        dob: new FormControl<Date | null>(null, Validators.required),
+        coverageKind: new FormControl<string | null>('', Validators.required),
+        dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
+      }),
     );
   }
 
@@ -287,12 +386,12 @@ export class EmployerDetailsComponent implements OnInit {
 
   addDependent(control) {
     control.push(
-      this.fb.group({
-        firstName: [''],
-        lastName: [''],
-        dob: ['', Validators.required],
-        relationship: ['', Validators.required]
-      })
+      this.fb.group<DependentFormGroup>({
+        firstName: new FormControl<string | null>('', Validators.required),
+        lastName: new FormControl<string | null>('', Validators.required),
+        dob: new FormControl<Date | null>(null, Validators.required),
+        relationship: new FormControl<string | null>('', Validators.required),
+      }),
     );
   }
 
@@ -316,7 +415,7 @@ export class EmployerDetailsComponent implements OnInit {
       Swal.fire({
         icon: 'error',
         title: 'Invalid file type',
-        text: 'Please use the Roster Template to upload a vaild excel file.'
+        text: 'Please use the Roster Template to upload a vaild excel file.',
       });
       return;
     }
@@ -354,7 +453,7 @@ export class EmployerDetailsComponent implements OnInit {
   zipChangeSearch(event) {
     if (event.length === 5) {
       this.counties = this.availableCounties.filter((zipcode) => zipcode.zipCode === event);
-      this.quoteForm.get('county').setValue(this.counties[0].county);
+      this.quoteForm.get('county')?.setValue(this.counties[0].county);
       this.enableCounty();
     }
     if (event.length === 5 && this.showEmployeeRoster) {
@@ -368,7 +467,7 @@ export class EmployerDetailsComponent implements OnInit {
       this.updateFormValue(item, 'zipCode');
     }
     this.counties = this.availableCounties.filter((zipcode) => zipcode.zipCode === item);
-    this.quoteForm.get('county').setValue(this.counties[0].county);
+    this.quoteForm.get('county')?.setValue(this.counties[0].county);
   }
 
   updateEffectiveDate(event) {
@@ -421,11 +520,11 @@ export class EmployerDetailsComponent implements OnInit {
       if (this.counties.length === 1) {
         form.county = this.counties[0].county;
         localStorage.setItem('employerDetails', JSON.stringify(form));
-        this.quoteForm.get('county').setValue(form.county.county);
+        this.quoteForm.get('county')?.setValue(form.county.county);
       }
     }
     if (!this.showEmployeeRoster && this.counties.length) {
-      this.quoteForm.get('county').setValue(this.counties[0].county);
+      this.quoteForm.get('county')?.setValue(this.counties[0].county);
     }
     this.enableCounty();
   }
@@ -434,7 +533,7 @@ export class EmployerDetailsComponent implements OnInit {
     if (this.showEmployeeRoster) {
       const form = JSON.parse(localStorage.getItem('employerDetails'));
       const selectedCounty = this.availableCounties.filter(
-        (c) => c.county === event.target.value && c.zipCode === form.zip
+        (c) => c.county === event.target.value && c.zipCode === form.zip,
       );
       form.county = selectedCounty[0].county;
       localStorage.setItem('employerDetails', JSON.stringify(form));
@@ -482,23 +581,31 @@ export class EmployerDetailsComponent implements OnInit {
       if (data.relation === 'Employee') {
         count++;
         control.push(
-          this.fb.group({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            dob: new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
-            coverageKind: ['both'],
-            dependents: this.fb.array([])
-          })
+          this.fb.group<EmployeeFormGroup>({
+            firstName: new FormControl(data.firstName, Validators.required),
+            lastName: new FormControl(data.lastName, Validators.required),
+            dob: new FormControl(
+              new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
+              Validators.required,
+            ),
+            coverageKind: new FormControl('both', Validators.required),
+            dependents: this.fb.array<FormGroup<DependentFormGroup>>([]),
+          }),
         );
       } else {
         // Add dependents to employee if dependents
-        control['controls'][count - 1]['controls']['dependents'].push(
-          this.fb.group({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            dob: new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
-            relationship: data.relation
-          })
+        const employeeGroup = control.controls[count - 1] as FormGroup<EmployeeFormGroup>;
+        const dependentsArray = employeeGroup.controls.dependents;
+        dependentsArray.push(
+          this.fb.group<DependentFormGroup>({
+            firstName: new FormControl(data.firstName, Validators.required),
+            lastName: new FormControl(data.lastName, Validators.required),
+            dob: new FormControl(
+              new Date(data.dob.getFullYear(), data.dob.getMonth(), data.dob.getDate()),
+              Validators.required,
+            ),
+            relationship: new FormControl(data.relation, Validators.required),
+          }),
         );
       }
     });
@@ -514,7 +621,7 @@ export class EmployerDetailsComponent implements OnInit {
   saveNewEmployee() {
     const form = this.employerDetails;
     const employees = form.employees;
-    const newEmployee = this.addNewEmployeeForm.value;
+    const newEmployee = this.addNewEmployeeForm.value as Employee;
     employees.push(newEmployee);
     localStorage.setItem('employerDetails', JSON.stringify(form));
     this.rows = employees;
@@ -553,18 +660,21 @@ export class EmployerDetailsComponent implements OnInit {
     employeeForm.patchValue({
       firstName: employee.firstName,
       lastName: employee.lastName,
-      dob: new Date(Date.parse(employee.dob)),
-      coverageKind: employee.coverageKind
+      dob: employee.dob instanceof Date ? employee.dob : new Date(employee.dob),
+      coverageKind: employee.coverageKind,
     });
-    employeeForm.controls.dependents = this.fb.array([]);
-    employee.dependents.forEach(function(dependent) {
+    employeeForm.controls.dependents = this.fb.array<FormGroup<DependentFormGroup>>([]);
+    employee.dependents.forEach((dependent) => {
       (<FormArray>employeeForm.controls.dependents).push(
-        this.fb.group({
-          firstName: [dependent.firstName],
-          lastName: [dependent.lastName],
-          dob: [new Date(Date.parse(dependent.dob)), Validators.required],
-          relationship: [dependent.relationship, Validators.required]
-        })
+        this.fb.group<DependentFormGroup>({
+          firstName: new FormControl(dependent.firstName, Validators.required),
+          lastName: new FormControl(dependent.lastName, Validators.required),
+          dob: new FormControl(
+            dependent.dob instanceof Date ? dependent.dob : new Date(dependent.dob),
+            Validators.required,
+          ),
+          relationship: new FormControl(dependent.relationship, Validators.required),
+        }),
       );
     });
   }
@@ -576,12 +686,12 @@ export class EmployerDetailsComponent implements OnInit {
 
   updateEmployee() {
     this.showEditHousehold = false;
-    this.rows[this.editEmployeeIndex] = this.editEmployeeForm.value;
-    this.employerDetails.employees[this.editEmployeeIndex] = this.editEmployeeForm.value;
+    const updatedEmployee = this.editEmployeeForm.value as Employee;
+    this.rows[this.editEmployeeIndex] = updatedEmployee;
+    this.employerDetails.employees[this.editEmployeeIndex] = updatedEmployee;
     if (this.editEmployeeForm.controls.dependents.value) {
-      this.employerDetails.employees[
-        this.editEmployeeIndex
-      ].dependents = this.editEmployeeForm.controls.dependents.value;
+      this.employerDetails.employees[this.editEmployeeIndex].dependents = this.editEmployeeForm.controls.dependents
+        .value as Dependent[];
     }
     localStorage.setItem('employerDetails', JSON.stringify(this.employerDetails));
     this.editEmployeeIndex = null;
@@ -605,7 +715,7 @@ export class EmployerDetailsComponent implements OnInit {
       input = input.substr(0, input.length - 3);
     }
 
-    const values = input.split('/').map(function(v) {
+    const values = input.split('/').map(function (v) {
       return v.replace(/\D/g, '');
     });
     if (values[0]) {
@@ -614,7 +724,7 @@ export class EmployerDetailsComponent implements OnInit {
     if (values[1]) {
       values[1] = this.validateMonthDate(values[1], 31);
     }
-    const output = values.map(function(v, i) {
+    const output = values.map(function (v, i) {
       return v.length === 2 && i < 2 ? v + ' / ' : v;
     });
     e.target.value = output.join('').substr(0, 14);

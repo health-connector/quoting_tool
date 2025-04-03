@@ -421,7 +421,7 @@ export class PlanFilterComponent implements OnInit {
   // Helper function to flatten and deduplicate array of arrays
   private flattenAndDeduplicate<T>(arrayOfArrays: T[][]): T[] {
     const flattened = arrayOfArrays.flat();
-    return Array.from(new Set(flattened.map((item) => JSON.stringify(item)))).map((str) => JSON.parse(str));
+    return Array.from(new Set(flattened.map((item) => JSON.stringify(item)))).map((str) => JSON.parse(str)) as T[];
   }
 
   filterCarriers() {
