@@ -21,11 +21,10 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
-              "src/styles.css",
+              "src/assets/scss/style.scss",
               "node_modules/@swimlane/ngx-datatable/index.css",
               "node_modules/@swimlane/ngx-datatable/themes/material.css",
-              "node_modules/@swimlane/ngx-datatable/assets/icons.css",
-              "src/assets/scss/style.scss"
+              "node_modules/@swimlane/ngx-datatable/assets/icons.css"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": [],

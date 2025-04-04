@@ -135,7 +135,7 @@ $colors: (
   'cyan': $cyan,
   'white': $white,
   'gray': $gray-600,
-  'gray-dark': $gray-800
+  'gray-dark': $gray-800,
 );
 
 $primary: $blue !default;
@@ -168,7 +168,7 @@ $theme-colors: map-merge(
     'light-danger': #f9e7eb,
     'light-warning': #fff7eb,
     'light-success': #e8fdeb,
-    'light-info': #cfecfe
+    'light-info': #cfecfe,
   ),
   $theme-colors
 );
@@ -262,7 +262,7 @@ $grid-breakpoints: (
   sm: 576px,
   md: 768px,
   lg: 992px,
-  xl: 1600px
+  xl: 1600px,
 ) !default;
 // Navbar
 $navbar-dark-color: rgba($white, 0.8) !default;
