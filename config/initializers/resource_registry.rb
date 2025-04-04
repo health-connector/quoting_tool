@@ -1,11 +1,8 @@
-# Initialize EnrollRegistry
 EnrollRegistry = ResourceRegistry::Registry.new
 
 EnrollRegistry.configure do |config|
-  config.name       = :enroll
-  config.created_at = DateTime.now
+  config.name       = :quoting_tool
 
-  # Preserve existing application configuration details
   config.application = {
     name: "Quoting Tool",
     default_namespace: "options",
@@ -14,7 +11,6 @@ EnrollRegistry.configure do |config|
     auto_register: []
   }
   
-  # Preserve existing resolver configuration
   config.resolver = {
     root: :enterprise,
     tenant: :cca,
@@ -23,6 +19,5 @@ EnrollRegistry.configure do |config|
     application: :quoting_tool
   }
   
-  # Add load paths from the original configuration
   config.load_paths = ['system']
 end
