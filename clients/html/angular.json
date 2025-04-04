@@ -21,7 +21,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": ["src/assets"],
             "styles": [
-              "src/assets/scss/styles.scss",
+              "src/styles/styles.scss",
               "node_modules/@swimlane/ngx-datatable/index.css",
               "node_modules/@swimlane/ngx-datatable/themes/material.css",
               "node_modules/@swimlane/ngx-datatable/assets/icons.css"
