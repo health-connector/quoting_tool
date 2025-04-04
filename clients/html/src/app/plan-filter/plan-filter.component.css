@@ -3,11 +3,11 @@
 }
 
 .btn-outline-info {
-  background-color: #fff;
+  background-color: var(--white);
 }
 
 .btn-outline-info:hover {
-  color: #009efb;
+  color: var(--secondary-color-light);
 }
 
 .clickable-header {
@@ -60,12 +60,12 @@
 
 /* When the radio button is checked, add a blue background */
 .radio-container input:checked ~ .checkmark {
-  background-color: #c56c24;
+  background-color: var(--main-color);
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
-  content: "";
+  content: '';
   position: absolute;
   display: none;
 }
@@ -77,12 +77,12 @@
 
 /* Style the indicator (dot/circle) */
 .radio-container .checkmark:after {
- 	top: 7px;
-	left: 6px;
-	width: 8px;
-	height: 8px;
-	border-radius: 50%;
-	background: white;
+  top: 7px;
+  left: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--white);
 }
 
 .radio-container label {
@@ -94,12 +94,12 @@
 }
 
 .filter-btn {
-  background-color: #fff;
+  background-color: var(--white);
 }
 
 .heading-label {
   font-weight: 600;
-  color: #c56c24;
+  color: var(--main-color);
   text-decoration: underline;
 }
 
@@ -109,11 +109,6 @@
 
 .cs-text {
   color: #3e5569;
-}
-
-.shadow-1 {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .table th {

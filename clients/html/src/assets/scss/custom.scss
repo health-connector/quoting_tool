@@ -1,7 +1,7 @@
 // In this scss you can overwrite all our scss, we suggested you to add your scss into this, so whenever the update comes it will not affect your code.
 
 body {
-  background-color: #f2efef;
+  background-color: var(--background-color);
   font-family: 'Roboto Slab', serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -9,11 +9,11 @@ body {
 }
 
 a {
-  color: #381be7;
+  color: var(--secondary-color);
 }
 
 a:active {
-  color: #c56c24;
+  color: var(--main-color);
 }
 
 .btn {
@@ -22,87 +22,95 @@ a:active {
 }
 
 .btn-link {
-  color: #c56c24;
+  color: var(--main-color);
 }
 
 .btn-outline-info {
-  color: #00507e;
-  border-color: #00507e;
+  color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .btn-primary {
-  background-color: $ma-dark-blue;
-  border-color: $ma-dark-blue;
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
 }
 
 .btn-primary:hover {
-  background-color: #c56c24;
-  border-color: #c56c24;
+  background-color: var(--main-color);
+  border-color: var(--main-color);
 }
 
-.btn-success, .btn-success:disabled {
-  background-color: #c56c24;
-  border-color: #c56c24;
-  color: #fff;
+.btn-success,
+.btn-success:disabled {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+  color: var(--text-light);
 }
 
 .btn-success:hover {
-  background-color: lighten($ma-primary-orange, 10%);
-  border-color: lighten($ma-primary-orange, 10%);
+  background-color: var(--main-color-light);
+  border-color: var(--main-color-light);
 }
 
 .btn-primary.disabled,
 .btn-primary:disabled {
-  background-color: #005e81;
-  border-color: #005e81;
+  background-color: var(--secondary-color-light);
+  border-color: var(--secondary-color-light);
 }
 
 .btn-success {
-  color: #fff;
+  color: var(--text-light);
 }
 
 .footer {
   font-size: 14px;
-  color: #ffffff;
-  background-color: $ma-dark-blue;
+  color: var(--text-light);
+  background-color: var(--secondary-color);
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
 }
 
-.autocomplete-container, .autocomplete-container .input-container input {
+.autocomplete-container,
+.autocomplete-container .input-container input {
   height: calc(1.5em + 0.75rem + 2px) !important;
   box-shadow: none !important;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--shadow-color);
   border-radius: 2px;
 }
 
 .ngx-datatable .datatable-header {
-  background-color: #005e81;
+  background-color: var(--secondary-color-light);
 }
 
 .ngb-dp-day {
   .bg-primary {
-    background-color: #c56c24 !important;
+    background-color: var(--main-color) !important;
   }
 }
 
 .ngb-dp-weekday {
-  color: #005e81 !important;
+  color: var(--secondary-color-light) !important;
 }
 
 .ngx-datatable.material .datatable-header .datatable-header-cell {
-  color: #fff;
+  color: var(--text-light);
   font-size: 14px;
 }
 
 .plan-tooltip {
-  border-bottom: 1px dashed #007bc4;
-  color: #414141;
+  border-bottom: 1px dashed var(--secondary-color-light);
+  color: var(--text-dark);
 }
 
 .shadow-1 {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  box-shadow:
+    0 1px 3px var(--shaddow-black-10),
+    0 1px 2px var(--shaddow-black-20);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.footer {
+  padding: 15px 20px;
 }
