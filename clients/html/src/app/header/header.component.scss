@@ -1,7 +1,7 @@
 @import '../../../src/assets/scss/variable';
 
 .main-header {
-  background-color: #ffffff;
+  background-color: var(--white);
   border-bottom: solid 3px var(--secondary-color);
   min-height: 50px;
 }
@@ -12,10 +12,10 @@
 
 .main-link {
   font-weight: 600;
-  color: #5c5c5c;
+  color: var(--text-dark);
   font-size: 18px;
 }
 
 .navbar-brand {
-  border-right: solid 1px #d7d7d7;
+  border-right: solid 1px var(--shadow-color);
 }

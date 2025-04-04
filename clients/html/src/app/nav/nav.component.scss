@@ -1,17 +1,20 @@
 a {
-  color: #005e81;
+  color: var(--secondary-color-light);
   font-weight: 600;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
   font-size: 20px;
   cursor: pointer;
 }
 
 a:hover {
-  color: #c56c24;
+  color: var(--main-color);
 }
 
 a.active {
-  color: #c56c24;
+  color: var(--main-color);
   text-decoration: underline;
 }

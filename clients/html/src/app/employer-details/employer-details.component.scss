@@ -1,16 +1,16 @@
 @import '../../../src/assets/scss/variable';
 
 .btn-link a {
-  color: #0036cb;
+  color: var(--link-color);
 }
 
 .btn-outline-primary {
-  color: #c56c24;
-  border-color: #c56c24;
+  color: var(--main-color);
+  border-color: var(--main-color);
 }
 
 .btn-outline-primary:hover {
-  background-color: #c56c24;
+  background-color: var(--main-color);
 }
 
 .fa-question {
@@ -25,25 +25,24 @@ fieldset.household {
   padding: 20px;
   border-radius: 10px;
   width: inherit;
-  background: #eaeaea;
+  background: var(--gray-200);
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.12),
-    0 1px 2px rgba(0, 0, 0, 0.24);
+    0 1px 3px var(--shadow-black-10),
+    0 1px 2px var(--shadow-black-20);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 fieldset.household:hover {
   box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.25),
-    0 10px 10px rgba(0, 0, 0, 0.22);
+    0 14px 28px var(--shadow-black-20),
+    0 10px 10px var(--shadow-black-10);
 }
 
 fieldset.household > legend {
-  background: #005e81;
-  color: #fff;
+  background: var(--secondary-color-light);
+  color: var(--text-light);
   padding: 0px 8px 3px 8px;
-  -webkit-border-radius: 5px 5px 0px 0px;
-  -moz-border-radius: 5px 5px 0px 0px;
+  border-radius: 5px 5px 0px 0px;
   font-weight: normal;
   font-size: 20px;
   font-weight: 600;
@@ -54,7 +53,7 @@ fieldset.dependent {
 }
 
 fieldset.dependent > legend {
-  color: #c56c24;
+  color: var(--main-color);
 }
 
 .fa-trash {
@@ -77,12 +76,12 @@ fieldset.dependent > legend {
 }
 
 .modal-header {
-  color: #fff;
-  background: #005e81;
+  color: var(--text-light);
+  background: var(--secondary-color-light);
 }
 
 .required-field {
-  color: #a00723;
+  color: var(--destructive-color);
   font-weight: 600;
 }
 

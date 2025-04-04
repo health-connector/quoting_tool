@@ -1,5 +1,5 @@
 .btn-outline-info {
-  background-color: #fff;
+  background-color: var(--white);
 }
 
 .dental-button-group {

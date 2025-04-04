@@ -15,7 +15,7 @@
 }
 
 .count-text {
-  color: #6c757d !important;
+  color: var(--gray-600) !important;
   font-size: 80%;
 }
 
@@ -48,14 +48,14 @@
   left: 0;
   height: 25px;
   width: 25px;
-  background-color: #eee;
-  border: 2px solid #6c757d;
+  background-color: var(--gray-200);
+  border: 2px solid var(--gray-600);
   border-radius: 50%;
 }
 
 /* On mouse-over, add a grey background color */
 .radio-container:hover input ~ .checkmark {
-  background-color: #ccc;
+  background-color: var(--gray-200);
 }
 
 /* When the radio button is checked, add a blue background */
@@ -90,7 +90,7 @@
 }
 
 .fa-question-circle {
-  color: #009efb;
+  color: var(--secondary-color);
 }
 
 .filter-btn {
@@ -108,7 +108,7 @@
 }
 
 .cs-text {
-  color: #3e5569;
+  color: var(--gray-700);
 }
 
 .table th {
