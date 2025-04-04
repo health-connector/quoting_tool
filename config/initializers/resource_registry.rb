@@ -1,7 +1,9 @@
 EnrollRegistry = ResourceRegistry::Registry.new
 
 EnrollRegistry.configure do |config|
-  config.name       = :quoting_tool
+  config.name       = "Quoting Tool"
+  # Point to the correct configuration file path
+  config.load_path  = Rails.root.join('system', 'config').to_s
 
   config.application = {
     name: "Quoting Tool",
@@ -16,7 +18,7 @@ EnrollRegistry.configure do |config|
     tenant: :cca,
     site: :primary,
     env: :production,
-    application: :quoting_tool
+    application: "Quoting Tool"
   }
   
   config.load_paths = ['system']
