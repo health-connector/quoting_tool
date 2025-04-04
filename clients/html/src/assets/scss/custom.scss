@@ -8,6 +8,12 @@ body {
   height: 100%;
 }
 
+.container {
+  @include media-breakpoint-up(xxl) {
+    max-width: 1140px;
+  }
+}
+
 a {
   color: var(--secondary-color);
 }

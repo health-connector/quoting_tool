@@ -46,7 +46,7 @@ interface EmployerDetails {
             <a href="https://www.mahealthconnector.org/business/employers/employee-choice" target="_blank"
               >benefit models</a
             >.<br /><br />
-            <i class="fas fa-sticky-note pr-2 fa-lg"></i>
+            <i class="fas fa-sticky-note pe-2 fa-lg"></i>
             <strong
               >Note: The rates displayed for plans here represent 100% employer contribution to plan premium. You can
               choose to contribute less when you apply.

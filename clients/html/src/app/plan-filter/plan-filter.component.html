@@ -1,15 +1,15 @@
 <div class="row pt-12">
   <div class="col-8 mt-2">
     <button class="btn btn-outline-info">
-      <span class="cs-text pr-2">Cost shown for</span>
-      <i class="fas fa-user ml-1"></i> {{ costShownText }}
+      <span class="cs-text pe-2">Cost shown for</span>
+      <i class="fas fa-user ms-1"></i> {{ costShownText }}
     </button>
     Effective Date: <strong>{{ employerDetails?.effectiveDate | date: 'MMMM, y' }}</strong>
   </div>
   <div class="col-12 mt-4 mb-4">
     <h5 class="mb-3"><strong>Select a Benefit Model</strong></h5>
     @for (plan of planOptions; track plan; let i = $index) {
-      <label class="radio-container mr-3" [hidden]="plan.view !== planType()"
+      <label class="radio-container me-3" [hidden]="plan.view !== planType()"
         >{{ plan.value }}
         <input
           type="radio"
@@ -47,14 +47,14 @@
                       Metal Level
                       @if (planType() !== 'dental') {
                         <i
-                          class="far fa-question-circle ml-2"
+                          class="far fa-question-circle ms-2"
                           placement="right"
                           [ngbTooltip]="getToolTip('metalLevel')"
                         ></i>
                       }
                     </p>
                     @for (metalLevel of metalLevelOptions; track metalLevel; let i = $index) {
-                      <div class="custom-control custom-checkbox mr-sm-2 m-b-15">
+                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
                         <input
                           type="checkbox"
                           class="custom-control-input checkbox-input"
@@ -73,13 +73,13 @@
                     <p class="heading-label">
                       Plan Type
                       <i
-                        class="far fa-question-circle ml-2"
+                        class="far fa-question-circle ms-2"
                         placement="right"
                         [ngbTooltip]="getToolTip('planType')"
                       ></i>
                     </p>
                     @for (product of products; track product; let i = $index) {
-                      <div class="custom-control custom-checkbox mr-sm-2 m-b-15">
+                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
                         <input
                           type="checkbox"
                           class="custom-control-input checkbox-input"
@@ -98,13 +98,13 @@
                     <p class="heading-label">
                       HSA Eligible
                       <i
-                        class="far fa-question-circle ml-2"
+                        class="far fa-question-circle ms-2"
                         placement="right"
                         [ngbTooltip]="getToolTip('hsaEligible')"
                       ></i>
                     </p>
                     @for (hsa of hsaEligible; track hsa; let i = $index) {
-                      <div class="custom-control custom-checkbox mr-sm-2 m-b-15">
+                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
                         <input
                           type="checkbox"
                           class="custom-control-input checkbox-input"
@@ -124,7 +124,7 @@
                     <p class="heading-label">
                       Plan Premiums
                       <i
-                        class="far fa-question-circle ml-2"
+                        class="far fa-question-circle ms-2"
                         placement="right"
                         [ngbTooltip]="getToolTip('planPremiums')"
                       ></i>
@@ -133,7 +133,7 @@
                       <label for="pp1"></label>
                       <input
                         type="text"
-                        class="form-control col-3 mr-2"
+                        class="form-control col-3 me-2"
                         id="pp1"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="planPremiumsFrom"
@@ -142,7 +142,7 @@
                       TO
                       <input
                         type="text"
-                        class="form-control col-3 ml-2"
+                        class="form-control col-3 ms-2"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="planPremiumsTo"
                         (ngModelChange)="filterCarriers()"
@@ -153,7 +153,7 @@
                     <p class="heading-label">
                       Yearly Medical Deductible
                       <i
-                        class="far fa-question-circle ml-2"
+                        class="far fa-question-circle ms-2"
                         placement="right"
                         [ngbTooltip]="getToolTip('yearlyMedicalDeductible')"
                       ></i>
@@ -162,7 +162,7 @@
                       <label for="ymb1"></label>
                       <input
                         type="text"
-                        class="form-control col-3 mr-2"
+                        class="form-control col-3 me-2"
                         id="ymb1"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="yearlyMedicalDeductibleFrom"
@@ -171,7 +171,7 @@
                       TO
                       <input
                         type="text"
-                        class="form-control col-3 ml-2"
+                        class="form-control col-3 ms-2"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="yearlyMedicalDeductibleTo"
                         (ngModelChange)="filterCarriers()"
@@ -187,7 +187,7 @@
                 <div class="row">
                   @for (carrier of carriers; track carrier; let i = $index) {
                     <div class="col-3">
-                      <div class="custom-control custom-checkbox mr-sm-2 m-b-15">
+                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
                         <input
                           type="checkbox"
                           class="custom-control-input checkbox-input"
@@ -203,7 +203,7 @@
                 <div class="row mt-4">
                   <div class="col-6 offset-md-8">
                     <div class="row">
-                      <div class="col-5 mr-2">
+                      <div class="col-5 me-2">
                         <button class="btn btn-primary" (click)="resetAll()">Clear Filters</button>
                       </div>
                       <div class="col-3">
@@ -238,7 +238,7 @@
                       {{ getTableHeader('col-2') }}
                       @if (!pdfView && planType() !== 'dental') {
                         <i
-                          class="fas fa-question-circle ml-2"
+                          class="fas fa-question-circle ms-2"
                           placement="right"
                           [ngbTooltip]="getToolTip('benefitCost')"
                         ></i>
@@ -258,7 +258,7 @@
                       }
                       @if (!pdfView) {
                         <i
-                          class="fas fa-question-circle ml-2"
+                          class="fas fa-question-circle ms-2"
                           placement="right"
                           [ngbTooltip]="getToolTip('annualDeductibleFamilyIndividual')"
                         ></i>
@@ -278,7 +278,7 @@
                       }
                       @if (!pdfView) {
                         <i
-                          class="fas fa-question-circle ml-2"
+                          class="fas fa-question-circle ms-2"
                           placement="right"
                           [ngbTooltip]="getToolTip('maximumOutOfPocket')"
                         ></i>
@@ -289,7 +289,7 @@
                         {{ getTableHeader('col-5') }}
                         @if (!pdfView) {
                           <i
-                            class="fas fa-question-circle ml-2"
+                            class="fas fa-question-circle ms-2"
                             placement="right"
                             [ngbTooltip]="getToolTip('monthlyCost')"
                           ></i>
@@ -310,7 +310,7 @@
                       }
                       @if (!pdfView) {
                         <i
-                          class="fas fa-question-circle ml-2"
+                          class="fas fa-question-circle ms-2"
                           placement="right"
                           [ngbTooltip]="getToolTip('maximumMonthlyEmployerCost')"
                         ></i>

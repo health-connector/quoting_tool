@@ -7,7 +7,7 @@
 }
 <div class="container mb-5 mt-3">
   <app-nav [validForm]="showEmployeeRoster" myPath="Employer Details" />
-  <div class="row pl-3 mt-4">
+  <div class="row ps-3 mt-4">
     <form [formGroup]="quoteForm">
       <div class="row mb-2">
         <div class="col-12">
@@ -19,7 +19,7 @@
           <div class="form-group">
             <label for="effectiveDate">Effective Date: <span class="required-field">*</span></label>
             <select
-              class="custom-select pl-2"
+              class="custom-select ps-2"
               id="inlineFormCustomSelect"
               formControlName="effectiveDate"
               id="effectiveDate"
@@ -60,7 +60,7 @@
               </ng-template>
             </div>
           </div>
-          <div class="sic-col-1 pr-2">
+          <div class="sic-col-1 pe-2">
             <i class="fas fa-question mt-4 fa-lg pt-3" (click)="showSicDetails = !showSicDetails"></i>
           </div>
           <div class="col-3">
@@ -200,7 +200,7 @@
         }
 
         @if (showEditHousehold) {
-          <div class="row pl-2">
+          <div class="row ps-2">
             <form [formGroup]="editEmployeeForm">
               <div [@fadeInOut]>
                 <fieldset class="household mb-3">
@@ -242,7 +242,7 @@
                         </select>
                       </div>
                     </div>
-                    <div class="pl-2" formArrayName="dependents">
+                    <div class="ps-2" formArrayName="dependents">
                       @for (
                         dependent of editEmployeeForm.get('dependents')['controls'];
                         track dependent;
@@ -346,7 +346,7 @@
         }
 
         @if (showNewEmployee) {
-          <div class="row pl-2">
+          <div class="row ps-2">
             <form [formGroup]="addNewEmployeeForm">
               <div [@fadeInOut]>
                 <fieldset class="household mb-3">
@@ -389,7 +389,7 @@
                         </select>
                       </div>
                     </div>
-                    <div class="pl-2" formArrayName="dependents">
+                    <div class="ps-2" formArrayName="dependents">
                       @for (
                         dependent of addNewEmployeeForm.get('dependents')['controls'];
                         track dependent;
@@ -489,7 +489,7 @@
         }
 
         @if (showHouseholds) {
-          <div class="row pl-2">
+          <div class="row ps-2">
             <!-- Row for households  -->
             <div formArrayName="employees">
               <!-- Start employee forms array -->
@@ -547,7 +547,7 @@
                       <div class="pt-4">
                         <i class="fas fa-trash fa-2x" (click)="deleteEmployee(i)"></i>
                       </div>
-                      <div class="pl-2" formArrayName="dependents">
+                      <div class="ps-2" formArrayName="dependents">
                         <!-- starts depenendts array -->
                         @for (dependent of employee.get('dependents').controls; track dependent; let j = $index) {
                           <div [@fadeInOut]>
