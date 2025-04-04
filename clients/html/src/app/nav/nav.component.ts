@@ -13,21 +13,21 @@ import { NgClass } from '@angular/common';
             <li class="nav-item">
               <a
                 class="nav-link"
-              [ngClass]="{
-                disabled: isFormValid(link.name),
-                active: isLinkActive(link.name)
-              }"
+                [ngClass]="{
+                  disabled: isFormValid(link.name),
+                  active: isLinkActive(link.name),
+                }"
                 [routerLink]="link.path"
                 >{{ link.name }}</a
-                >
-              </li>
-            }
-          </ul>
-        </div>
+              >
+            </li>
+          }
+        </ul>
       </div>
-    `,
+    </div>
+  `,
   styleUrls: ['./nav.component.scss'],
-  imports: [NgClass, RouterLink]
+  imports: [NgClass, RouterLink],
 })
 export class NavComponent {
   validForm = input<boolean>();
@@ -36,7 +36,7 @@ export class NavComponent {
   navLinks = [
     { path: '/employer-details', name: 'Employer Details' },
     { path: '/employer-details/health', name: 'Health' },
-    { path: '/employer-details/dental', name: 'Dental' }
+    { path: '/employer-details/dental', name: 'Dental' },
   ];
 
   isFormValid(name) {

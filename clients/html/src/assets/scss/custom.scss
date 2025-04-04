@@ -6,6 +6,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
+  color: var(--text-dark);
 }
 
 .container {
@@ -119,4 +120,8 @@ a:active {
 
 .footer {
   padding: 15px 20px;
+}
+
+.nav-link.disabled {
+  opacity: 0.7;
 }
