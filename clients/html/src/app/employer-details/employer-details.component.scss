@@ -86,3 +86,13 @@ fieldset.dependent > legend {
 .sub-heading-text {
   font-weight: 600;
 }
+
+label {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.question-icon {
+  position: absolute;
+  transform: translate(-20px, 40px);
+}

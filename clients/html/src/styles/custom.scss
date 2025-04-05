@@ -7,6 +7,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   height: 100%;
   color: var(--text-dark);
+  font-size: 0.875rem;
 }
 
 .container {
@@ -124,4 +125,559 @@ a:active {
 
 .nav-link.disabled {
   opacity: 0.7;
+}
+
+// Custom select
+.custom-select {
+  background-size: auto;
+
+  display: inline-block;
+  width: 100%;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-dark);
+  vertical-align: middle;
+  // background: url(custom-select.33d0b67c047e466b46c4.png) right 0.75rem center/8px 10px no-repeat #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' viewBox='0 0 12 8'><path d='M1 1L6 6L11 1' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 8px) center;
+  background-size: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  appearance: none;
+}
+
+.material-icon-list-demo .icons div {
+  width: 33%;
+  padding: 10px;
+  display: inline-block;
+  line-height: 40px;
+
+  i {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+
+  code {
+    margin-right: 10px;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .material-icon-list-demo .icons div {
+    width: 100%;
+  }
+}
+
+// This is for the datatable
+.table.dataTable {
+  border-collapse: collapse !important;
+}
+
+.dataTables_wrapper {
+  padding: 0px;
+}
+
+.note-editor.note-frame,
+.dropzone {
+  border-color: var(--border-color);
+}
+
+.dropzone {
+  border-style: dotted;
+}
+
+.note-toolbar {
+  z-index: 1;
+}
+
+// this is for custom pills
+.custom-pills {
+  .nav-pills {
+    .nav-link {
+      border-radius: 0;
+      opacity: 0.7;
+
+      &.active {
+        color: var(--main-color);
+        opacity: 1;
+        background-color: transparent;
+        border-bottom: 2px solid var(--main-color);
+      }
+    }
+  }
+}
+
+// Form row Separator
+label {
+  font-weight: 600;
+}
+
+.r-separator .form-group {
+  border-bottom: 1px solid var(--border-color);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.striped-rows .row:nth-child(odd) {
+  background-color: var(--gray-100);
+}
+
+.b-form .row {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0;
+  padding: 15px 0;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.b-label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+// Custom validation Classes
+.error {
+  .form-control {
+    border-color: var(--destructive-color);
+  }
+
+  .help-block {
+    color: var(--destructive-color);
+  }
+}
+
+.validate {
+  .form-control {
+    border-color: var(--success-color);
+  }
+
+  .help-block {
+    color: var(--success-color);
+  }
+}
+
+@media (min-height: 33.875em) {
+  .picker--opened .picker__frame {
+    top: 30%;
+    bottom: auto;
+  }
+}
+
+.dtp > .dtp-content > .dtp-date-view > header.dtp-header {
+  background: #1d50de;
+}
+
+.dtp div.dtp-date,
+.dtp div.dtp-time,
+.dtp table.dtp-picker-days tr > td > a.selected {
+  background: var(--main-color);
+}
+
+.dtp .p10 > a {
+  color: var(--text-light);
+}
+
+.datepicker .day,
+.datepicker .dow {
+  padding: 5px 10px;
+}
+
+.docs-buttons .btn,
+.docs-data .input-group {
+  margin-bottom: 5px;
+}
+
+// scrollbar
+.scrollable {
+  position: relative;
+}
+
+.error-box {
+  height: 100%;
+  position: fixed;
+  //background: url(../../../images/background/error-bg.jpg) no-repeat center center #fff;
+  width: 100%;
+
+  .error-body {
+    padding-top: 5%;
+  }
+
+  .error-title {
+    font-size: 210px;
+    font-weight: 900;
+    text-shadow:
+      4px 4px 0 var(--text-light),
+      6px 6px 0 var(--text-dark);
+    line-height: 210px;
+  }
+}
+
+.price-label {
+  position: absolute;
+  top: -10px;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  width: 100px;
+  padding: 5px 10px;
+}
+
+.price-sign {
+  position: absolute;
+  font-size: 15px;
+  top: 5px;
+  margin-left: -10px;
+}
+
+// Taskboard
+
+/*******************
+Taskboard scss
+******************/
+.taskboard {
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+  padding: 8px;
+
+  .taskboard-wrapper {
+    width: 280px;
+    padding-right: 8px;
+    padding-left: 8px;
+    box-sizing: border-box;
+    display: inline-block;
+    vertical-align: top;
+    height: 100%;
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+
+  .taskboard-list {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    white-space: normal;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 0;
+  }
+
+  .taskboard-header {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 0.02rem;
+    padding: 8px 8px 0;
+  }
+
+  .taskboard-task {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: var(--text-light);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &:hover {
+      cursor: grab;
+    }
+  }
+
+  .taskboard-task:after {
+    content: '';
+    position: absolute;
+    border: 4px solid transparent;
+    top: 0;
+    border-top-width: 12px;
+    border-bottom-color: transparent;
+    right: 6px;
+  }
+
+  .taskboard-task.task-status-success:after {
+    border-top-color: var(--success-color);
+    border-right-color: var(--success-color);
+    border-left-color: var(--success-color);
+  }
+
+  .taskboard-task.task-status-info:after {
+    border-top-color: var(--main-color);
+    border-right-color: var(--main-color);
+    border-left-color: var(--main-color);
+  }
+
+  .taskboard-task.task-status-warning:after {
+    border-top-color: var(--warning-color);
+    border-right-color: var(--warning-color);
+    border-left-color: var(--warning-color);
+  }
+
+  .taskboard-task.task-status-danger:after {
+    border-top-color: var(--destructive-color);
+    border-right-color: var(--destructive-color);
+    border-left-color: var(--destructive-color);
+  }
+
+  .taskboard-cards {
+    padding: 8px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .taskboard-task-title {
+    margin-bottom: 8px;
+  }
+}
+
+.ng2-smart-page-item {
+  border: 1px solid var(--border-color);
+
+  .ng2-smart-page-link {
+    border: none;
+  }
+
+  &.active {
+    border-color: var(--main-color);
+
+    .ng2-smart-page-link {
+      border-color: transparent;
+    }
+  }
+}
+
+.ngx-datatable.material {
+  box-shadow: none;
+  border: 1px solid var(--border-color);
+}
+
+// File Upload Plugin
+
+.afu-select-btn {
+  margin-bottom: 0;
+}
+
+.afu-valid-file {
+  .progress {
+    width: 500px;
+    height: 13px;
+  }
+}
+
+#attachPin {
+  .label:empty {
+    display: none;
+  }
+}
+
+/*******************
+Notifier pages scss
+******************/
+.notifier__container * {
+  box-sizing: border-box;
+}
+
+.notifier__container-list {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 0;
+  list-style-type: none;
+}
+
+.notifier__notification {
+  display: block;
+  position: fixed;
+  visibility: hidden;
+  z-index: 10000;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.notifier__notification--material {
+  border-radius: 3px;
+  box-shadow: 0 1px 3px var(--notifier-shadow-color);
+  cursor: default; // Default cursor, even when hovering over text
+
+  padding: {
+    top: 11px;
+    right: 26px;
+    bottom: 10px;
+    left: 26px;
+  }
+
+  .notifier__notification {
+    &-message {
+      display: inline-block;
+
+      margin: {
+        // Reset paragraph default styles
+        top: 0;
+        bottom: 0;
+      }
+
+      vertical-align: top;
+      line-height: 32px;
+      font-size: 15px;
+    }
+
+    &-button {
+      display: inline-block;
+      transition: opacity 0.2s ease;
+      opacity: 0.5;
+
+      margin: {
+        right: -10px;
+        left: 10px;
+        top: -4px;
+      }
+      outline: none;
+      border: none;
+      background: none;
+      cursor: pointer; // Make it obvious that the "button" (or, more honestly, icon) is clickable (#UX)
+      padding: 6px;
+      width: 32px;
+      height: 32px;
+      vertical-align: top;
+
+      &:hover,
+      &:focus {
+        opacity: 1; // Make me "feel" the clickability with a transparency change (#UX)
+      }
+
+      &:active {
+        transform: scale(0.82); // Make me "feel" the click by a push back (#UX)
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.notifier__notification--default {
+  background-color: var(--main-color);
+  color: var(--text-light);
+
+  .notifier__notification-button-icon {
+    // 16x16 fixed size
+    fill: var(--text-light);
+  }
+}
+
+.notifier__notification--info {
+  background-color: var(--main-color);
+  color: var(--text-light);
+
+  .notifier__notification-button-icon {
+    // 16x16 fixed size
+    fill: var(--text-light);
+  }
+}
+
+.notifier__notification--warning {
+  background-color: var(--warning-color);
+  color: var(--text-light);
+
+  .notifier__notification-button-icon {
+    // 16x16 fixed size
+    fill: var(--text-light);
+  }
+}
+
+.notifier__notification--success {
+  background-color: var(--success-color);
+  color: var(--text-light);
+
+  .notifier__notification-button-icon {
+    // 16x16 fixed size
+    fill: var(--text-light);
+  }
+}
+
+.notifier__notification--error {
+  background-color: var(--destructive-color);
+  color: var(--text-light);
+
+  .notifier__notification-button-icon {
+    // 16x16 fixed size
+    fill: var(--text-light);
+  }
+}
+
+/*******************
+Ngx wizard pages scss
+******************/
+
+.wizard-navbar {
+  padding: 0px;
+  margin: 50px 0 50px 0;
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    height: 2px;
+    background: var(--border-color);
+    content: '';
+    position: absolute;
+    width: 75%;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+  }
+
+  li {
+    list-style: none;
+    text-align: center;
+
+    .round-tabs {
+      padding: 20px;
+      background: white;
+      position: relative;
+      z-index: 2;
+      border: 1px solid var(--border-color);
+      border-radius: 100%;
+    }
+
+    > a {
+      padding: 0.5rem 0;
+    }
+
+    > a.active .round-tabs {
+      background: var(--main-color);
+      border-color: var(--main-color);
+      color: var(--text-light);
+    }
+  }
+}
+
+#ngx .ng-invalid,
+.ng-touched.ng-invalid {
+  border-color: var(--destructive-color);
+}
+
+#ngx .ng-valid,
+.ng-touched.ng-valid {
+  border-color: var(--success-color);
 }
