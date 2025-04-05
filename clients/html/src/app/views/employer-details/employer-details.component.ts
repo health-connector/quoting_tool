@@ -23,17 +23,17 @@ import {
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
 
-import { EmployerDetailsService } from './../services/employer-details.service';
-import zipcodesData from '../../data/zipCode.json';
-import sicsData from '../../data/sic.json';
-import sicCodesData from '../../data/sicCodes.json';
-import { SelectedSicService } from '../services/selected-sic.service';
-import { CoverageTypePipe } from './coverage-type.pipe';
+import { EmployerDetailsService } from '../../services/employer-details.service';
+import zipcodesData from '../../../data/zipCode.json';
+import sicsData from '../../../data/sic.json';
+import sicCodesData from '../../../data/sicCodes.json';
+import { SelectedSicService } from '../../services/selected-sic.service';
+import { CoverageTypePipe } from '../../pipes/coverage-type.pipe';
 import { RouterLink } from '@angular/router';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
-import { DropdownTreeviewSelectComponent } from '../dropdown-treeview-select/dropdown-treeview-select.component';
+import { DropdownTreeviewSelectComponent } from '../../components/dropdown-treeview-select/dropdown-treeview-select.component';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import { NavComponent } from '../nav/nav.component';
+import { NavComponent } from '../../components/nav/nav.component';
 import { DatePipe } from '@angular/common';
 
 interface ZipCodeData {

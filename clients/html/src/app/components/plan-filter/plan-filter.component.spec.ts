@@ -6,8 +6,8 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { PlanFilterPipe } from './plan-filter.pipe';
-import { OrderByPipe } from './order-by.pipe';
+import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
+import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 const data = {

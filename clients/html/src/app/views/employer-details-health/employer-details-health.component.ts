@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 // import carriers from '../../../data/carriers.json'; // Removed unused import
-import { NavComponent } from '../../nav/nav.component';
-import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
+import { NavComponent } from '../../components/nav/nav.component';
+import { PlanFilterComponent } from '../../components/plan-filter/plan-filter.component';
 import { RosterEntry } from '../../data/sponsor_roster'; // Import RosterEntry
 
 // Define interface for employer details structure

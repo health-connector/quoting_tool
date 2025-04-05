@@ -1,24 +1,24 @@
 import { Component, OnInit, inject, input } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import tooltips from '../../data/tooltips.json';
-import tableHeaders from '../../data/tableHeaders.json';
+import tooltips from '../../../data/tooltips.json';
+import tableHeaders from '../../../data/tableHeaders.json';
 import html2PDF from 'jspdf-html2canvas';
 import Swal from 'sweetalert2';
 
-import { QuoteCalculator } from '../data/quotes';
-import { TieredContributionModel, RelationshipContributionModel } from '../data/contribution_models';
+import { QuoteCalculator } from '../../data/quotes';
+import { TieredContributionModel, RelationshipContributionModel } from '../../data/contribution_models';
 import {
   ClientPreferences,
   CLIENT_PREFERENCES,
   defaultRelationshipContributionModel,
   defaultTieredContributionModel,
-} from '../config/client_configuration';
-import { PlanProviderService } from '../services/plan-provider.service';
-import { Product } from '../data/products';
-import { RosterEntry } from '../data/sponsor_roster';
-import { PackageTypes } from '../config/package_types';
-import { OrderByPipe } from './order-by.pipe';
-import { PlanFilterPipe } from './plan-filter.pipe';
+} from '../../config/client_configuration';
+import { PlanProviderService } from '../../services/plan-provider.service';
+import { Product } from '../../data/products';
+import { RosterEntry } from '../../data/sponsor_roster';
+import { PackageTypes } from '../../config/package_types';
+import { OrderByPipe } from '../../pipes/order-by.pipe';
+import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';

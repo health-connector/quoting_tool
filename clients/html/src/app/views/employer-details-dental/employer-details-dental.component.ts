@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
-import { NavComponent } from '../../nav/nav.component';
+import { PlanFilterComponent } from '../../components/plan-filter/plan-filter.component';
+import { NavComponent } from '../../components/nav/nav.component';
 import { RosterEntry } from '../../data/sponsor_roster';
 
 // Define interface for employer details structure

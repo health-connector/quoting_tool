@@ -17,27 +17,27 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'employer-details',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'employer-details',
     loadComponent: () =>
-      import('./app/employer-details/employer-details.component').then((m) => m.EmployerDetailsComponent)
+      import('./app/views/employer-details/employer-details.component').then((m) => m.EmployerDetailsComponent),
   },
   {
     path: 'employer-details/health',
     loadComponent: () =>
-      import('./app/employer-details/employer-details-health/employer-details-health.component').then(
-        (m) => m.EmployerDetailsHealthComponent
-      )
+      import('./app/views/employer-details-health/employer-details-health.component').then(
+        (m) => m.EmployerDetailsHealthComponent,
+      ),
   },
   {
     path: 'employer-details/dental',
     loadComponent: () =>
-      import('./app/employer-details/employer-details-dental/employer-details-dental.component').then(
-        (m) => m.EmployerDetailsDentalComponent
-      )
-  }
+      import('./app/views/employer-details-dental/employer-details-dental.component').then(
+        (m) => m.EmployerDetailsDentalComponent,
+      ),
+  },
 ];
 
 if (environment.production) {
@@ -52,10 +52,10 @@ bootstrapApplication(AppComponent, {
       FormsModule,
       ReactiveFormsModule,
       NgbModule,
-      SweetAlert2Module.forRoot()
+      SweetAlert2Module.forRoot(),
     ),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
-    provideRouter(routes)
-  ]
+    provideRouter(routes),
+  ],
 }).catch((err) => console.log(err));

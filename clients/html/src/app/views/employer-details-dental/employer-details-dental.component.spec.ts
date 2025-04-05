@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { EmployerDetailsDentalComponent } from './employer-details-dental.component';
-import { PlanFilterComponent } from '../../plan-filter/plan-filter.component';
+import { PlanFilterComponent } from '../../components/plan-filter/plan-filter.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';

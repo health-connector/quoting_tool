@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { SelectedSicService } from '../services/selected-sic.service';
-import sicCodes from '../../data/sicCodes.json';
+import { SelectedSicService } from '../../services/selected-sic.service';
+import sicCodes from '../../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
-import { TreeviewWrapperComponent } from '../shared/treeview-wrapper/treeview-wrapper.component';
+import { TreeviewWrapperComponent } from '../treeview-wrapper/treeview-wrapper.component';
 
 // Define the structure for SIC code entries imported from JSON
 interface SicCodeEntry {

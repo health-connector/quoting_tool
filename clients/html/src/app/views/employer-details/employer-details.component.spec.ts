@@ -4,12 +4,12 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { EmployerDetailsComponent } from './employer-details.component';
-import { NavComponent } from '../nav/nav.component';
+import { NavComponent } from '../../components/nav/nav.component';
 import { ReactiveFormsModule, FormBuilder, FormArray } from '@angular/forms';
 import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import { CoverageTypePipe } from './coverage-type.pipe';
+import { CoverageTypePipe } from '../../pipes/coverage-type.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('EmployerDetailsComponent', () => {
