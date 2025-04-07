@@ -1,23 +1,13 @@
-EnrollRegistry = ResourceRegistry::Registry.new
+# frozen_string_literal: true
 
-EnrollRegistry.configure do |config|
+require 'cgi'
+require 'dry-types'
+
+Dry::Types.load_extensions(:maybe)
+QuotingToolRegistry = ResourceRegistry::Registry.new
+
+QuotingToolRegistry.configure do |config|
   config.name       = :quoting_tool
-
-  config.application = {
-    name: "Quoting Tool",
-    default_namespace: "options",
-    root: Rails.root,
-    system_dir: "system",
-    auto_register: []
-  }
-  
-  config.resolver = {
-    root: :enterprise,
-    tenant: :cca,
-    site: :primary,
-    env: :production,
-    application: :quoting_tool
-  }
-  
-  config.load_paths = ['system']
+  config.created_at = DateTime.now
+  config.load_path  = Rails.root.join('system', 'config').to_s
 end
