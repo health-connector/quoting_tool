@@ -157,7 +157,7 @@
       <!-- End row for employees roster text  -->
 
       @if (showEmployeeRoster) {
-        <div class="m-b-10">
+        <div class="mb-4">
           <ngx-datatable
             #censusDatatable
             class="material striped mt-1"
@@ -195,7 +195,9 @@
             <ngx-datatable-column name="">
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 <div ngbDropdown class="d-inline-block" container="body">
-                  <button type="button" class="btn btn-outline-primary" ngbDropdownToggle>Actions</button>
+                  <button type="button" class="btn btn-outline-primary actions-button" ngbDropdownToggle>
+                    Actions
+                  </button>
                   <div ngbDropdownMenu>
                     <button type="button" ngbDropdownItem (click)="editEmployee(rowIndex)">Edit</button>
                     <button type="button" ngbDropdownItem (click)="removeEmployeeFromRoster(rowIndex)">Delete</button>
@@ -250,7 +252,7 @@
                       </select>
                     </div>
                   </div>
-                  <div class="ps-2" formArrayName="dependents">
+                  <div class="ps-2 mt-4" formArrayName="dependents">
                     @for (
                       dependent of editEmployeeForm.get('dependents')['controls'];
                       track dependent;
@@ -262,7 +264,7 @@
                             <h6 class="sub-heading-text">Dependent {{ j + 1 }}</h6>
                           </legend>
                           <div class="row" [formGroupName]="j">
-                            <div class="col-3">
+                            <div class="col-3 pb-4">
                               <div class="form-group">
                                 <label for="firstName">First Name</label>
                                 <input
@@ -273,7 +275,7 @@
                                 />
                               </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-3 pb-4">
                               <div class="form-group">
                                 <label for="lastName">Last Name</label>
                                 <input
@@ -284,7 +286,7 @@
                                 />
                               </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-3 pb-4">
                               <div class="form-group">
                                 <label for="dob">DOB <span class="required-field">*</span></label>
                                 <input
@@ -299,7 +301,7 @@
                                 />
                               </div>
                             </div>
-                            <div class="col-2">
+                            <div class="col-2 pb-4">
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
                                 <select type="text" class="form-control" formControlName="relationship">
@@ -320,22 +322,22 @@
                       </div>
                     }
                   </div>
-                  <div class="col-11">
+                  <div class="col-11 d-flex justify-content-end">
                     <button
                       type="button"
-                      class="btn btn-link float-right"
+                      class="btn btn-link"
                       (click)="addDependent(editEmployeeForm.controls.dependents)"
                     >
                       <i class="fas fa-users"></i> Add Dependent
                     </button>
                   </div>
-                  <div class="col-12">
-                    <button type="button" class="float-right btn btn-primary" (click)="this.showEditHousehold = false">
+                  <div class="col-12 d-grid gap-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" (click)="this.showEditHousehold = false">
                       Cancel
                     </button>
                     <button
                       type="button"
-                      class="float-right btn btn-primary"
+                      class="btn btn-primary"
                       [disabled]="validateEmployeeEditForm()"
                       (click)="updateEmployee()"
                     >
@@ -393,7 +395,7 @@
                       </select>
                     </div>
                   </div>
-                  <div class="ps-2" formArrayName="dependents">
+                  <div class="ps-2 mt-4" formArrayName="dependents">
                     @for (
                       dependent of addNewEmployeeForm.get('dependents')['controls'];
                       track dependent;
@@ -463,21 +465,19 @@
                       </div>
                     }
                   </div>
-                  <div class="col-11">
+                  <div class="col-11 d-flex justify-content-end">
                     <button
                       type="button"
-                      class="btn btn-link float-right"
+                      class="btn btn-link"
                       (click)="addDependent(addNewEmployeeForm.controls.dependents)"
                     >
                       <i class="fas fa-users"></i> Add Dependent
                     </button>
                   </div>
-                  <div class="col-12">
-                    <button class="float-right btn btn-primary" type="button" (click)="this.showNewEmployee = false">
-                      Cancel
-                    </button>
+                  <div class="col-12 d-grid gap-2 d-flex justify-content-end">
+                    <button class="btn btn-primary" type="button" (click)="this.showNewEmployee = false">Cancel</button>
                     <button
-                      class="float-right btn btn-primary"
+                      class="btn btn-primary"
                       type="button"
                       [disabled]="!addNewEmployeeForm.valid"
                       (click)="saveNewEmployee()"
@@ -546,7 +546,7 @@
                     <div class="pt-4">
                       <i class="fas fa-trash fa-2x" (click)="deleteEmployee(i)"></i>
                     </div>
-                    <div class="ps-2" formArrayName="dependents">
+                    <div class="ps-2 mt-4" formArrayName="dependents">
                       <!-- starts depenendts array -->
                       @for (dependent of employee.get('dependents').controls; track dependent; let j = $index) {
                         <div [@fadeInOut]>
@@ -616,12 +616,8 @@
                       }
                     </div>
                     <!-- ends depenendts array -->
-                    <div class="col-11">
-                      <button
-                        type="button"
-                        class="btn btn-link float-right"
-                        (click)="addDependent(employee.controls.dependents)"
-                      >
+                    <div class="col-11 d-flex justify-content-end">
+                      <button type="button" class="btn btn-link" (click)="addDependent(employee.controls.dependents)">
                         <i class="fas fa-users"></i> Add Dependent
                       </button>
                     </div>

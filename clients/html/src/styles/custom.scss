@@ -92,6 +92,12 @@ a:active {
   background-color: var(--secondary-color-light);
 }
 
+.ngx-datatable.material .datatable-header .datatable-header-cell {
+  background-color: var(--secondary-color-light) !important;
+  color: var(--text-light) !important;
+  font-size: 14px !important;
+}
+
 .ngb-dp-day {
   .bg-primary {
     background-color: var(--main-color) !important;
@@ -100,11 +106,6 @@ a:active {
 
 .ngb-dp-weekday {
   color: var(--secondary-color-light) !important;
-}
-
-.ngx-datatable.material .datatable-header .datatable-header-cell {
-  color: var(--text-light);
-  font-size: 14px;
 }
 
 .plan-tooltip {
@@ -174,7 +175,7 @@ a:active {
 
 // This is for the datatable
 .table.dataTable {
-  border-collapse: collapse !important;
+  // border-collapse: collapse !important;
 }
 
 .dataTables_wrapper {
