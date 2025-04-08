@@ -36,3 +36,8 @@
   --shadow-black-10: rgba(0, 0, 0, 0.12);
   --shadow-black-20: rgba(0, 0, 0, 0.24);
 }
+
+.nav {
+  --bs-nav-link-color: var(--secondary-color) !important;
+  --bs-nav-link-hover-color: var(--main-color);
+}

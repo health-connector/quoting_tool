@@ -1,13 +1,15 @@
 <div class="row pt-12">
   <div class="col-8 mt-2">
-    <button class="btn btn-outline-info">
+    <div class="cost-shown-pill">
       <span class="cs-text pe-2">Cost shown for</span>
       <i class="fas fa-user ms-1"></i> {{ costShownText }}
-    </button>
+    </div>
     Effective Date: <strong>{{ employerDetails?.effectiveDate | date: 'MMMM, y' }}</strong>
   </div>
+
   <div class="col-12 mt-4 mb-4">
     <h5 class="mb-3"><strong>Select a Benefit Model</strong></h5>
+
     @for (plan of planOptions; track plan; let i = $index) {
       <label class="radio-container me-3" [hidden]="plan.view !== planType()"
         >{{ plan.value }}

@@ -245,7 +245,7 @@
                   <div class="col-2">
                     <div class="form-group">
                       <label for="coverageKind">Coverage Kind <span class="required-field">*</span></label>
-                      <select type="text" class="form-control" formControlName="coverageKind">
+                      <select type="text" class="custom-select form-control" formControlName="coverageKind">
                         <option value="both" selected>Both</option>
                         <option value="healthOnly">Health Only</option>
                         <option value="dentalOnly">Dental Only</option>
@@ -304,7 +304,7 @@
                             <div class="col-2 pb-4">
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                <select type="text" class="form-control" formControlName="relationship">
+                                <select type="text" class="custom-select form-control" formControlName="relationship">
                                   @for (relation of relationOptions; track relation) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
@@ -388,7 +388,7 @@
                   <div class="col-2">
                     <div class="form-group">
                       <label for="coverageKind">Coverage Kind <span class="required-field">*</span></label>
-                      <select type="text" class="form-control" formControlName="coverageKind">
+                      <select type="text" class="custom-select form-control" formControlName="coverageKind">
                         <option value="both" selected>Both</option>
                         <option value="healthOnly">Health Only</option>
                         <option value="dentalOnly">Dental Only</option>
@@ -447,7 +447,7 @@
                             <div class="col-2">
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                <select type="text" class="form-control" formControlName="relationship">
+                                <select type="text" class="custom-select form-control" formControlName="relationship">
                                   @for (relation of relationOptions; track relation) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
@@ -536,7 +536,7 @@
                     <div class="col-2">
                       <div class="form-group">
                         <label for="coverageKind">Coverage Type <span class="required-field">*</span></label>
-                        <select type="text" class="form-control" formControlName="coverageKind">
+                        <select type="text" class="custom-select form-control" formControlName="coverageKind">
                           <option value="both" selected>Both</option>
                           <option value="healthOnly">Health Only</option>
                           <option value="dentalOnly">Dental Only</option>
@@ -596,7 +596,7 @@
                               <div class="col-2">
                                 <div class="form-group">
                                   <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                  <select type="text" class="form-control" formControlName="relationship">
+                                  <select type="text" class="custom-select form-control" formControlName="relationship">
                                     @for (relation of relationOptions; track relation) {
                                       <option [value]="relation.key">{{ relation.value }}</option>
                                     }
@@ -667,7 +667,7 @@
       <div class="row mt-3 form-button-group">
         <div class="col-12 d-flex gap-2">
           @if (!showEmployeeRoster) {
-            <button type="button" class="float-left btn btn-primary upload-employee-roster" (click)="open(content)">
+            <button type="button" class="btn btn-primary upload-employee-roster" (click)="open(content)">
               <i class="fas fa-upload"></i> Upload Employee Roster
             </button>
           }
@@ -692,7 +692,7 @@
             </button>
           }
           @if (showEmployeeRoster) {
-            <a class="float-right btn btn-success view-plans-button" routerLink="/employer-details/health"
+            <a class="btn btn-success view-plans-button ms-auto" routerLink="/employer-details/health"
               ><i class="fas fa-check"></i> View Plans</a
             >
           }

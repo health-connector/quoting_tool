@@ -25,7 +25,7 @@ interface EmployerDetails {
             choose to contribute less when you apply.
           </p>
           <strong
-            ><i class="fas fa-stethoscope mr-2"></i
+            ><i class="fas fa-stethoscope pe-2"></i
             ><a href="https://ma.checkbookhealth.org/mashop/index.cfm" target="_blank">Find My Doctor</a></strong
           >
         </div>

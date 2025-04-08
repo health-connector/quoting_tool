@@ -2,12 +2,22 @@
   padding-bottom: 100px;
 }
 
-.btn-outline-info {
-  background-color: var(--white);
-}
-
-.btn-outline-info:hover {
+.cost-shown-pill {
+  border: 1px solid var(--gray-200);
   color: var(--secondary-color-light);
+  font-size: 14px;
+  border-color: var(--secondary-color);
+  display: inline-block;
+  background-color: var(--white);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-transform: uppercase;
+
+  i {
+    margin-right: 0.5rem;
+  }
 }
 
 .clickable-header {
