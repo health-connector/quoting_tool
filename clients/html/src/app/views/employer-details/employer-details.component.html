@@ -21,7 +21,7 @@
           <div class="form-group d-flex flex-column mb-3">
             <label for="effectiveDate">Effective Date: <span class="required-field">*</span></label>
             <select
-              class="custom-select ps-2"
+              class="form-select ps-2"
               id="inlineFormCustomSelect"
               formControlName="effectiveDate"
               id="effectiveDate"
@@ -101,7 +101,7 @@
         <div class="col-3">
           <div class="form-group">
             <label for="countyField">County:</label>
-            <select formControlName="county" class="custom-select" id="countyField" (change)="updateCounty($event)">
+            <select formControlName="county" class="form-select" id="countyField" (change)="updateCounty($event)">
               @for (county of counties; track county) {
                 <option [value]="county.county">{{ county.county }}</option>
               }
@@ -245,7 +245,7 @@
                   <div class="col-2">
                     <div class="form-group">
                       <label for="coverageKind">Coverage Kind <span class="required-field">*</span></label>
-                      <select type="text" class="custom-select form-control" formControlName="coverageKind">
+                      <select type="text" class="form-select" formControlName="coverageKind">
                         <option value="both" selected>Both</option>
                         <option value="healthOnly">Health Only</option>
                         <option value="dentalOnly">Dental Only</option>
@@ -304,7 +304,7 @@
                             <div class="col-2 pb-4">
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                <select type="text" class="custom-select form-control" formControlName="relationship">
+                                <select type="text" class="form-select" formControlName="relationship">
                                   @for (relation of relationOptions; track relation) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
@@ -388,7 +388,7 @@
                   <div class="col-2">
                     <div class="form-group">
                       <label for="coverageKind">Coverage Kind <span class="required-field">*</span></label>
-                      <select type="text" class="custom-select form-control" formControlName="coverageKind">
+                      <select type="text" class="form-select" formControlName="coverageKind">
                         <option value="both" selected>Both</option>
                         <option value="healthOnly">Health Only</option>
                         <option value="dentalOnly">Dental Only</option>
@@ -401,13 +401,13 @@
                       track dependent;
                       let j = $index
                     ) {
-                      <div [@fadeInOut]>
+                      <div [@fadeInOut] class="mb-3">
                         <fieldset class="dependent">
                           <legend>
                             <h6 class="sub-heading-text">Dependent {{ j + 1 }}</h6>
                           </legend>
                           <div class="row" [formGroupName]="j">
-                            <div class="col-3">
+                            <div class="col-2">
                               <div class="form-group">
                                 <label for="firstName">First Name</label>
                                 <input
@@ -418,7 +418,7 @@
                                 />
                               </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                               <div class="form-group">
                                 <label for="lastName">Last Name</label>
                                 <input
@@ -429,7 +429,7 @@
                                 />
                               </div>
                             </div>
-                            <div class="col-3">
+                            <div class="col-2">
                               <div class="form-group">
                                 <label for="dob">DOB <span class="required-field">*</span></label>
                                 <input
@@ -447,7 +447,7 @@
                             <div class="col-2">
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                <select type="text" class="custom-select form-control" formControlName="relationship">
+                                <select type="text" class="form-select" formControlName="relationship">
                                   @for (relation of relationOptions; track relation) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
@@ -536,27 +536,27 @@
                     <div class="col-2">
                       <div class="form-group">
                         <label for="coverageKind">Coverage Type <span class="required-field">*</span></label>
-                        <select type="text" class="custom-select form-control" formControlName="coverageKind">
+                        <select type="text" class="form-select" formControlName="coverageKind">
                           <option value="both" selected>Both</option>
                           <option value="healthOnly">Health Only</option>
                           <option value="dentalOnly">Dental Only</option>
                         </select>
                       </div>
                     </div>
-                    <div class="pt-4">
+                    <div class="col-1 pt-4">
                       <i class="fas fa-trash fa-2x" (click)="deleteEmployee(i)"></i>
                     </div>
                     <div class="ps-2 mt-4" formArrayName="dependents">
                       <!-- starts depenendts array -->
                       @for (dependent of employee.get('dependents').controls; track dependent; let j = $index) {
-                        <div [@fadeInOut]>
+                        <div [@fadeInOut] class="mb-3">
                           <fieldset class="dependent">
                             <legend>
                               <h6 class="sub-heading-text">Dependent {{ j + 1 }}</h6>
                             </legend>
                             <div class="row" [formGroupName]="j">
                               <!-- starts dependents row -->
-                              <div class="col-3">
+                              <div class="col-2">
                                 <div class="form-group">
                                   <label for="firstName">First Name</label>
                                   <input
@@ -567,7 +567,7 @@
                                   />
                                 </div>
                               </div>
-                              <div class="col-3">
+                              <div class="col-2">
                                 <div class="form-group">
                                   <label for="lastName">Last Name</label>
                                   <input
@@ -578,7 +578,7 @@
                                   />
                                 </div>
                               </div>
-                              <div class="col-3">
+                              <div class="col-2">
                                 <div class="form-group">
                                   <label for="dob">DOB <span class="required-field">*</span></label>
                                   <input
@@ -596,7 +596,7 @@
                               <div class="col-2">
                                 <div class="form-group">
                                   <label for="relationship">Relationship <span class="required-field">*</span></label>
-                                  <select type="text" class="custom-select form-control" formControlName="relationship">
+                                  <select type="text" class="form-select" formControlName="relationship">
                                     @for (relation of relationOptions; track relation) {
                                       <option [value]="relation.key">{{ relation.value }}</option>
                                     }
