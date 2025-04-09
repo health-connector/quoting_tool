@@ -1,30 +1,33 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input, OnDestroy } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import tooltips from '../../../data/tooltips.json';
-import tableHeaders from '../../../data/tableHeaders.json';
-import html2PDF from 'jspdf-html2canvas';
+import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
+import html2PDF from 'jspdf-html2canvas';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators'; // Import takeUntil if using PlanProviderService observables
 
-import { QuoteCalculator } from '../../data/quotes';
-import { TieredContributionModel, RelationshipContributionModel } from '../../data/contribution_models';
+import tooltipsData from '../../../data/tooltips.json';
+import tableHeadersData from '../../../data/tableHeaders.json';
+
 import {
   ClientPreferences,
   CLIENT_PREFERENCES,
   defaultRelationshipContributionModel,
   defaultTieredContributionModel,
 } from '../../config/client_configuration';
-import { PlanProviderService } from '../../services/plan-provider.service';
-import { Product } from '../../data/products';
-import { RosterEntry } from '../../data/sponsor_roster';
 import { PackageTypes } from '../../config/package_types';
+import { RelationshipContributionModel, TieredContributionModel } from '../../data/contribution_models';
+import { Product } from '../../data/products';
+import { QuoteCalculator } from '../../data/quotes';
+import { RosterEntry } from '../../data/sponsor_roster';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
-import { RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
-import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { PlanProviderService } from '../../services/plan-provider.service';
 
-// Define interfaces for complex types
+// --- Interfaces ---
 interface ProductInformation {
   metal_level?: string;
   provider_name: string;
@@ -32,22 +35,18 @@ interface ProductInformation {
   hsa_eligible: boolean;
   deductible: string;
   name: string;
-  package_kinds?: PackageTypes[]; // Explicitly define package_kinds
-  sic_code_factor?: number; // Explicitly define sic_code_factor
-  group_size_factor?: (group_size: string) => number; // Explicitly define group_size_factor
-  // Allow index signature for dynamic access in filterCarriers
-  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((arg: unknown) => unknown); // Add function type
+  package_kinds?: PackageTypes[];
+  sic_code_factor?: number;
+  group_size_factor?: (group_size: string) => number;
+  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((arg: unknown) => unknown);
 }
 
-// Represents a product after quoting/calculation
 interface QuotedProduct {
   product_information: ProductInformation;
   total_cost: number;
-  // Add fields expected by OrderByPipe/SortablePlan and template
-  deductible: string;
-  sponsor_cost: number;
-  // Allow index signature if other properties are accessed dynamically in template
-  [key: string]: unknown;
+  deductible: string; // For display and sorting
+  sponsor_cost: number; // For sorting
+  [key: string]: unknown; // Allow dynamic access
 }
 
 interface SicInfo {
@@ -62,8 +61,21 @@ interface EmployerDetails {
   zip: string;
 }
 
+// --- Types ---
 type FilterType = 'metalLevel' | 'productType' | 'insuranceCompany' | 'hsa';
 type PlanType = 'health' | 'dental';
+type SortKey = keyof QuotedProduct | 'metal_level' | 'product_type' | 'provider_name' | 'hsa_eligible'; // Extend as needed
+
+// --- Constants ---
+const FILTER_KEYS = {
+  METAL_LEVEL: 'metal_level',
+  PRODUCT_TYPE: 'product_type',
+  PROVIDER_NAME: 'provider_name',
+  HSA_ELIGIBLE: 'hsa_eligible',
+} as const;
+
+const DEFAULT_SORT_KIND: SortKey = 'total_cost';
+const DEFAULT_ICON_COL = 'col-6'; // TODO: Revisit if this is the best way to track icon column
 
 @Component({
   selector: 'app-plan-filter',
@@ -71,17 +83,7 @@ type PlanType = 'health' | 'dental';
   templateUrl: './plan-filter.component.html',
   styleUrls: ['./plan-filter.component.css'],
   providers: [PlanProviderService],
-  animations: [
-    trigger('fadeInOut', [
-      state(
-        'void',
-        style({
-          opacity: 0,
-        }),
-      ),
-      transition('void <=> *', animate(400)),
-    ]),
-  ],
+  animations: [trigger('fadeInOut', [state('void', style({ opacity: 0 })), transition('void <=> *', animate(400))])],
   imports: [
     NgClass,
     NgbCollapse,
@@ -97,131 +99,178 @@ type PlanType = 'health' | 'dental';
   ],
   host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
-export class PlanFilterComponent implements OnInit {
+export class PlanFilterComponent implements OnInit, OnDestroy {
+  // --- Inputs ---
+  carrierPlans = input<QuotedProduct[]>(); // TODO: Is this input still needed if component fetches data?
+  planType = input.required<PlanType>(); // Use required input
+
+  // --- Injected Services ---
   private planService = inject(PlanProviderService);
-  public tooltips = tooltips[0];
-  public isCollapsed: boolean = false; // Assuming simple boolean state
+  private clientPreferences: ClientPreferences = CLIENT_PREFERENCES;
+
+  // --- Configuration Data ---
+  public tooltips = tooltipsData[0]; // Consider making type-safe access
+  public tableHeaders = tableHeadersData[0]; // Consider making type-safe access
+
+  // --- Component State ---
+  public isLoading = false;
+  public showPlansTable = false;
+  public isCollapsed = false;
+  public pdfView = false;
+  public filterLength = 0;
+  public costShownText = '';
+  public btnName = '';
+  public btnLink = '';
+  public filterSelected = false; // Add filterSelected back
+
+  // --- Data Properties ---
+  public employerDetails: EmployerDetails | null = null; // Must be public for template access
+  private sponsorRoster: RosterEntry[] = [];
+  private sponsorProducts: Product[] = []; // All products fetched for the sponsor
+  private kindFilteredProducts: Product[] = []; // Products filtered by current PackageType
+  public defaultCarriers: QuotedProduct[] = []; // All quoted products before filtering
+  public filteredCarriers: QuotedProduct[] = []; // Displayed products after filtering
+
+  // --- Calculators ---
+  private relationshipCalculator!: QuoteCalculator;
+  private tieredCalculator!: QuoteCalculator;
+  private relationshipContributionModel!: RelationshipContributionModel;
+  private tieredContributionModel!: TieredContributionModel;
+
+  // --- Filtering State ---
+  public planFilter: PackageTypes | null = null; // Selected package type filter
+  public selectedMetalLevels: { key: string; value: string }[] = [];
+  public selectedProductTypes: { key: string; value: string }[] = [];
+  public selectedInsuranceCompanies: { key: string; value: string }[] = [];
+  public selectedHSAs: { key: string; value: boolean }[] = [];
+  public planPremiumsFrom: number | null = null;
+  public planPremiumsTo: number | null = null;
+  public yearlyMedicalDeductibleFrom: number | null = null;
+  public yearlyMedicalDeductibleTo: number | null = null;
+
+  // --- Filter Options (Derived) ---
   public metalLevelOptions: string[] = [];
   public carriers: string[] = [];
   public products: string[] = [];
   public hsaEligible: boolean[] = [];
-  public filteredCarriers: QuotedProduct[] = [];
-  public defaultCarriers: QuotedProduct[] = [];
-  public employerDetails: EmployerDetails | null = null;
-  public erEmployees: RosterEntry[] = [];
-  public costShownText: string = '';
-  public clearAll: boolean = false; // Initialize clearAll
-  public filterLength: number = 0;
-  public filterSelected = false;
-  public tableHeaders = tableHeaders[0];
-  selectedMetalLevels: { key: string; value: string }[] = [];
-  selectedProductTypes: { key: string; value: string }[] = [];
-  selectedInsuranceCompanies: { key: string; value: string }[] = [];
-  selectedHSAs: { key: string; value: boolean }[] = [];
-  filterCarriersResults: QuotedProduct[] = [];
-  filterKeysSelected: FilterType[] = [];
-  planPremiumsFrom: number | null = null;
-  planPremiumsTo: number | null = null;
-  yearlyMedicalDeductibleFrom: number | null = null;
-  yearlyMedicalDeductibleTo: number | null = null;
-  html2PDF = html2PDF;
-  public pdfView = false;
-  public btnName: string = '';
-  public btnLink: string = '';
-  public isLoading: boolean = false;
-  public showPlansTable = false;
-  selected = -1;
 
-  private sponsorRoster: Array<RosterEntry> = [];
-  public planFilter: PackageTypes | null = null; // Initialize planFilter
-  public hasTierCompatibleType: boolean = false;
-  public hasRelationshipCompatibleType: boolean = false;
-  public kindFilteredProducts: Product[] = []; // Use Product type from import
-  public sponsorProducts: Product[] = []; // Use Product type from import
-  public filteredProducts: Product[] = []; // Use Product type from import
-  public clientPreferences: ClientPreferences = CLIENT_PREFERENCES;
-  public relationshipCalculator!: QuoteCalculator; // Use definite assignment assertion
-  public tieredCalculator!: QuoteCalculator; // Use definite assignment assertion
-  public relationshipContributionModel!: RelationshipContributionModel; // Use definite assignment assertion
-  public tieredContributionModel!: TieredContributionModel; // Use definite assignment assertion
-  sortDirection = true;
-  sortKind: string = 'total_cost'; // Default sort kind
-  iconSelected: string = 'col-6'; // Default selected icon column
+  // --- Sorting State ---
+  public sortDirection = true; // true = asc, false = desc
+  public sortKind: SortKey = DEFAULT_SORT_KIND;
+  public iconSelected: string = DEFAULT_ICON_COL; // Tracks which column header shows the sort icon
 
-  get sortFilter(): 'asc' | 'desc' {
-    return this.sortDirection ? 'asc' : 'desc';
+  // --- Package Type Compatibility ---
+  public hasTierCompatibleType = false;
+  public hasRelationshipCompatibleType = false;
+
+  // --- Misc ---
+  private destroy$ = new Subject<void>();
+  public html2PDF = html2PDF; // Expose for template
+
+  // --- Lifecycle Hooks ---
+  ngOnInit() {
+    this.isLoading = true;
+    this._loadEmployerDetails();
+
+    const currentPlanType = this.planType();
+    if (!this.employerDetails || !currentPlanType) {
+      console.warn('[PlanFilterComponent] Missing employer details or plan type on init.');
+      this.isLoading = false;
+      // Handle error state appropriately, maybe show a message
+      return;
+    }
+
+    this._updateButtonLinks(currentPlanType);
+    this._initializeCalculatorsAndRoster(new Date(this.employerDetails.effectiveDate), currentPlanType);
+    this._fetchInitialPlans(currentPlanType);
   }
 
-  public planOptions = [
-    { key: 'single_issuer', value: 'One Carrier', view: 'health' },
-    { key: 'metal_level', value: 'One Level', view: 'health' },
-    { key: 'single_product', value: 'One Plan', view: 'health' },
-    { key: 'single_product', value: 'One Plan', view: 'dental' },
-  ];
-
-  carrierPlans = input<QuotedProduct[]>(); // Use QuotedProduct[]
-  planType = input<PlanType>(); // Use PlanType ('health' | 'dental')
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   unloadHandler(event: Event) {
+    // Consider if this is still necessary or if alternative UX (like auto-save) is better
     event.returnValue = false;
   }
 
-  ngOnInit() {
-    this.isLoading = false;
+  // --- Initialization Helpers ---
+  private _loadEmployerDetails(): void {
     const erDetails = localStorage.getItem('employerDetails');
-    // Add type assertion for parsing JSON
-    this.employerDetails = erDetails ? (JSON.parse(erDetails) as EmployerDetails) : null;
-    this.filterLength = 0;
-
-    const currentPlanType = this.planType(); // Store input value
-
-    if (this.employerDetails && currentPlanType) {
-      this.erEmployees = this.employerDetails.employees;
-
-      if (this.erEmployees.length > 1) {
-        this.costShownText = `${this.erEmployees.length} employees`;
+    try {
+      this.employerDetails = erDetails ? (JSON.parse(erDetails) as EmployerDetails) : null;
+      this.filterLength = 0; // Reset count initially
+      if (this.employerDetails) {
+        this.costShownText =
+          this.employerDetails.employees.length > 1
+            ? `${this.employerDetails.employees.length} employees`
+            : `${this.employerDetails.employees.length} employee`;
       } else {
-        this.costShownText = `${this.erEmployees.length} employee`;
+        this.costShownText = '0 employees';
       }
-
-      this.isLoading = true;
-      const startDate = this.employerDetails.effectiveDate; // Use property from interface
-      this.planService.getPlansFor(
-        this,
-        this.employerDetails.sic.standardIndustryCodeCode, // Use property from interface
-        new Date(startDate), // Convert string to Date object
-        'MA',
-        this.employerDetails.county, // Use property from interface
-        this.employerDetails.zip, // Use property from interface
-        currentPlanType, // Use stored value
-        this,
-      );
-      this.sponsorRoster = this.employerDetails.employees.map(
-        (employee): RosterEntry => ({
-          ...employee, // Keep original properties like coverageKind
-          dob: new Date(employee.dob), // Convert main dob
-          dependents: employee.dependents.map((dep) => ({
-            // Convert dependent dob
-            ...dep,
-            dob: new Date(dep.dob),
-          })),
-          // Removed will_enroll and roster_dependents from this mapped object structure
-        }),
-      );
-
-      const formattedStartDate = new Date(startDate);
-
-      this.tieredContributionModel = defaultTieredContributionModel();
-      this.tieredCalculator = this.calculator(formattedStartDate, this.tieredContributionModel, currentPlanType, true);
-      this.relationshipContributionModel = defaultRelationshipContributionModel();
-      this.relationshipCalculator = this.calculator(
-        formattedStartDate,
-        this.relationshipContributionModel,
-        currentPlanType,
-      );
+    } catch (error) {
+      console.error('Failed to parse employer details from localStorage', error);
+      this.employerDetails = null;
+      // Handle error: maybe redirect or show error message
     }
+  }
 
-    if (currentPlanType === 'health') {
+  private _initializeCalculatorsAndRoster(effectiveDate: Date, planType: PlanType): void {
+    if (!this.employerDetails) return;
+
+    this.sponsorRoster = this.employerDetails.employees.map(
+      (employee): RosterEntry => ({
+        ...employee,
+        dob: new Date(employee.dob),
+        dependents: employee.dependents.map((dep) => ({
+          ...dep,
+          dob: new Date(dep.dob),
+        })),
+      }),
+    );
+
+    this.tieredContributionModel = defaultTieredContributionModel();
+    this.tieredCalculator = this._createCalculator(effectiveDate, this.tieredContributionModel, planType, true);
+    this.relationshipContributionModel = defaultRelationshipContributionModel();
+    this.relationshipCalculator = this._createCalculator(
+      effectiveDate,
+      this.relationshipContributionModel,
+      planType,
+      false,
+    );
+  }
+
+  private _fetchInitialPlans(planType: PlanType): void {
+    if (!this.employerDetails) return;
+
+    this.planService.getPlansFor(
+      this, // TODO: Revisit if 'this' is the correct callback context for PlanProviderService
+      this.employerDetails.sic.standardIndustryCodeCode,
+      new Date(this.employerDetails.effectiveDate),
+      'MA', // TODO: Make region dynamic?
+      this.employerDetails.county,
+      this.employerDetails.zip,
+      planType,
+      this, // TODO: Callback context again
+    );
+    // If getPlansFor returns an Observable:
+    // .pipe(takeUntil(this.destroy$))
+    // .subscribe({
+    //   next: (products) => this.onProductsLoaded(products), // Assuming service calls onProductsLoaded or returns data
+    //   error: (err) => {
+    //     console.error("Failed to fetch plans", err);
+    //     this.isLoading = false;
+    //     // Show error message
+    //   },
+    //   complete: () => this.isLoading = false // Might be set in onProductsLoaded instead
+    // });
+    // If getPlansFor uses the callback pattern (like original code), keep as is,
+    // but ensure isLoading is handled correctly in onProductsLoaded and error scenarios.
+  }
+
+  private _updateButtonLinks(planType: PlanType): void {
+    if (planType === 'health') {
       this.btnName = 'Select Dental';
       this.btnLink = '/employer-details/dental';
     } else {
@@ -230,462 +279,440 @@ export class PlanFilterComponent implements OnInit {
     }
   }
 
-  will_enroll(kind: string, currentPlanType: PlanType | undefined): boolean {
-    // Add type for currentPlanType
-    if (currentPlanType && (kind === '' || kind === 'both' || kind.includes(currentPlanType))) {
-      return true;
-    }
-    return false;
-  }
+  // --- Product Loading and Recalculation ---
 
-  public loadData() {
-    // Explicitly type the accumulator in reduce
-    this.metalLevelOptions = this.filteredCarriers
-      .map((plan) => plan.product_information.metal_level)
-      .filter((level): level is string => level !== undefined) // Filter out undefined and type guard
-      .reduce((unique: string[], item: string) => (unique.includes(item) ? unique : [...unique, item]), []);
-
-    this.carriers = this.filteredCarriers
-      .map((plan) => plan.product_information.provider_name)
-      .reduce((unique: string[], item: string) => (unique.includes(item) ? unique : [...unique, item]), []);
-
-    this.products = this.filteredCarriers
-      .map((plan) => plan.product_information.product_type)
-      .reduce((unique: string[], item: string) => (unique.includes(item) ? unique : [...unique, item]), []);
-
-    this.hsaEligible = this.filteredCarriers
-      .map((plan) => plan.product_information.hsa_eligible)
-      .reduce((unique: boolean[], item: boolean) => (unique.includes(item) ? unique : [...unique, item]), []);
-
-    this.filterLength = this.filteredCarriers.length;
-    this.filterSelected = true;
-    console.log('[PlanFilterComponent] loadData finished. filterLength:', this.filterLength); // Added log
-  }
-
-  public onProductsLoaded(products: Array<Product>): void {
-    console.log('[PlanFilterComponent] onProductsLoaded received products:', products); // Added log
-
+  // Called by PlanProviderService (or subscription) when products are fetched
+  public onProductsLoaded(products: Product[]): void {
+    console.log('[PlanFilterComponent] onProductsLoaded received products:', products.length);
+    this.isLoading = true; // Start processing
     this.sponsorProducts = products;
-    this.kindFilteredProducts = products; // Start with all received products
+    this.kindFilteredProducts = [...products]; // Initially, all fetched products are kind-filtered
 
-    // TODO: Revisit compatibility checks and filtering once Product/ClientPreferences structures are clear
-    // For now, assume calculators can handle the products received.
-    // this.hasTierCompatibleType = products.some(...)
-    // this.hasRelationshipCompatibleType = products.some(...)
-
-    // Initial filtering - simplified: Assume products received are for the current plan type
-    // or recalculate will handle it.
-    console.log('[PlanFilterComponent] kindFilteredProducts (before recalculate):', this.kindFilteredProducts); // Added log
-
-    // Trigger recalculation and data loading if needed
-    if (this.kindFilteredProducts.length > 0) {
-      this.recalculate(); // Recalculate costs
-    } else {
-      this.filteredCarriers = []; // Clear carriers if no products match
-      this.defaultCarriers = [];
-      this.loadData(); // Still call loadData to update filters/counts
-    }
+    // Apply initial package filter if one exists, otherwise use all products
+    this._applyPackageFilter();
+    this._recalculateQuotes();
 
     this.showPlansTable = true;
+    this.isLoading = false; // Finish processing
   }
 
-  changePackageFilter(newVal: string | null) {
-    // Type the parameter directly - changed from PackageTypes to string
-    // Assert if needed later: this.planFilter = newVal as PackageTypes;
-    this.planFilter = newVal as PackageTypes; // Assuming string values match PackageTypes enum/type for now
-    this.hasTierCompatibleType = false;
-    this.hasRelationshipCompatibleType = false;
-    if (newVal != null) {
-      this.hasRelationshipCompatibleType = this.isRelationshipPackageType(this.planFilter);
-      this.hasTierCompatibleType = this.isTieredPackageType(this.planFilter);
-    }
-    const packageKinds = this.planFilter;
-    this.kindFilteredProducts = this.sponsorProducts;
-    if (packageKinds != null) {
-      this.kindFilteredProducts = this.sponsorProducts.filter((p) => p.package_kinds.includes(packageKinds));
-    }
-    this.filteredProducts = this.kindFilteredProducts;
-    this.recalculate();
-    this.resetAll(); // Reset filters when package changes
-    this.showPlansTable = true;
-    this.sortDirection = true; // Reset sort direction
-    this.sortKind = 'total_cost'; // Reset sort kind
-    this.iconSelected = 'col-6'; // Reset sort icon
-  }
-
-  recalculate() {
+  private _recalculateQuotes(): void {
     const currentPlanType = this.planType();
     console.log(
       '[PlanFilterComponent] recalculate started. kindFilteredProducts:',
-      this.kindFilteredProducts,
+      this.kindFilteredProducts.length,
       'planFilter:',
       this.planFilter,
-    ); // Added log
+    );
 
     if (!currentPlanType || this.kindFilteredProducts.length === 0) {
       console.log('[PlanFilterComponent] recalculate skipped (no plan type or products).');
-      this.filteredCarriers = []; // Ensure carriers are cleared if skipping
       this.defaultCarriers = [];
-      this.loadData();
+      this.filteredCarriers = [];
+      this._updateFilterOptionsAndCounts();
       return;
     }
 
-    // Determine the correct calculator
     const calculator = this.hasRelationshipCompatibleType ? this.relationshipCalculator : this.tieredCalculator;
 
     if (!calculator) {
       console.error('[PlanFilterComponent] recalculate failed: Calculator not initialized');
+      this.defaultCarriers = [];
+      this.filteredCarriers = [];
+      this._updateFilterOptionsAndCounts();
       return;
     }
 
     console.log(
       '[PlanFilterComponent] recalculate using calculator:',
       this.hasRelationshipCompatibleType ? 'relationship' : 'tiered',
-    ); // Added log
+    );
 
-    // Get quotes
     const quotesFromCalculator = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter);
-    console.log('[PlanFilterComponent] recalculate got quotesFromCalculator:', quotesFromCalculator); // Added log
 
-    // Map quotes to ensure deductible is a string and match QuotedProduct interface
-    const newQuotes: QuotedProduct[] = quotesFromCalculator.map((quote) => ({
-      ...quote,
-      product_information: {
-        ...quote.product_information,
-        // Ensure deductible is string, handle potential null/undefined
-        deductible: String(quote.product_information.deductible ?? ''),
-      },
-      // Add fields expected by OrderByPipe (SortablePlan) and template
-      deductible: String(quote.product_information.deductible ?? ''), // Top-level deductible for sorting
-      sponsor_cost: quote.total_cost, // Assuming total_cost is used for sponsor_cost sorting
-    }));
+    const newQuotes: QuotedProduct[] = quotesFromCalculator.map(
+      (quote): QuotedProduct => ({
+        ...quote,
+        product_information: {
+          ...quote.product_information,
+          deductible: String(quote.product_information.deductible ?? ''), // Ensure string
+        },
+        deductible: String(quote.product_information.deductible ?? ''), // Top-level for sorting/display
+        sponsor_cost: quote.total_cost, // Assuming total_cost is used for sponsor_cost sorting
+      }),
+    );
 
-    // This filtering step seems redundant if kindFilteredProducts was already filtered?
-    // Commenting out for now, as it might be causing issues if product names/providers mismatch.
-    // const fProductsForCompare = this.filteredProducts.map((fp) => fp.name + fp.provider_name);
-    // const filteredQuotes = newQuotes.filter((nq) =>
-    //   fProductsForCompare.includes(nq.product_information.name + nq.product_information.provider_name),
-    // );
-    // this.filteredCarriers = filteredQuotes;
+    this.defaultCarriers = newQuotes;
+    console.log('[PlanFilterComponent] recalculate finished. defaultCarriers:', this.defaultCarriers.length);
 
-    // Directly assign the processed quotes
-    this.filteredCarriers = newQuotes;
-    this.defaultCarriers = [...this.filteredCarriers]; // Create a copy for default state
-
-    console.log('[PlanFilterComponent] recalculate finished. filteredCarriers:', this.filteredCarriers); // Added log
-
-    this.loadData(); // Load filter options based on new data
+    // Apply existing filters to the newly calculated default carriers
+    this.applyFiltersAndUpdateDisplay();
   }
 
-  isRelationshipPackageType(pt: PackageTypes): boolean {
-    return this.clientPreferences.relationship_package_types.includes(pt);
-  }
-
-  isTieredPackageType(pt: PackageTypes): boolean {
-    return this.clientPreferences.tiered_package_types.includes(pt);
-  }
-
-  private calculator(
+  private _createCalculator(
     date: Date,
     contributionModel: TieredContributionModel | RelationshipContributionModel,
-    currentPlanType: PlanType,
-    isTieredCalculator?: boolean,
+    planType: PlanType,
+    isTieredCalculator: boolean,
   ): QuoteCalculator {
-    if (isTieredCalculator) {
-      const calc = new this.clientPreferences.tiered_quote_calculator(
-        date,
-        contributionModel as TieredContributionModel, // Type assertion
-        this.sponsorRoster,
-        currentPlanType,
+    const calculatorClass = isTieredCalculator
+      ? this.clientPreferences.tiered_quote_calculator
+      : this.clientPreferences.relationship_quote_calculator;
+
+    // Type assertion is okay here if we trust clientPreferences structure
+    return new calculatorClass(
+      date,
+      contributionModel as any, // Use 'any' or ensure constructor signatures match
+      this.sponsorRoster,
+      planType,
+    );
+  }
+
+  // --- Package Filtering ---
+
+  public changePackageFilter(newVal: string | null): void {
+    this.planFilter = newVal as PackageTypes; // Assuming string values map to PackageTypes
+    this._updatePackageCompatibility();
+    this._applyPackageFilter();
+    this._recalculateQuotes(); // Recalculate quotes for the new set of kindFilteredProducts
+    this.resetFiltersAndSort(); // Reset filters when package changes
+    this.showPlansTable = true; // Ensure table is visible
+  }
+
+  private _applyPackageFilter(): void {
+    if (this.planFilter != null) {
+      this.kindFilteredProducts = this.sponsorProducts.filter(
+        (p) => p.package_kinds?.includes(this.planFilter!), // Add null check for package_kinds
       );
-      return calc;
     } else {
-      const calculator = new this.clientPreferences.relationship_quote_calculator(
-        date,
-        contributionModel as RelationshipContributionModel, // Type assertion
-        this.sponsorRoster,
-        currentPlanType,
-      );
-      return calculator;
+      this.kindFilteredProducts = [...this.sponsorProducts]; // No package filter, use all
+    }
+    // Note: The original code also set `this.filteredProducts = this.kindFilteredProducts;`
+    // This seemed redundant if `filteredProducts` wasn't used elsewhere. Removed for now.
+    // If it was used (e.g., in the commented-out filter step in recalculate), reconsider.
+  }
+
+  private _updatePackageCompatibility(): void {
+    this.hasTierCompatibleType = false;
+    this.hasRelationshipCompatibleType = false;
+    if (this.planFilter != null) {
+      this.hasRelationshipCompatibleType = this.isRelationshipPackageType(this.planFilter);
+      this.hasTierCompatibleType = this.isTieredPackageType(this.planFilter);
     }
   }
 
-  selectedFilter(value: string | boolean, event: Event, type: FilterType) {
-    // Use defined types
-    const target = event.target as HTMLInputElement; // Type assertion for event target
+  // --- General Filtering ---
+
+  public selectedFilter(value: string | boolean, event: Event, type: FilterType): void {
+    const target = event.target as HTMLInputElement;
+    const isChecked = target.checked;
+
+    const updateSelection = <T extends { key: string; value: string | boolean }>(
+      list: T[],
+      key: string,
+      val: string | boolean,
+    ) => {
+      if (isChecked) {
+        // Add only if the correct type and not already present
+        if (typeof val === typeof list[0]?.value && !list.some((item) => item.value === val)) {
+          list.push({ key, value: val } as T);
+        }
+      } else {
+        const index = list.findIndex((item) => item.value === val);
+        if (index > -1) list.splice(index, 1);
+      }
+    };
+
     switch (type) {
       case 'metalLevel':
-        if (target.checked) {
-          // Ensure value is string for metal level
-          if (typeof value === 'string') {
-            this.selectedMetalLevels.push({ key: 'metal_level', value: value });
-            this.filterKeysSelected.push(type);
-          }
-        } else {
-          this.selectedMetalLevels = this.selectedMetalLevels.filter((ml) => ml.value != value);
-          const keyIndex = this.filterKeysSelected.indexOf(type);
-          if (keyIndex > -1) this.filterKeysSelected.splice(keyIndex, 1); // Remove only if found
-        }
+        if (typeof value === 'string') updateSelection(this.selectedMetalLevels, FILTER_KEYS.METAL_LEVEL, value);
         break;
       case 'productType':
-        if (target.checked) {
-          if (typeof value === 'string') {
-            this.selectedProductTypes.push({ key: 'product_type', value: value });
-            this.filterKeysSelected.push(type);
-          }
-        } else {
-          this.selectedProductTypes = this.selectedProductTypes.filter((ml) => ml.value != value);
-          const keyIndex = this.filterKeysSelected.indexOf(type);
-          if (keyIndex > -1) this.filterKeysSelected.splice(keyIndex, 1);
-        }
+        if (typeof value === 'string') updateSelection(this.selectedProductTypes, FILTER_KEYS.PRODUCT_TYPE, value);
         break;
       case 'insuranceCompany':
-        if (target.checked) {
-          if (typeof value === 'string') {
-            this.selectedInsuranceCompanies.push({ key: 'provider_name', value: value });
-            this.filterKeysSelected.push(type);
-          }
-        } else {
-          this.selectedInsuranceCompanies = this.selectedInsuranceCompanies.filter((ml) => ml.value != value);
-          const keyIndex = this.filterKeysSelected.indexOf(type);
-          if (keyIndex > -1) this.filterKeysSelected.splice(keyIndex, 1);
-        }
+        if (typeof value === 'string')
+          updateSelection(this.selectedInsuranceCompanies, FILTER_KEYS.PROVIDER_NAME, value);
         break;
       case 'hsa':
-        if (target.checked) {
-          // Ensure value is boolean for HSA
-          if (typeof value === 'boolean') {
-            this.selectedHSAs.push({ key: 'hsa_eligible', value: value });
-            this.filterKeysSelected.push(type);
-          }
-        } else {
-          this.selectedHSAs = this.selectedHSAs.filter((ml) => ml.value != value);
-          const keyIndex = this.filterKeysSelected.indexOf(type);
-          if (keyIndex > -1) this.filterKeysSelected.splice(keyIndex, 1);
-        }
+        if (typeof value === 'boolean') updateSelection(this.selectedHSAs, FILTER_KEYS.HSA_ELIGIBLE, value);
         break;
     }
-    this.filterCarriers();
+    this.applyFiltersAndUpdateDisplay();
   }
 
-  // Helper function to flatten and deduplicate array of arrays
-  private flattenAndDeduplicate<T>(arrayOfArrays: T[][]): T[] {
-    const flattened = arrayOfArrays.flat();
-    return Array.from(new Set(flattened.map((item) => JSON.stringify(item)))).map((str) => JSON.parse(str)) as T[];
+  public applyFiltersAndUpdateDisplay(): void {
+    let filtered: QuotedProduct[] = [...this.defaultCarriers];
+
+    // Apply categorical filters
+    filtered = this._applyCategoricalFilters(filtered);
+
+    // Apply range filters
+    filtered = this._applyRangeFilters(filtered);
+
+    this.filteredCarriers = filtered;
+    this._updateFilterOptionsAndCounts(); // Update counts based on the *final* filtered list
   }
 
-  filterCarriers() {
-    const plans: QuotedProduct[] = this.defaultCarriers;
-    let selected: QuotedProduct[] = [...plans]; // Start with all plans
-
+  private _applyCategoricalFilters(plans: QuotedProduct[]): QuotedProduct[] {
     const filterGroups = [
-      { selectedItems: this.selectedMetalLevels, key: 'metal_level' },
-      { selectedItems: this.selectedProductTypes, key: 'product_type' },
-      { selectedItems: this.selectedInsuranceCompanies, key: 'provider_name' },
-      { selectedItems: this.selectedHSAs, key: 'hsa_eligible' },
+      { selectedItems: this.selectedMetalLevels, key: FILTER_KEYS.METAL_LEVEL },
+      { selectedItems: this.selectedProductTypes, key: FILTER_KEYS.PRODUCT_TYPE },
+      { selectedItems: this.selectedInsuranceCompanies, key: FILTER_KEYS.PROVIDER_NAME },
+      { selectedItems: this.selectedHSAs, key: FILTER_KEYS.HSA_ELIGIBLE },
     ];
 
-    // Apply filters iteratively only if a selection exists for the group
+    let filteredPlans = plans;
     filterGroups.forEach((group) => {
       if (group.selectedItems.length > 0) {
-        selected = selected.filter((plan) =>
+        filteredPlans = filteredPlans.filter((plan) =>
           group.selectedItems.some((item) => plan.product_information[item.key] === item.value),
         );
       }
     });
+    return filteredPlans;
+  }
 
-    // Apply range filters
+  private _applyRangeFilters(plans: QuotedProduct[]): QuotedProduct[] {
+    let filteredPlans = plans;
+
+    // Deductible Filters
     if (this.yearlyMedicalDeductibleFrom !== null) {
-      selected = selected.filter((plan) => {
-        const deductible = parseInt(plan.product_information.deductible?.replace(/[$,]/g, '') || '0', 10);
-        return !isNaN(deductible) && deductible >= (this.yearlyMedicalDeductibleFrom ?? -Infinity);
+      filteredPlans = filteredPlans.filter((plan) => {
+        const deductible = this._parseDeductible(plan.product_information.deductible);
+        return deductible >= (this.yearlyMedicalDeductibleFrom ?? -Infinity);
       });
     }
-
     if (this.yearlyMedicalDeductibleTo !== null) {
-      selected = selected.filter((plan) => {
-        const deductible = parseInt(plan.product_information.deductible?.replace(/[$,]/g, '') || '0', 10);
-        return !isNaN(deductible) && deductible <= (this.yearlyMedicalDeductibleTo ?? Infinity);
+      filteredPlans = filteredPlans.filter((plan) => {
+        const deductible = this._parseDeductible(plan.product_information.deductible);
+        return deductible <= (this.yearlyMedicalDeductibleTo ?? Infinity);
       });
     }
 
+    // Premium Filters
     if (this.planPremiumsFrom !== null) {
-      selected = selected.filter((plan) => plan.total_cost >= (this.planPremiumsFrom ?? -Infinity));
+      filteredPlans = filteredPlans.filter((plan) => plan.total_cost >= (this.planPremiumsFrom ?? -Infinity));
     }
-
     if (this.planPremiumsTo !== null) {
-      selected = selected.filter((plan) => plan.total_cost <= (this.planPremiumsTo ?? Infinity));
+      filteredPlans = filteredPlans.filter((plan) => plan.total_cost <= (this.planPremiumsTo ?? Infinity));
     }
 
-    this.filterCarriersResults = selected; // Store results before updating display
-    this.filteredCarriers = selected;
+    return filteredPlans;
+  }
+
+  private _parseDeductible(deductibleString?: string): number {
+    if (!deductibleString) return NaN;
+    const num = parseInt(deductibleString.replace(/[$,]/g, ''), 10);
+    return isNaN(num) ? NaN : num;
+  }
+
+  private _updateFilterOptionsAndCounts(): void {
+    // Update options based on *default* carriers to show all possibilities
+    const uniqueValues = <T>(items: T[]) => Array.from(new Set(items));
+
+    this.metalLevelOptions = uniqueValues(
+      this.defaultCarriers.map((p) => p.product_information.metal_level).filter((level): level is string => !!level), // Ensure level is defined and string
+    ).sort();
+
+    this.carriers = uniqueValues(this.defaultCarriers.map((p) => p.product_information.provider_name)).sort();
+
+    this.products = uniqueValues(this.defaultCarriers.map((p) => p.product_information.product_type)).sort();
+
+    this.hsaEligible = uniqueValues(this.defaultCarriers.map((p) => p.product_information.hsa_eligible)).sort((a, b) =>
+      a === b ? 0 : a ? -1 : 1,
+    ); // Show true before false
+
+    // Update count based on *currently filtered* carriers
     this.filterLength = this.filteredCarriers.length;
+    this.filterSelected = this.defaultCarriers.length > 0; // Enable if we have data
+    console.log('[PlanFilterComponent] Filters updated. Filter length:', this.filterLength);
   }
 
-  displayResults() {
-    // This method seems redundant now as filterCarriers directly updates filteredCarriers
-    // If specific logic is needed here, keep it, otherwise it can be removed.
-    // For now, keeping the assignment as it was.
-    this.filteredCarriers = this.filterCarriersResults;
-    this.filterLength = this.filterCarriersResults.length;
-  }
-
-  resetAll() {
-    this.filteredCarriers = [...this.defaultCarriers]; // Reset to a copy of default carriers
-    this.filterLength = this.defaultCarriers.length;
+  public resetFiltersAndSort(): void {
     this.selectedMetalLevels = [];
     this.selectedProductTypes = [];
     this.selectedInsuranceCompanies = [];
-    this.selectedHSAs = []; // Reset HSA selection
-    this.filterCarriersResults = [];
-    this.filterKeysSelected = [];
-    this.yearlyMedicalDeductibleFrom = null; // Reset to null
-    this.yearlyMedicalDeductibleTo = null; // Reset to null
-    this.planPremiumsFrom = null; // Reset to null
-    this.planPremiumsTo = null; // Reset to null
+    this.selectedHSAs = [];
+    this.yearlyMedicalDeductibleFrom = null;
+    this.yearlyMedicalDeductibleTo = null;
+    this.planPremiumsFrom = null;
+    this.planPremiumsTo = null;
 
-    // Reset checkboxes
-    const checkboxes = document.querySelectorAll<HTMLInputElement>('.checkbox-input'); // Use querySelectorAll with type
-    checkboxes.forEach((checkbox) => {
-      checkbox.checked = false;
-    });
+    // Reset UI checkboxes
+    document.querySelectorAll<HTMLInputElement>('.checkbox-input').forEach((checkbox) => (checkbox.checked = false));
+
+    // Reset sorting
+    this.sortDirection = true;
+    this.sortKind = DEFAULT_SORT_KIND;
+    this.iconSelected = DEFAULT_ICON_COL;
+
+    // Re-apply filters (which will now be empty) to reset the displayed list
+    this.applyFiltersAndUpdateDisplay();
   }
 
-  getToolTip(type: string): string | undefined {
-    // Type the parameter
-    const currentPlanType = this.planType();
-    if (!currentPlanType || !this.tooltips[currentPlanType]) return undefined; // Handle missing planType
-    // Find the tooltip object for the given type
-    const tooltipObj = this.tooltips[currentPlanType].find((item) => item[type]);
-    return tooltipObj ? tooltipObj[type] : undefined; // Return string or undefined
-  }
+  // --- Sorting ---
 
-  getTableHeader(col: string): string[] {
-    // Type the parameter
-    const currentPlanType = this.planType();
-    if (!currentPlanType || !this.tableHeaders[currentPlanType]) return []; // Handle missing planType
-    // Find the header object for the given column
-    const headerObj = this.tableHeaders[currentPlanType].find((item) => item[col]);
-    return headerObj ? [headerObj[col]] : []; // Return array with the header string or empty array
-  }
-
-  metalLevelCount(metalLevel: string): string | undefined {
-    // Type the parameter, return string or undefined
-    const currentPlanType = this.planType();
-    if (currentPlanType === 'health') {
-      const count = this.filteredCarriers.filter((plan) => plan.product_information.metal_level === metalLevel).length; // Get length directly
-      return `(${count} Plans)`;
+  public sortData(kind: SortKey): void {
+    if (this.sortKind === kind) {
+      this.sortDirection = !this.sortDirection; // Toggle direction
+    } else {
+      this.sortKind = kind;
+      this.sortDirection = true; // Default to ascending
     }
-    return undefined; // Return undefined if not health plan type
+    this.setIcon(kind); // Update icon state
+    // Note: Sorting is handled by the OrderByPipe in the template based on sortKind and sortDirection
   }
 
-  productTypeCounts(product: string): string {
-    // Type the parameter
-    const count = this.filteredCarriers.filter((plan) => plan.product_information.product_type === product).length; // Get length directly
+  get sortFilter(): 'asc' | 'desc' {
+    return this.sortDirection ? 'asc' : 'desc';
+  }
+
+  setIcon(col: SortKey): void {
+    // This seems fragile if column IDs change. Consider a different approach if possible.
+    // If 'col-6' etc. refers to CSS classes for layout, this logic is mixing concerns.
+    // For now, keeping the original logic but using the type.
+    this.iconSelected = col as string; // Cast needed if col can be keys not directly used as icon identifiers
+  }
+
+  showIcon(col: SortKey): boolean {
+    // Show icon if it's the currently selected column for sorting
+    return this.iconSelected === (col as string);
+  }
+
+  // --- UI Helpers / Template Methods ---
+
+  public getToolTip(type: string): string | undefined {
+    const currentPlanType = this.planType();
+    const tipsForType = this.tooltips[currentPlanType];
+    if (!tipsForType) return undefined;
+    const tooltipObj = tipsForType.find((item: any) => item[type]); // Use any temporarily if structure is dynamic
+    return tooltipObj ? tooltipObj[type] : undefined;
+  }
+
+  public getTableHeader(col: string): string[] {
+    const currentPlanType = this.planType();
+    const headersForType = this.tableHeaders[currentPlanType];
+    if (!headersForType) return [];
+    const headerObj = headersForType.find((item: any) => item[col]); // Use any temporarily
+    return headerObj ? [headerObj[col]] : [];
+  }
+
+  public metalLevelCount(metalLevel: string): string | undefined {
+    // Count based on *currently filtered* carriers for display
+    if (this.planType() !== 'health') return undefined;
+    const count = this.filteredCarriers.filter((p) => p.product_information.metal_level === metalLevel).length;
     return `(${count} Plans)`;
   }
 
-  hsaCounts(hsa: boolean): string {
-    // Type the parameter
-    const count = this.filteredCarriers.filter((plan) => plan.product_information.hsa_eligible === hsa).length; // Get length directly
+  public productTypeCounts(product: string): string {
+    const count = this.filteredCarriers.filter((p) => p.product_information.product_type === product).length;
     return `(${count} Plans)`;
   }
 
-  showPDFGenerationMsg() {
-    Swal.fire({
-      title: 'Generating PDF',
-      html: 'Please hold while PDF is generated.',
-      icon: 'info',
-      showConfirmButton: false,
-      showCancelButton: false,
-      backdrop: true,
-      allowOutsideClick: false,
-    });
+  public hsaCounts(hsa: boolean): string {
+    const count = this.filteredCarriers.filter((p) => p.product_information.hsa_eligible === hsa).length;
+    return `(${count} Plans)`;
   }
 
-  downloadPdf() {
-    this.pdfView = true;
-    // Ensure table exists before trying to access it
+  public validateNumber(event: KeyboardEvent): boolean {
+    const charCode = event.which ?? event.keyCode;
+    // Allow backspace, delete, arrows, home, end, etc. (control keys) and numbers
+    const isControlKey = charCode < 32 || (charCode >= 37 && charCode <= 40); // Basic control keys
+    const isNumber = charCode >= 48 && charCode <= 57;
+
+    if (isControlKey || isNumber) {
+      return true;
+    } else {
+      event.preventDefault();
+      return false;
+    }
+  }
+
+  // --- Actions ---
+
+  public downloadPdf(): void {
     const table = document.getElementById('plan-table');
     if (!table) {
       console.error("Element with ID 'plan-table' not found.");
       Swal.fire('Error', 'Could not find table to generate PDF.', 'error');
-      this.pdfView = false;
       return;
     }
-    this.showPDFGenerationMsg();
-    const currentPlanType = this.planType() || 'download'; // Default filename if planType is undefined
-    this.html2PDF(table, {
-      jsPDF: {
-        unit: 'pt',
-        format: 'a4',
-      },
+
+    this.pdfView = true; // Indicate PDF generation is in progress (for UI state if needed)
+    this._showPdfGenerationMsg();
+
+    const filename = `${this.planType() || 'download'}.pdf`;
+
+    html2PDF(table, {
+      jsPDF: { unit: 'pt', format: 'a4', orientation: 'landscape' }, // Consider landscape if table is wide
       imageType: 'image/png',
-      output: `./pdf/${currentPlanType}.pdf`, // Use stored plan type
+      output: filename, // Let save() handle download name
+      html2canvas: { scale: 2, useCORS: true }, // Improve quality, allow external images
+      margin: { top: 40, right: 40, bottom: 40, left: 40 },
     })
-      .then((pdf: unknown) => {
-        // Add type for pdf if available from jspdf types
-        (pdf as { save: () => void }).save(); // Type assertion needed to call save
+      .then((pdf: any) => {
+        // Use 'any' if jspdf types are not available
+        pdf.save(filename);
         Swal.close();
-        // Ensure pdfView is reset even after success
         this.pdfView = false;
       })
       .catch((error: unknown) => {
-        // Add error handling
         console.error('PDF generation failed:', error);
         Swal.fire('Error', 'PDF generation failed. Please try again.', 'error');
         this.pdfView = false;
       });
-    // Consider removing the timeout or making it conditional on success/error
-    // setTimeout(() => {
-    //   this.pdfView = false;
-    // }, 500);
   }
 
-  getSbcDocument(key: string) {
-    // Type the parameter
+  private _showPdfGenerationMsg(): void {
+    Swal.fire({
+      title: 'Generating PDF',
+      html: 'Please hold while the PDF is generated.<br>This may take a moment...',
+      icon: 'info',
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
+
+  public getSbcDocument(key: string): void {
     const win = window.open('', '_blank');
     if (win) {
-      // Check if window was opened successfully
+      // Ensure PlanProviderService handles opening the doc in the new window
       this.planService.getSbcDocumentFor(key, win);
     } else {
       console.error('Could not open new window for SBC document.');
-      // Optionally show user message
-      Swal.fire('Error', 'Could not open a new window. Please check your browser settings.', 'error');
+      Swal.fire('Error', "Could not open a new window. Please check your browser's pop-up blocker settings.", 'error');
     }
   }
 
-  sortData(kind: string) {
-    // Type the parameter
-    if (this.sortKind === kind) {
-      this.sortDirection = !this.sortDirection; // Toggle direction if same column
-    } else {
-      this.sortKind = kind;
-      this.sortDirection = true; // Default to ascending for new column
-    }
-    this.setIcon(kind); // Update icon based on the new sort kind
+  // --- Utility / Compatibility ---
+
+  private isRelationshipPackageType(pt: PackageTypes): boolean {
+    return this.clientPreferences.relationship_package_types.includes(pt);
   }
 
-  setIcon(col: string) {
-    // Type the parameter
-    this.iconSelected = col;
+  private isTieredPackageType(pt: PackageTypes): boolean {
+    return this.clientPreferences.tiered_package_types.includes(pt);
   }
 
-  showIcon(col: string): boolean {
-    // Type the parameter, return boolean
-    // Simplified logic: show icon if it's the currently selected column for sorting
-    return this.iconSelected === col;
-  }
+  // Original will_enroll - Check if still needed, seems specific to roster processing which is now internal
+  // public will_enroll(kind: string): boolean {
+  //   const currentPlanType = this.planType();
+  //   if (!currentPlanType) return false;
+  //   return kind === '' || kind === 'both' || kind.includes(currentPlanType);
+  // }
 
-  validateNumber(event: KeyboardEvent): boolean {
-    // Type the parameter
-    const charCode = event.which ? event.which : event.keyCode;
-    // Allow backspace, delete, arrow keys, etc. (key codes < 32)
-    // Allow numbers (48-57)
-    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-      event.preventDefault(); // Prevent the character from being entered
-      return false;
-    }
-    return true;
-  }
+  // Original planOptions - Check if used in the template or can be removed
+  public planOptions = [
+    { key: 'single_issuer', value: 'One Carrier', view: 'health' },
+    { key: 'metal_level', value: 'One Level', view: 'health' },
+    { key: 'single_product', value: 'One Plan', view: 'health' },
+    { key: 'single_product', value: 'One Plan', view: 'dental' },
+  ];
+
+  // Original selected property - Check if used or can be removed
+  // selected = -1;
 }

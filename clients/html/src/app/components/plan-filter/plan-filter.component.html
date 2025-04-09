@@ -8,7 +8,7 @@
   </div>
 
   <div class="col-12 mt-4 mb-4">
-    <h5 class="mb-3"><strong>Select a Benefit Model</strong></h5>
+    <h6 class="mb-3"><strong>Select a Benefit Model</strong></h6>
 
     @for (plan of planOptions; track plan; let i = $index) {
       <label class="radio-container me-3" [hidden]="plan.view !== planType()"
@@ -139,7 +139,7 @@
                         id="pp1"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="planPremiumsFrom"
-                        (ngModelChange)="filterCarriers()"
+                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
                       />
                       TO
                       <input
@@ -147,7 +147,7 @@
                         class="form-control col-3 ms-2"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="planPremiumsTo"
-                        (ngModelChange)="filterCarriers()"
+                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
                       />
                     </div>
                   </div>
@@ -168,7 +168,7 @@
                         id="ymb1"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="yearlyMedicalDeductibleFrom"
-                        (ngModelChange)="filterCarriers()"
+                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
                       />
                       TO
                       <input
@@ -176,7 +176,7 @@
                         class="form-control col-3 ms-2"
                         (keydown)="validateNumber($event)"
                         [(ngModel)]="yearlyMedicalDeductibleTo"
-                        (ngModelChange)="filterCarriers()"
+                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
                       />
                     </div>
                   </div>
@@ -206,12 +206,10 @@
                   <div class="col-6 offset-md-8">
                     <div class="row">
                       <div class="col-5 me-2">
-                        <button class="btn btn-primary" (click)="resetAll()">Clear Filters</button>
+                        <button class="btn btn-primary" (click)="resetFiltersAndSort()">Clear Filters</button>
                       </div>
                       <div class="col-3">
-                        <button class="btn btn-success" (click)="isCollapsed = !isCollapsed; displayResults()">
-                          Apply
-                        </button>
+                        <button class="btn btn-success" (click)="isCollapsed = !isCollapsed">Apply</button>
                       </div>
                     </div>
                   </div>
@@ -223,7 +221,7 @@
       </div>
       <div class="row mt-3">
         <div class="col-12">
-          <h6 class="font-weight-bold">Displaying {{ filterLength }} Plans</h6>
+          <p class="fw-bold">Displaying {{ filterLength }} Plans</p>
         </div>
       </div>
       @if (showPlansTable) {
@@ -388,14 +386,13 @@
         </div>
       }
       @if (showPlansTable) {
-        <div class="row button-group">
-          <div class="col-6">
+        <div class="row button-group mt-3">
+          <div class="col-12 d-flex justify-content-between">
             <button class="btn btn-success" (click)="downloadPdf()" [disabled]="!filterSelected">
               <i class="far fa-file-pdf"></i> Save PDF
             </button>
-          </div>
-          <div class="col-6">
-            <a class="btn btn-primary float-right" [routerLink]="btnLink">{{ btnName }}</a>
+
+            <a class="btn btn-primary" [routerLink]="btnLink">{{ btnName }}</a>
           </div>
         </div>
       }
