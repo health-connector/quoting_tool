@@ -43,7 +43,7 @@
           <div id="collapseExample" [ngbCollapse]="!isCollapsed" [@fadeInOut]>
             <div class="card shadow-1">
               <div class="card-body">
-                <div class="row">
+                <div class="row mb-3">
                   <div class="col-3">
                     <p class="heading-label">
                       Metal Level
@@ -56,18 +56,18 @@
                       }
                     </p>
                     @for (metalLevel of metalLevelOptions; track metalLevel; let i = $index) {
-                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
+                      <div class="form-check">
                         <input
+                          class="form-check-input"
                           type="checkbox"
-                          class="custom-control-input checkbox-input"
-                          id="checkbox-metal-{{ i }}"
                           [value]="metalLevel"
+                          id="checkbox-metal-{{ i }}"
                           (click)="selectedFilter(metalLevel, $event, 'metalLevel')"
                         />
-                        <label class="custom-control-label" for="checkbox-metal-{{ i }}"
-                          >{{ metalLevel | titlecase }}
-                          <span class="count-text">{{ metalLevelCount(metalLevel) }}</span></label
-                        >
+                        <label class="form-check-label" for="checkbox-metal-{{ i }}">
+                          {{ metalLevel | titlecase }}
+                          <span class="count-text">{{ metalLevelCount(metalLevel) }}</span>
+                        </label>
                       </div>
                     }
                   </div>
@@ -81,18 +81,18 @@
                       ></i>
                     </p>
                     @for (product of products; track product; let i = $index) {
-                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
+                      <div class="form-check">
                         <input
+                          class="form-check-input"
                           type="checkbox"
-                          class="custom-control-input checkbox-input"
-                          id="checkbox-plan-{{ i }}"
                           [value]="product"
                           (click)="selectedFilter(product, $event, 'productType')"
+                          id="checkbox-plan-{{ i }}"
                         />
-                        <label class="custom-control-label" for="checkbox-plan-{{ i }}"
-                          >{{ product.toUpperCase() }}
-                          <span class="count-text">{{ productTypeCounts(product) }}</span></label
-                        >
+                        <label class="form-check-label" for="checkbox-plan-{{ i }}">
+                          {{ product.toUpperCase() }}
+                          <span class="count-text">{{ productTypeCounts(product) }}</span>
+                        </label>
                       </div>
                     }
                   </div>
@@ -106,17 +106,18 @@
                       ></i>
                     </p>
                     @for (hsa of hsaEligible; track hsa; let i = $index) {
-                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
+                      <div class="form-check">
                         <input
+                          class="form-check-input"
                           type="checkbox"
-                          class="custom-control-input checkbox-input"
-                          id="checkbox-hsa-{{ i }}"
                           [value]="hsa"
+                          id="checkbox-hsa-{{ i }}"
                           (click)="selectedFilter(hsa, $event, 'hsa')"
                         />
-                        <label class="custom-control-label" for="checkbox-hsa-{{ i }}"
-                          >{{ hsa | planFilter }} <span class="count-text">{{ hsaCounts(hsa) }}</span></label
-                        >
+                        <label class="form-check-label" for="checkbox-hsa-{{ i }}">
+                          {{ hsa | planFilter }}
+                          <span class="count-text">{{ hsaCounts(hsa) }}</span>
+                        </label>
                       </div>
                     }
                   </div>
@@ -132,23 +133,27 @@
                       ></i>
                     </p>
                     <div class="row">
-                      <label for="pp1"></label>
-                      <input
-                        type="text"
-                        class="form-control col-3 me-2"
-                        id="pp1"
-                        (keydown)="validateNumber($event)"
-                        [(ngModel)]="planPremiumsFrom"
-                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
-                      />
-                      TO
-                      <input
-                        type="text"
-                        class="form-control col-3 ms-2"
-                        (keydown)="validateNumber($event)"
-                        [(ngModel)]="planPremiumsTo"
-                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
-                      />
+                      <div class="col-3 form-floating">
+                        <input
+                          type="text"
+                          class="form-control col-3 me-2"
+                          id="pp1"
+                          (keydown)="validateNumber($event)"
+                          [(ngModel)]="planPremiumsFrom"
+                          (ngModelChange)="applyFiltersAndUpdateDisplay()"
+                        />
+                        <label for="pp1">From $</label>
+                      </div>
+                      <div class="col-3 form-floating">
+                        <input
+                          type="text"
+                          class="form-control col-3 ms-2"
+                          (keydown)="validateNumber($event)"
+                          [(ngModel)]="planPremiumsTo"
+                          (ngModelChange)="applyFiltersAndUpdateDisplay()"
+                        />
+                        <label for="pp1">To $</label>
+                      </div>
                     </div>
                   </div>
                   <div class="col-6">
@@ -161,23 +166,27 @@
                       ></i>
                     </p>
                     <div class="row">
-                      <label for="ymb1"></label>
-                      <input
-                        type="text"
-                        class="form-control col-3 me-2"
-                        id="ymb1"
-                        (keydown)="validateNumber($event)"
-                        [(ngModel)]="yearlyMedicalDeductibleFrom"
-                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
-                      />
-                      TO
-                      <input
-                        type="text"
-                        class="form-control col-3 ms-2"
-                        (keydown)="validateNumber($event)"
-                        [(ngModel)]="yearlyMedicalDeductibleTo"
-                        (ngModelChange)="applyFiltersAndUpdateDisplay()"
-                      />
+                      <div class="col-3 form-floating">
+                        <input
+                          type="text"
+                          class="form-control col-3 me-2"
+                          id="ymb1"
+                          (keydown)="validateNumber($event)"
+                          [(ngModel)]="yearlyMedicalDeductibleFrom"
+                          (ngModelChange)="applyFiltersAndUpdateDisplay()"
+                        />
+                        <label for="ymb1">From $</label>
+                      </div>
+                      <div class="col-3 form-floating">
+                        <input
+                          type="text"
+                          class="form-control col-3 ms-2"
+                          (keydown)="validateNumber($event)"
+                          [(ngModel)]="yearlyMedicalDeductibleTo"
+                          (ngModelChange)="applyFiltersAndUpdateDisplay()"
+                        />
+                        <label for="ymb1">To $</label>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -189,15 +198,17 @@
                 <div class="row">
                   @for (carrier of carriers; track carrier; let i = $index) {
                     <div class="col-3">
-                      <div class="custom-control custom-checkbox me-sm-2 m-b-15">
+                      <div class="form-check">
                         <input
+                          class="form-check-input"
                           type="checkbox"
-                          class="custom-control-input checkbox-input"
                           id="checkbox-carrier-{{ i }}"
                           [value]="carrier"
                           (click)="selectedFilter(carrier, $event, 'insuranceCompany')"
                         />
-                        <label class="custom-control-label" for="checkbox-carrier-{{ i }}">{{ carrier }}</label>
+                        <label class="form-check-label" for="checkbox-carrier-{{ i }}">
+                          {{ carrier }}
+                        </label>
                       </div>
                     </div>
                   }
