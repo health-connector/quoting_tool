@@ -74,7 +74,7 @@ module Transactions
           rating_area.exchange_provided_code = rating_area_id
           rating_area.county_zip_ids = location_ids
           begin
-            rating_area.save
+            rating_area.save!
           rescue => e
             return Failure({message: "Error creating Rating Area record for #{rating_area_id}"})
           end

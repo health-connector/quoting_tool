@@ -10,8 +10,8 @@ gem 'net-imap', require: false
 gem 'net-pop', require: false
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.0.0'
-gem 'activemodel', '~> 6.0.0'
+gem 'rails', '~> 6.1.7'
+gem 'activemodel', '~> 6.1.7'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.12'

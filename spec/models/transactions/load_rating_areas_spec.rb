@@ -39,7 +39,7 @@ RSpec.describe Transactions::LoadRatingAreas, type: :transaction do
     end
 
     it "should return failure message" do
-      expect(subject.failure[:message]).to include("Error creating Rating Area")
+      expect(subject.failure&.dig(:message)).to include("Error creating Rating Area")
     end
   end
 end
