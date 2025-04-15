@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.1.6'
+ruby '3.2.5'
 
 # Ruby 3.1+ compatibility - these standard libraries are now separate gems
 # Temp fix for kube pod restarts
@@ -10,7 +10,7 @@ gem 'net-imap', require: false
 gem 'net-pop', require: false
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.0.8.7'
+gem 'rails', '~> 7.1.5.1'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.12'
@@ -33,7 +33,7 @@ gem 'matrix'
 gem 'rails-i18n', '7.0.9'
 
 # MongoDB NoSQL database ORM
-gem 'mongoid', '7.5.4'
+gem 'mongoid', '8.1.9'
 
 # Settings, validation and dependency injection
 gem 'resource_registry',  git:  'https://github.com/ideacrew/resource_registry.git', tag: 'v0.10.1'
@@ -51,7 +51,7 @@ group :development, :test do
   gem 'yard' #,                   '~> 0.9.12',  require: false
   gem 'climate_control' #
   gem 'factory_bot_rails',      '~> 4.11'
-  gem 'pry-byebug'
+  gem 'pry-byebug', '~> 3.11.0'
 end
 
 group :development do
