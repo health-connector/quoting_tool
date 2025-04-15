@@ -13,7 +13,7 @@ gem 'net-pop', require: false
 gem 'rails', '~> 7.1.5.1'
 
 # Use Puma as the app server
-gem 'puma', '~> 3.12'
+gem 'puma', '~> 6.6.0'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
@@ -45,10 +45,13 @@ gem 'nokogiri',                 '~> 1.18.6'
 gem 'nokogiri-happymapper',     '~> 0.8.0', :require => 'happymapper'
 gem 'money-rails',              '~> 1.13'
 
+# bundler-audit upgrades
+gem 'jmespath', '~> 1.6.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rspec-rails', '~> 7.1.1'
-  gem 'yard' #,                   '~> 0.9.12',  require: false
+  gem 'yard', '~> 0.9.36',  require: false
   gem 'climate_control' #
   gem 'factory_bot_rails',      '~> 4.11'
   gem 'pry-byebug', '~> 3.11.0'

@@ -992,7 +992,7 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    jmespath (1.4.0)
+    jmespath (1.6.2)
     json (2.7.6)
     jsonapi-serializer (2.2.0)
       activesupport (>= 4.2)
@@ -1069,7 +1069,8 @@ GEM
     psych (5.2.3)
       date
       stringio
-    puma (3.12.2)
+    puma (6.6.0)
+      nio4r (~> 2.0)
     racc (1.8.1)
     rack (2.2.13)
     rack-cors (1.0.5)
@@ -1196,7 +1197,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    yard (0.9.20)
+    yard (0.9.37)
     zeitwerk (2.6.18)
 
 PLATFORMS
@@ -1209,6 +1210,7 @@ DEPENDENCIES
   database_cleaner-mongoid (~> 2.0, >= 2.0.1)
   dry-transaction (~> 0.13.0)
   factory_bot_rails (~> 4.11)
+  jmespath (~> 1.6.1)
   jsonapi-serializer
   listen (>= 3.0.5)
   matrix
@@ -1220,7 +1222,7 @@ DEPENDENCIES
   nokogiri (~> 1.18.6)
   nokogiri-happymapper (~> 0.8.0)
   pry-byebug (~> 3.11.0)
-  puma (~> 3.12)
+  puma (~> 6.6.0)
   rack-cors
   rails (~> 7.1.5.1)
   rails-i18n (= 7.0.9)
@@ -1236,7 +1238,7 @@ DEPENDENCIES
   tzinfo-data
   virtus (~> 1.0)
   web-console (>= 3)
-  yard
+  yard (~> 0.9.36)
 
 RUBY VERSION
    ruby 3.3.8p144
