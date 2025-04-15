@@ -12,7 +12,7 @@ ENV USERNAME=quoting_tool
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG BUNDLER_VERSION=2.0.2
+ARG BUNDLER_VERSION=2.4.22
 ENV BUNDLER_VERSION=$BUNDLER_VERSION
 
 # Only install what's needed that isn't in the base image (per `app list --installed`)
