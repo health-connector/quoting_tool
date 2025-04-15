@@ -1,5 +1,5 @@
 class ProductSerializer
-  include FastJsonapi::ObjectSerializer
+  include JSONAPI::Serializer
 
   ProviderMap = {
     "36046" => "Harvard Pilgrim Health Care",

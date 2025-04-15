@@ -10,8 +10,7 @@ gem 'net-imap', require: false
 gem 'net-pop', require: false
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1.7'
-gem 'activemodel', '~> 6.1.7'
+gem 'rails', '~> 7.0.8.7'
 
 # Use Puma as the app server
 gem 'puma', '~> 3.12'
@@ -38,7 +37,7 @@ gem 'mongoid', '7.5.4'
 
 # Settings, validation and dependency injection
 gem 'resource_registry',  git:  'https://github.com/ideacrew/resource_registry.git', tag: 'v0.10.1'
-gem 'fast_jsonapi'
+gem 'jsonapi-serializer'
 gem 'roo', '~> 2.1'
 gem 'virtus', '~> 1.0'
 gem 'dry-transaction', '~> 0.13.0'
