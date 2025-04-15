@@ -21,7 +21,7 @@ import { OrderByPipe } from '../plan-filter/order-by.pipe';
     PlanFilterPipe,
     OrderByPipe
   ],
-  imports: [CommonModule, RouterModule, FormsModule, TreeviewModule, NgbCollapseModule, NgbTooltipModule],
+  imports: [CommonModule, RouterModule, FormsModule, TreeviewModule.forRoot(), NgbCollapseModule, NgbTooltipModule],
   exports: [NavComponent, DropdownTreeviewSelectComponent, CoverageTypePipe, PlanFilterComponent]
 })
 export class SharedModule {}

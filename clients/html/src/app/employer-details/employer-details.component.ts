@@ -70,7 +70,7 @@ export class EmployerDetailsComponent implements OnInit {
   public months: any;
   public todaysDate = new Date();
   public employeeRosterDetails: any;
-  public show: boolean;
+  public showSicDetails: boolean = false;
   showNewEmployee = false;
   excelArray: any;
 
@@ -210,7 +210,7 @@ export class EmployerDetailsComponent implements OnInit {
         'standardIndustryCodeCode'
       ];
       this.quoteForm.get('sic').setValue(sicValue);
-      this.show = false;
+      this.showSicDetails = false
     }
   }
 
