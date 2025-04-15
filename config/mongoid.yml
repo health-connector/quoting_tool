@@ -139,7 +139,7 @@ production:
     default:
       # Defines the name of the default database that Mongoid can connect to.
       # (required).
-      database: <%= ENV['QUOTING_TOOL_DB_NAME'] %>
+      database: <%= ENV['QUOTING_TOOL_DB_NAME'] || 'quoting_tool_prod' %>
       hosts:
         - "<%= ENV['QUOTING_TOOL_DB_HOST'] %>:<%= ENV['QUOTING_TOOL_DB_PORT'] %>"
       options:
