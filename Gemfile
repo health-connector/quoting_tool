@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.2.5'
+ruby '3.3.8'
 
 # Ruby 3.1+ compatibility - these standard libraries are now separate gems
 # Temp fix for kube pod restarts
@@ -47,7 +47,7 @@ gem 'money-rails',              '~> 1.13'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'rspec-rails', '~> 3.8'
+  gem 'rspec-rails', '~> 7.1.1'
   gem 'yard' #,                   '~> 0.9.12',  require: false
   gem 'climate_control' #
   gem 'factory_bot_rails',      '~> 4.11'
