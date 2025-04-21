@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./.docker/development/app/Dockerfile
       args:
-        RUBY_VERSION: '3.3.8'
+        RUBY_VERSION: '3.4.3'
         BUNDLER_VERSION: '2.4.22'
         NODE_MAJOR: '11'
         YARN_VERSION: '1.17.3'
@@ -27,12 +27,13 @@ services:
       - WEB_CONCURRENCY=1
       - HISTFILE=/app/log/.bash_history
       - EDITOR=vi
+      - MONGODB_URL=mongo:27017
     # secrets:
     #   - master_key
     #   - credentials
     stdin_open: true
     tty: true
-    command: bash -c "mkdir -p tmp/pids && bundle && bundle exec rails s"
+    command: bash -c "mkdir -p tmp/pids && bundle && bundle exec rails s -b 0.0.0.0"
     ports:
       - '3000:3000'
     depends_on:
