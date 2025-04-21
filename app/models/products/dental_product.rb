@@ -1,7 +1,6 @@
 module Products
   class DentalProduct < Product
-
-    PRODUCT_PACKAGE_KINDS = [:single_product, :multi_product]
+    PRODUCT_PACKAGE_KINDS = %i[single_product multi_product]
     METAL_LEVEL_KINDS     = [:dental]
 
     field :hios_id,                     type: String
@@ -14,7 +13,7 @@ module Products
     field :is_standard_plan,            type: Boolean,  default: false
 
     field :metal_level_kind,            type: Symbol
-    field :ehb,                         type: Float,    default: 0.0
+    field :ehb,                         type: Float, default: 0.0
 
     # Visits
 
@@ -24,9 +23,9 @@ module Products
 
     validates :metal_level_kind,
               presence: true,
-              inclusion: {in: METAL_LEVEL_KINDS, message: "%{value} is not a valid metal level kind"}
+              inclusion: { in: METAL_LEVEL_KINDS, message: '%<value>s is not a valid metal level kind' }
 
-    alias_method :is_standard_plan?, :is_standard_plan
+    alias is_standard_plan? is_standard_plan
 
     def metal_level
       dental_level.to_s

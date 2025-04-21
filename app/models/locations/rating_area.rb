@@ -17,35 +17,35 @@ class Locations::RatingArea
 
   validate :location_specified
 
-  index({county_zip_ids: 1})
-  index({covered_state_codes: 1})
+  index({ county_zip_ids: 1 })
+  index({ covered_state_codes: 1 })
 
   def location_specified
     if county_zip_ids.blank? && covered_states.blank?
-      errors.add(:base, "a location covered by the rating area must be specified")
+      errors.add(:base, 'a location covered by the rating area must be specified')
     end
     true
   end
 
   def self.rating_area_for(address, during: TimeKeeper.date_of_record)
-    county_name = address.county.blank? ? "" : address.county.titlecase
+    county_name = address.county.blank? ? '' : address.county.titlecase
     zip_code = address.zip
-    state_abbrev = address.state.blank? ? "" : address.state.upcase
-    
+    state_abbrev = address.state.blank? ? '' : address.state.upcase
+
     county_zip_ids = ::BenefitMarkets::Locations::CountyZip.where(
-      :zip => zip_code,
-      :county_name => county_name,
-      :state => state_abbrev
+      zip: zip_code,
+      county_name:,
+      state: state_abbrev
     ).map(&:id)
-    
-    # TODO FIX
+
+    # TODO: FIX
     # raise "Multiple Rating Areas Returned" if area.count > 1
-    
-    self.where(
-      "active_year" => during.year,
-      "$or" => [
-        {"county_zip_ids" => { "$in" => county_zip_ids }},
-        {"covered_states" => state_abbrev}
+
+    where(
+      'active_year' => during.year,
+      '$or' => [
+        { 'county_zip_ids' => { '$in' => county_zip_ids } },
+        { 'covered_states' => state_abbrev }
       ]
     ).first
   end

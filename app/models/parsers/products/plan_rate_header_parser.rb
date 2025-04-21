@@ -20,23 +20,21 @@ module Parsers
       element :market_coverage_type, String, tag: 'marketCoverageType'
       element :template_version, String, tag: 'templateVersion'
 
-
-
       def to_hash
         {
-          application_id: application_id.present? ? application_id.gsub(/\n/,'').strip : "",
-          last_modified_date: last_modified_date.present? ? last_modified_date.gsub(/\n/,'').strip : "",
-          last_modified_by: last_modified_by.present? ? last_modified_by.gsub(/\n/,'').strip : "",
-          statements: statements.present? ? statements.gsub(/\n/,'').strip : "",
-          status: status.present? ? status.gsub(/\n/,'').strip : "",
-          attestation_indicator: attestation_indicator.present? ? attestation_indicator.gsub(/\n/,'').strip : "",
-          tin: tin.present? ? tin.gsub(/\n/,'').strip : "",
-          issuer_id: issuer_id.present? ? issuer_id.gsub(/\n/,'').strip : "",
-          submission_type: submission_type.present? ? submission_type.gsub(/\n/,'').strip : "",
-          market_type: market_type.present? ? market_type.gsub(/\n/,'').strip : "",
-          market_division_type: market_division_type.present? ? market_division_type.gsub(/\n/,'').strip : "",
-          market_coverage_type: market_coverage_type.present? ? market_coverage_type.gsub(/\n/,'').strip : "",
-          template_version: template_version.present? ? template_version.gsub(/\n/,'').strip : "",
+          application_id: application_id.present? ? application_id.gsub(/\n/, '').strip : '',
+          last_modified_date: last_modified_date.present? ? last_modified_date.gsub(/\n/, '').strip : '',
+          last_modified_by: last_modified_by.present? ? last_modified_by.gsub(/\n/, '').strip : '',
+          statements: statements.present? ? statements.gsub(/\n/, '').strip : '',
+          status: status.present? ? status.gsub(/\n/, '').strip : '',
+          attestation_indicator: attestation_indicator.present? ? attestation_indicator.gsub(/\n/, '').strip : '',
+          tin: tin.present? ? tin.gsub(/\n/, '').strip : '',
+          issuer_id: issuer_id.present? ? issuer_id.gsub(/\n/, '').strip : '',
+          submission_type: submission_type.present? ? submission_type.gsub(/\n/, '').strip : '',
+          market_type: market_type.present? ? market_type.gsub(/\n/, '').strip : '',
+          market_division_type: market_division_type.present? ? market_division_type.gsub(/\n/, '').strip : '',
+          market_coverage_type: market_coverage_type.present? ? market_coverage_type.gsub(/\n/, '').strip : '',
+          template_version: template_version.present? ? template_version.gsub(/\n/, '').strip : ''
         }
       end
     end

@@ -1,6 +1,5 @@
 module Forms
   class CensusRecordForm
-
     include ActiveModel::Validations
     include Virtus.model
 
@@ -15,7 +14,7 @@ module Forms
     validate :date_format
 
     def date_format
-      errors.add(:base, "DOB: #{dob}") if dob &.include?('Invalid Format')
+      errors.add(:base, "DOB: #{dob}") if dob&.include?('Invalid Format')
     end
   end
 end

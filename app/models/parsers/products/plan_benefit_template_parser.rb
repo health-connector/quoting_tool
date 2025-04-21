@@ -5,7 +5,7 @@ module Parsers
 
       tag 'planBenefitTemplateVO'
 
-      has_one :packages_list, PackageListParser, :tag => "packagesList"
+      has_one :packages_list, PackageListParser, tag: 'packagesList'
 
       def to_hash
         {

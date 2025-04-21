@@ -10,11 +10,10 @@ module Transactions
 
     private
 
-
     def load_file_info(input)
       file = Roo::Spreadsheet.open(input)
-      sheet = file.sheet("Master Zip Code List")
-      Success({sheet: sheet})
+      sheet = file.sheet('Master Zip Code List')
+      Success({ sheet: })
     end
 
     def validate_file_info(input)
@@ -25,18 +24,16 @@ module Transactions
     def load_file_data(input)
       sheet = input[:sheet]
       columns = sheet.row(1).map(&:parameterize).map(&:underscore)
-      output = (2..sheet.last_row).inject([]) do |result, id|
+      output = (2..sheet.last_row).each_with_object([]) do |id, result|
         row = Hash[[columns, sheet.row(id)].transpose]
 
         result << {
-          county_name: parse_text(row["county"]),
-          zip: parse_text(row["zip"]),
-          state: "MA" # get this from settings
+          county_name: parse_text(row['county']),
+          zip: parse_text(row['zip']),
+          state: 'MA' # get this from settings
         }
-
-        result
       end
-      Success({result: output})
+      Success({ result: output })
     end
 
     def validate_records(input)
@@ -47,14 +44,15 @@ module Transactions
     def create_records(input)
       input[:result].each_with_index do |json, i|
         unless Locations::CountyZip.find_or_create_by(json)
-          return Failure({message: "Failed to create County Zip record for index #{i}"})
+          return Failure({ message: "Failed to create County Zip record for index #{i}" })
         end
       end
-      Success({message: "Successfully created #{input[:result].size} County Zip records"})
+      Success({ message: "Successfully created #{input[:result].size} County Zip records" })
     end
 
     def parse_text(input)
       return nil if input.nil?
+
       input.to_s.squish!
     end
   end

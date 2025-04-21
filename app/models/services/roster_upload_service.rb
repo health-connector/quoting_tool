@@ -7,7 +7,7 @@ module Services
     TEMPLATE_DATE_CELL = 7
     TEMPLATE_VERSION_CELL = 13
 
-    CENSUS_MEMBER_RECORD = %w(
+    CENSUS_MEMBER_RECORD = %w[
       employer_assigned_family_id
       employee_relationship
       last_name
@@ -30,7 +30,7 @@ module Services
       state
       zip
       newly_designated
-    )
+    ]
 
     EmployeeTerminationMap = Struct.new(:employee, :employment_terminated_on)
     EmployeePersistMap = Struct.new(:employee)
@@ -55,15 +55,15 @@ module Services
     def load_census_records_form
       census_records = []
       columns = sheet.row(2)
-      (4..sheet.last_row).inject([]) do |result, id|
+      (4..sheet.last_row).each_with_object([]) do |id, result|
         row = Hash[[columns, sheet.row(id)].transpose]
         result << Forms::CensusRecordForm.new(
-          employer_assigned_family_id: parse_text(row["employer_assigned_family_id"]),
-          employee_relationship: parse_relationship(row["employee_relationship"]),
-          last_name: parse_text(row["last_name"]),
-          first_name: parse_text(row["first_name"]),
-          dob: parse_date(row["dob"])        )
-        result
+          employer_assigned_family_id: parse_text(row['employer_assigned_family_id']),
+          employee_relationship: parse_relationship(row['employee_relationship']),
+          last_name: parse_text(row['last_name']),
+          first_name: parse_text(row['first_name']),
+          dob: parse_date(row['dob'])
+        )
       end
     end
 
@@ -77,7 +77,7 @@ module Services
     end
 
     def insert_into_persist_queqe(form)
-      if form.employee_relationship == "self"
+      if form.employee_relationship == 'self'
         insert_primary(form)
       else
         insert_dependent(form)
@@ -86,41 +86,42 @@ module Services
 
     def insert_primary(form)
       @primary_census_employee = sanitize_params(form).merge({
-        census_dependents: [],
-        id: @index
-      })
+                                                               census_dependents: [],
+                                                               id: @index
+                                                             })
       @primary_record = form
       @primary_census_employee
     end
 
     def insert_dependent(form)
-      return nil if (@primary_census_employee.nil? || @primary_record.nil?)
+      return nil if @primary_census_employee.nil? || @primary_record.nil?
+
       params = sanitize_params(form)
       @primary_census_employee[:census_dependents] << params
       @primary_census_employee
     end
 
     def sanitize_params(form)
-      form.attributes.slice(:employer_assigned_family_id, :employee_relationship, :last_name, :first_name, :employee_relationship).merge({dob: form.dob})
+      form.attributes.slice(:employer_assigned_family_id, :employee_relationship, :last_name, :first_name,
+                            :employee_relationship).merge({ dob: form.dob })
     end
 
     def parse_relationship(cell)
       return nil if cell.blank?
+
       case parse_text(cell).downcase
-        when "employee"
-          "self"
-        when "self"
-          "self"
-        when "spouse"
-          "spouse"
-        when "domestic partner"
-          "domestic_partner"
-        when "child"
-          "child_under_26"
-        when "disabled child"
-          "disabled_child_26_and_over"
-        else
-          nil
+      when 'employee'
+        'self'
+      when 'self'
+        'self'
+      when 'spouse'
+        'spouse'
+      when 'domestic partner'
+        'domestic_partner'
+      when 'child'
+        'child_under_26'
+      when 'disabled child'
+        'disabled_child_26_and_over'
       end
     end
 
@@ -131,13 +132,13 @@ module Services
     def parse_date(cell)
       return nil if cell.blank?
 
-      if cell.class == String
+      if cell.instance_of?(String)
         begin
-          Date.strptime(sanitize_value(cell), "%m/%d/%y")
-        rescue
+          Date.strptime(sanitize_value(cell), '%m/%d/%y')
+        rescue StandardError
           begin
-            Date.strptime(sanitize_value(cell), "%m-%d-%Y")
-          rescue
+            Date.strptime(sanitize_value(cell), '%m-%d-%Y')
+          rescue StandardError
             "#{cell} Invalid Format"
           end
         end
@@ -148,7 +149,7 @@ module Services
 
     def sanitize_value(value)
       value = value.to_s.split('.')[0] if value.is_a? Float
-      value.gsub(/[[:cntrl:]]|^[\p{Space}]+|[\p{Space}]+$/, '')
+      value.gsub(/[[:cntrl:]]|^\p{Space}+|\p{Space}+$/, '')
     end
   end
 end

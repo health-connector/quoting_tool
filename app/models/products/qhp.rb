@@ -31,26 +31,26 @@ class Products::Qhp
   field :qhp_or_non_qhp, type: String # on_the_exchange, off_the_exchange, both
   field :insurance_plan_pregnancy_notice_req_ind, type: String
   field :is_specialist_referral_required, type: String
-  field :health_care_specialist_referral_type, type: String, default: ""
+  field :health_care_specialist_referral_type, type: String, default: ''
   field :insurance_plan_benefit_exclusion_text, type: String
   field :ehb_percent_premium, type: String
 
-  field :indian_plan_variation, type: String  # amount per enrollee
+  field :indian_plan_variation, type: String # amount per enrollee
 
   # Required if small group
   field :hsa_eligibility, type: String
   field :employer_hsa_hra_contribution_indicator, type: String
   field :emp_contribution_amount_for_hsa_or_hra, type: Money # required if HSA Eligible
 
-  field :child_only_offering, type: String  # allows_adult_and_child_only, allows_adult_only, allows_child_only
+  field :child_only_offering, type: String # allows_adult_and_child_only, allows_adult_only, allows_child_only
   field :child_only_plan_id, type: String
   field :is_wellness_program_offered, type: String
-  field :is_disease_mgmt_programs_offered, type: String, default: ""
+  field :is_disease_mgmt_programs_offered, type: String, default: ''
 
   ## Stand alone dental
   # Dollar amount
   field :ehb_apportionment_for_pediatric_dental, type: String
-  field :guaranteed_vs_estimated_rate  # guaranteed_rate, estimated_rate
+  field :guaranteed_vs_estimated_rate # guaranteed_rate, estimated_rate
 
   ## AV Calculator Additional Benefit Design
   field :maximum_coinsurance_for_specialty_drugs, type: String
@@ -84,78 +84,79 @@ class Products::Qhp
                         :qhp_or_non_qhp, :emp_contribution_amount_for_hsa_or_hra, :child_only_offering,
                         :plan_effective_date, :out_of_country_coverage, :out_of_service_area_coverage, :national_network
 
-  scope :by_hios_ids_and_active_year, -> (sc_id, year) { where(:standard_component_id.in => sc_id, active_year: year ) }
+  scope :by_hios_ids_and_active_year, ->(sc_id, year) { where(:standard_component_id.in => sc_id, active_year: year) }
 
   embeds_many :qhp_benefits,
-    class_name: "Products::QhpBenefit",
-    cascade_callbacks: true,
-    validate: true
+              class_name: 'Products::QhpBenefit',
+              cascade_callbacks: true,
+              validate: true
 
   embeds_many :qhp_cost_share_variances,
-    class_name: "Products::QhpCostShareVariance",
-    cascade_callbacks: true,
-    validate: true
+              class_name: 'Products::QhpCostShareVariance',
+              cascade_callbacks: true,
+              validate: true
 
   accepts_nested_attributes_for :qhp_benefits, :qhp_cost_share_variances
 
-  index({"issuer_id" => 1})
-  index({"state_postal_code" => 1})
-  index({"national_network" => 1})
-  index({"tin" => 1}, {sparse: true})
-  index({"qhp_benefits.benefit_type_code" => 1})
-  index({"standard_component_id" => 1, "active_year" => 1})
+  index({ 'issuer_id' => 1 })
+  index({ 'state_postal_code' => 1 })
+  index({ 'national_network' => 1 })
+  index({ 'tin' => 1 }, { sparse: true })
+  index({ 'qhp_benefits.benefit_type_code' => 1 })
+  index({ 'standard_component_id' => 1, 'active_year' => 1 })
 
   def plan=(new_plan)
-    raise ArgumentError.new("expected Plan") unless new_plan.is_a? Plan
+    raise ArgumentError, 'expected Plan' unless new_plan.is_a? Plan
+
     self.plan_id = new_plan._id
     @plan = new_plan
   end
 
   def plan
     return @plan if defined? @plan
+
     @plan = Plan.find(plan_id) if plan_id.present?
   end
 
   VISIT_TYPES = [
-    "Primary Care Visit to Treat an Injury or Illness",
-    "Urgent Care Centers or Facilities",
-    "Specialist Visit",
-    "Emergency Room Services",
-    "Inpatient Hospital Services (e.g., Hospital Stay)",
-    "Laboratory Outpatient and Professional Services",
-    "X-rays and Diagnostic Imaging",
-    "Generic Drugs",
-    "Preferred Brand Drugs",
-    "Non-Preferred Brand Drugs",
-    "Specialty Drugs"
+    'Primary Care Visit to Treat an Injury or Illness',
+    'Urgent Care Centers or Facilities',
+    'Specialist Visit',
+    'Emergency Room Services',
+    'Inpatient Hospital Services (e.g., Hospital Stay)',
+    'Laboratory Outpatient and Professional Services',
+    'X-rays and Diagnostic Imaging',
+    'Generic Drugs',
+    'Preferred Brand Drugs',
+    'Non-Preferred Brand Drugs',
+    'Specialty Drugs'
   ]
 
   DENTAL_VISIT_TYPES = [
-    "Routine Dental Services (Adult)",
-    "Dental Check-Up for Children",
-    "Basic Dental Care - Child",
-    "Orthodontia - Child",
-    "Major Dental Care - Child",
-    "Basic Dental Care - Adult",
-    "Orthodontia - Adult",
-    "Major Dental Care - Adult",
-    "Accidental Dental"
+    'Routine Dental Services (Adult)',
+    'Dental Check-Up for Children',
+    'Basic Dental Care - Child',
+    'Orthodontia - Child',
+    'Major Dental Care - Child',
+    'Basic Dental Care - Adult',
+    'Orthodontia - Adult',
+    'Major Dental Care - Adult',
+    'Accidental Dental'
   ]
-
 
   def self.plan_hsa_status_map(plans)
     plan_hsa_status = {}
     @hios_ids = plans.map(&:hios_id)
-    @year = plans.first.present? ? plans.first.active_year : ""
+    @year = plans.first.present? ? plans.first.active_year : ''
     qcsvs = get_cost_share_variances
-    qcsvs.map {|qcsv| plan_hsa_status[qcsv.plan.id.to_s] = qcsv.qhp.hsa_eligibility}
+    qcsvs.map { |qcsv| plan_hsa_status[qcsv.plan.id.to_s] = qcsv.qhp.hsa_eligibility }
 
     plan_hsa_status
   end
 
   def self.get_cost_share_variances
     Rails.cache.fetch("csvs-hios-ids-#{@hios_ids}-year-#{@year}", expires_in: 5.hour) do
-      Products::QhpCostShareVariance.find_qhp_cost_share_variances(@hios_ids, @year, "")
+      Products::QhpCostShareVariance.find_qhp_cost_share_variances(@hios_ids, @year, '')
     end
   end
 end

@@ -4,7 +4,7 @@ module Forms
     include Virtus.model
 
     TEMPLATE_DATE = Date.new(2016, 10, 26)
-    TEMPLATE_VERSION = "1.1"
+    TEMPLATE_VERSION = '1.1'
 
     attribute :template_version
     attribute :template_date
@@ -20,7 +20,7 @@ module Forms
     validate :roster_template
 
     def self.call(file)
-      service = resolve_service.new(file: file)
+      service = resolve_service.new(file:)
       form = new
       service.load_form_metadata(form)
       form
@@ -35,9 +35,9 @@ module Forms
     end
 
     def persist!
-      if valid?
-        service.save(self)
-      end
+      return unless valid?
+
+      service.save(self)
     end
 
     def service
@@ -46,16 +46,14 @@ module Forms
 
     def roster_template
       template_date = parse_date(self.template_date)
-      unless (template_date == TEMPLATE_DATE && template_version == TEMPLATE_VERSION && header_valid?(sheet.row(2)))
-        self.errors.add(:base, "Unrecognized Employee Census spreadsheet format. Contact Admin for current template.")
-      end
+      return if template_date == TEMPLATE_DATE && template_version == TEMPLATE_VERSION && header_valid?(sheet.row(2))
+
+      errors.add(:base, 'Unrecognized Employee Census spreadsheet format. Contact Admin for current template.')
     end
 
     def roster_records
-      self.census_records.each_with_index do |census_record, i|
-        unless census_record.valid?
-          self.errors.add(:base, "Row #{i + 4}: #{census_record.errors.full_messages}")
-        end
+      census_records.each_with_index do |census_record, i|
+        errors.add(:base, "Row #{i + 4}: #{census_record.errors.full_messages}") unless census_record.valid?
       end
     end
 
@@ -68,13 +66,13 @@ module Forms
       if date.is_a? Date
         date
       else
-        Date.strptime(date, "%m/%d/%y")
+        Date.strptime(date, '%m/%d/%y')
       end
     end
 
     def sanitize_value(value)
       value = value.to_s.split('.')[0] if value.is_a? Float
-      value.gsub(/[[:cntrl:]]|^[\p{Space}]+|[\p{Space}]+$/, '')
+      value.gsub(/[[:cntrl:]]|^\p{Space}+|\p{Space}+$/, '')
     end
   end
 end

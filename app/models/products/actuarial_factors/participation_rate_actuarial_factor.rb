@@ -2,7 +2,7 @@ module Products
   module ActuarialFactors
     class ParticipationRateActuarialFactor < ActuarialFactor
       def self.value_for(issuer_hios_id, year, val)
-        record = self.where(issuer_hios_id: issuer_hios_id, active_year: year).first
+        record = where(issuer_hios_id:, active_year: year).first
         record.lookup(val)
       end
 
@@ -10,13 +10,13 @@ module Products
       # 97.1234 is OK, 0.971234 is NOT
       def lookup(val)
         rounded_value = val.respond_to?(:round) ? val.round : val
-        transformed_value = (rounded_value < 1) ? 1 : rounded_value
+        transformed_value = rounded_value < 1 ? 1 : rounded_value
         super(transformed_value.to_s)
       end
 
       def cached_lookup(val)
         rounded_value = val.respond_to?(:round) ? val.round : val
-        transformed_value = (rounded_value < 1) ? 1 : rounded_value
+        transformed_value = rounded_value < 1 ? 1 : rounded_value
         super(transformed_value.to_s)
       end
     end

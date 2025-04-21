@@ -5,7 +5,7 @@ module Parsers
 
       tag 'benefitsList'
 
-      has_many :benefits, Parsers::Products::BenefitsParser, tag: "benefits"
+      has_many :benefits, Parsers::Products::BenefitsParser, tag: 'benefits'
 
       def to_hash
         {

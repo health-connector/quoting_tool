@@ -11,5 +11,4 @@ class Products::QhpServiceVisit
   field :co_insurance_in_network_tier_1, type: String
   field :co_insurance_in_network_tier_2, type: String
   field :co_insurance_out_of_network, type: String
-
 end

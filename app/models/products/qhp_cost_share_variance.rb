@@ -38,22 +38,21 @@ class Products::QhpCostShareVariance
   field :having_diabetes_limit, type: String
 
   embeds_one :qhp_deductable,
-    class_name: "Products::QhpDeductable",
-    cascade_callbacks: true,
-    validate: true
+             class_name: 'Products::QhpDeductable',
+             cascade_callbacks: true,
+             validate: true
 
   embeds_many :qhp_maximum_out_of_pockets,
-    class_name: "Products::QhpMaximumOutOfPocket",
-    cascade_callbacks: true,
-    validate: true
+              class_name: 'Products::QhpMaximumOutOfPocket',
+              cascade_callbacks: true,
+              validate: true
 
   embeds_many :qhp_service_visits,
-    class_name: "Products::QhpServiceVisit",
-    cascade_callbacks: true,
-    validate: true
+              class_name: 'Products::QhpServiceVisit',
+              cascade_callbacks: true,
+              validate: true
 
   accepts_nested_attributes_for :qhp_maximum_out_of_pockets, :qhp_service_visits
-
 
   def self.find_qhp(ids, year)
     Products::Qhp.by_hios_ids_and_active_year(ids.map { |str| str[0..13] }, year)
@@ -61,8 +60,8 @@ class Products::QhpCostShareVariance
 
   def self.find_qhp_cost_share_variances(ids, year, coverage_kind)
     csvs = find_qhp(ids, year).map(&:qhp_cost_share_variances).flatten
-    ids = ids.map{|a| a+"-01"} if coverage_kind == "dental"
-    csvs.select{ |a| ids.include?(a.hios_plan_and_variant_id) }
+    ids = ids.map { |a| a + '-01' } if coverage_kind == 'dental'
+    csvs.select { |a| ids.include?(a.hios_plan_and_variant_id) }
   end
 
   def product
@@ -70,7 +69,9 @@ class Products::QhpCostShareVariance
       ::BenefitMarkets::Products::Product.find(product_id)
     else
       Rails.cache.fetch("qcsv-product-#{qhp.active_year}-hios-id-#{hios_plan_and_variant_id}", expires_in: 5.hours) do
-        BenefitMarkets::Products::Product.where(hios_id: /#{hios_plan_and_variant_id}/).select{|a| a.active_year == qhp.active_year}.first
+        BenefitMarkets::Products::Product.where(hios_id: /#{hios_plan_and_variant_id}/).select do |a|
+          a.active_year == qhp.active_year
+        end.first
       end
     end
   end

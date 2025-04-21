@@ -6,7 +6,8 @@ module Parsers
       tag 'plans'
 
       has_one :plan_attributes, Parsers::Products::PlanAttributesParser, tag: 'planAttributes'
-      has_many :cost_share_variance_list_attributes, Parsers::Products::CostShareVarianceParser, tag: 'costShareVariance', deep: true
+      has_many :cost_share_variance_list_attributes, Parsers::Products::CostShareVarianceParser,
+               tag: 'costShareVariance', deep: true
 
       def to_hash
         {

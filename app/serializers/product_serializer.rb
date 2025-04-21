@@ -2,23 +2,24 @@ class ProductSerializer
   include JSONAPI::Serializer
 
   ProviderMap = {
-    "36046" => "Harvard Pilgrim Health Care",
-    "80538" => "Delta Dental",
-    "11821" => "Delta Dental",
-    "31779" => "UnitedHealthcare",
-    "29125" => "Tufts Health Premier",
-    "38712" => "Tufts Health Premier",
-    "88806" => "Fallon Health",
-    "52710" => "Fallon Health",
-    "41304" => "Mass General Brigham Health Plan",
-    "18076" => "Altus Dental",
-    "34484" => "Health New England",
-    "59763" => "Tufts Health Direct",
-    "42690" => "Blue Cross Blue Shield MA",
-    "82569" => "WellSense Health Plan"
+    '36046' => 'Harvard Pilgrim Health Care',
+    '80538' => 'Delta Dental',
+    '11821' => 'Delta Dental',
+    '31779' => 'UnitedHealthcare',
+    '29125' => 'Tufts Health Premier',
+    '38712' => 'Tufts Health Premier',
+    '88806' => 'Fallon Health',
+    '52710' => 'Fallon Health',
+    '41304' => 'Mass General Brigham Health Plan',
+    '18076' => 'Altus Dental',
+    '34484' => 'Health New England',
+    '59763' => 'Tufts Health Direct',
+    '42690' => 'Blue Cross Blue Shield MA',
+    '82569' => 'WellSense Health Plan'
   }
 
-  attributes :deductible, :name, :group_size_factors, :group_tier_factors, :participation_factors, :hsa_eligible, :out_of_pocket_in_network
+  attributes :deductible, :name, :group_size_factors, :group_tier_factors, :participation_factors, :hsa_eligible,
+             :out_of_pocket_in_network
 
   attribute :available_packages, &:product_package_kinds
   attribute :group_deductible, &:family_deductible
@@ -60,7 +61,7 @@ class ProductSerializer
     object.id.to_s
   end
 
-  attribute :integrated_drug_deductible do |object|
+  attribute :integrated_drug_deductible do |_object|
     nil
   end
 

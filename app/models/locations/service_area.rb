@@ -20,36 +20,34 @@ module Locations
     validates_presence_of :issuer_hios_id, allow_nil: false
     validate :location_specified
 
-    index({county_zip_ids: 1})
-    index({covered_state_codes: 1})
+    index({ county_zip_ids: 1 })
+    index({ covered_state_codes: 1 })
 
     def location_specified
       if county_zip_ids.blank? && covered_states.blank?
-        errors.add(:base, "a location covered by the service area must be specified")
+        errors.add(:base, 'a location covered by the service area must be specified')
       end
       true
     end
 
     def self.service_areas_for(address, during: TimeKeeper.date_of_record)
-      county_name = address.county.blank? ? "" : address.county.titlecase
+      county_name = address.county.blank? ? '' : address.county.titlecase
       zip_code = address.zip
-      state_abbrev = address.state.blank? ? "" : address.state.upcase
+      state_abbrev = address.state.blank? ? '' : address.state.upcase
 
       county_zip_ids = ::BenefitMarkets::Locations::CountyZip.where(
-        :county_name => county_name,
-        :zip => zip_code,
-        :state => state_abbrev
+        county_name:,
+        zip: zip_code,
+        state: state_abbrev
       ).map(&:id).uniq
 
-      service_areas = self.where(
-        "active_year" => during.year,
-        "$or" => [
-          {"county_zip_ids" => { "$in" => county_zip_ids }},
-          {"covered_states" =>  state_abbrev}
+      where(
+        'active_year' => during.year,
+        '$or' => [
+          { 'county_zip_ids' => { '$in' => county_zip_ids } },
+          { 'covered_states' => state_abbrev }
         ]
       )
-      service_areas
     end
   end
 end
-

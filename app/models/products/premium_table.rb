@@ -10,27 +10,27 @@ module Products
     include Mongoid::Document
     include Mongoid::Timestamps
 
-    embedded_in :product, class_name: "::Products::Product"
+    embedded_in :product, class_name: '::Products::Product'
 
-    field       :effective_period,  type: Range
-
+    field       :effective_period, type: Range
 
     belongs_to  :rating_area,
-                class_name: "::Locations::RatingArea"
+                class_name: '::Locations::RatingArea'
 
     embeds_many :premium_tuples,
-                class_name: "::Products::PremiumTuple"
+                class_name: '::Products::PremiumTuple'
 
     validates_presence_of :effective_period, :rating_area
     # validates_presence_of :premium_tuples, :allow_blank => false
 
-
-    scope :effective_period_cover,    ->(compare_date = TimeKeeper.date_of_record) { where(
-                                                                           :"effective_period.min".lte => compare_date,
-                                                                           :"effective_period.max".gte => compare_date)
-                                                                        }
+    scope :effective_period_cover, lambda { |compare_date = TimeKeeper.date_of_record|
+                                     where(
+                                       :"effective_period.min".lte => compare_date,
+                                       :"effective_period.max".gte => compare_date
+                                     )
+                                   }
     def comparable_attrs
-      [:effective_period, :rating_area]
+      %i[effective_period rating_area]
     end
 
     # Define Comparable operator

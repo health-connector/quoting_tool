@@ -5,7 +5,7 @@ module Parsers
 
       tag 'packagesList'
 
-      has_many :packages, PackageParser, tag: "packages"
+      has_many :packages, PackageParser, tag: 'packages'
 
       def to_hash
         {

@@ -3,6 +3,6 @@ class Api::V1::SamplesController < ApplicationController
 
   def index
     @sample = 'Your connected to the Rails Backend if your seeing this message'
-    respond_with :api, :v1, json: {message: @sample}
+    respond_with :api, :v1, json: { message: @sample }
   end
 end

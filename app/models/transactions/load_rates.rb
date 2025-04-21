@@ -10,9 +10,8 @@ module Transactions
 
     private
 
-
     def load_file_info(input)
-      Success({files: input})
+      Success({ files: input })
     end
 
     def validate_file_info(input)
@@ -23,10 +22,10 @@ module Transactions
     def load_file_data(input)
       output = input[:files].inject([]) do |result, file|
         xml = Nokogiri::XML(File.open(file))
-        product_hash = Parsers::Products::PlanRateGroupListParser.parse(xml.root.canonicalize, :single => true).to_hash
+        product_hash = Parsers::Products::PlanRateGroupListParser.parse(xml.root.canonicalize, single: true).to_hash
         result += product_hash[:plan_rate_group_attributes]
       end
-      Success({result: output})
+      Success({ result: output })
     end
 
     def validate_records(input)
@@ -35,8 +34,8 @@ module Transactions
     end
 
     def create_records(input)
-      builder = Operations::RateBuilder.new.call({rate_groups: input[:result], rating_area_map: rating_area_map})
-      Success({message: "Rates Succesfully Loaded"})
+      builder = Operations::RateBuilder.new.call({ rate_groups: input[:result], rating_area_map: })
+      Success({ message: 'Rates Succesfully Loaded' })
     end
 
     def rating_area_map
@@ -49,19 +48,22 @@ module Transactions
 
     def parse_text(input)
       return nil if input.nil?
+
       input.squish!
     end
 
     def parse_boolean(value)
-      value = parse_text(value) 
+      value = parse_text(value)
       return true   if value == true   || value =~ (/(true|t|yes|y|1)$/i)
       return false  if value == false  || value =~ (/(false|f|no|n|0)$/i)
-      return nil
+
+      nil
     end
 
     def parse_url(input)
       return nil if input.nil?
-      return input if input.include?("http")
+      return input if input.include?('http')
+
       "http://#{input}"
     end
   end
