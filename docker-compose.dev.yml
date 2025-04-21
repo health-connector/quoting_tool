@@ -6,8 +6,8 @@ services:
       context: .
       dockerfile: ./.docker/development/app/Dockerfile
       args:
-        RUBY_VERSION: '3.1.6'
-        BUNDLER_VERSION: '2.0.2'
+        RUBY_VERSION: '3.3.8'
+        BUNDLER_VERSION: '2.4.22'
         NODE_MAJOR: '11'
         YARN_VERSION: '1.17.3'
     image: ideacrew/quoting_tool_app:dev-0.1.0
@@ -27,42 +27,41 @@ services:
       - WEB_CONCURRENCY=1
       - HISTFILE=/app/log/.bash_history
       - EDITOR=vi
-    secrets:
-      - master_key
-      - credentials
+    # secrets:
+    #   - master_key
+    #   - credentials
     stdin_open: true
     tty: true
-    command: bash -c "mkdir -p tmp/pids && bundle && yarn install --check-files && bundle exec puma -C config/puma.rb"
+    command: bash -c "mkdir -p tmp/pids && bundle && bundle exec rails s"
     ports:
       - '3000:3000'
     depends_on:
       - mongo
       - redis
 
-  web: &web
-    build:
-      context: .
-      dockerfile: ./.docker/development/web/Dockerfile
-    image: ideacrew/quoting_tool_web:dev-0.1.0
-    volumes:
-    volumes:
-      - ./clients/html:/app
-      - node_modules_web:/app/node_modules
-    tmpfs:
-      - /tmp
-    environment:
-      - NODE_ENV=development
-      - WEB_CONCURRENCY=1
-      - HISTFILE=/app/log/.bash_history
-      - EDITOR=vi
-    secrets:
-      - ssl_cert
-      - ssl_key
-    command: bash -c "rm -rf /app/node_modules/* && npm install  && ng serve --host 0.0.0.0 --port 4200"
-    ports:
-      - '4200:4200'
-    depends_on:
-      - app
+  # web: &web
+  #   build:
+  #     context: .
+  #     dockerfile: ./.docker/development/web/Dockerfile
+  #   image: ideacrew/quoting_tool_web:dev-0.1.0
+  #   volumes:
+  #     - ./clients/html:/app
+  #     - node_modules_web:/app/node_modules
+  #   tmpfs:
+  #     - /tmp
+  #   environment:
+  #     - NODE_ENV=development
+  #     - WEB_CONCURRENCY=1
+  #     - HISTFILE=/app/log/.bash_history
+  #     - EDITOR=vi
+  #   secrets:
+  #     - ssl_cert
+  #     - ssl_key
+  #   command: bash -c "rm -rf /app/node_modules/* && npm install  && ng serve --host 0.0.0.0 --port 4200"
+  #   ports:
+  #     - '4200:4200'
+  #   depends_on:
+  #     - app
 
   mongo:
     image: mongo:4.2
