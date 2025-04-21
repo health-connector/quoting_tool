@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Locations
   class CountyZip
     include Mongoid::Document

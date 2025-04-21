@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :dental_product, class: 'Products::DentalProduct' do
     sequence :title do |n|

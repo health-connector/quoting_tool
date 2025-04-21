@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Support product import from SERFF, CSV templates, etc
 
 # Effective dates during which sponsor may purchase this product at this price
@@ -11,7 +13,7 @@ module Products
     include Mongoid::Document
     include Mongoid::Timestamps
 
-    BENEFIT_MARKET_KINDS = %i[aca_shop aca_individual fehb medicaid medicare]
+    BENEFIT_MARKET_KINDS = %i[aca_shop aca_individual fehb medicaid medicare].freeze
 
     field :benefit_market_kind,   type: Symbol
 
@@ -157,7 +159,7 @@ module Products
 
     def ehb
       percent = read_attribute(:ehb)
-      percent && percent > 0 ? percent : 1
+      percent&.positive? ? percent : 1
     end
 
     def service_area
@@ -176,7 +178,7 @@ module Products
 
       p_tables.flat_map(&:premium_tuples).select do |pt|
         pt.age == premium_ages.min
-      end.min_by { |pt| pt.cost }.cost
+      end.min_by(&:cost).cost
     end
 
     def max_cost_for_application_period(effective_date)
@@ -185,7 +187,7 @@ module Products
 
       p_tables.flat_map(&:premium_tuples).select do |pt|
         pt.age == premium_ages.min
-      end.max_by { |pt| pt.cost }.cost
+      end.max_by(&:cost).cost
     end
 
     def cost_for_application_period(application_period)
@@ -194,7 +196,7 @@ module Products
 
       p_tables.flat_map(&:premium_tuples).select do |pt|
         pt.age == premium_ages.min
-      end.min_by { |pt| pt.cost }.cost
+      end.min_by(&:cost).cost
     end
 
     def deductible_value

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Load the compatibility layer for Dry::Transaction::Operation
 require 'dry/transaction/operation'
 

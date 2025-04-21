@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Products
   class DentalProduct < Product
-    PRODUCT_PACKAGE_KINDS = %i[single_product multi_product]
-    METAL_LEVEL_KINDS     = [:dental]
+    PRODUCT_PACKAGE_KINDS = %i[single_product multi_product].freeze
+    METAL_LEVEL_KINDS     = [:dental].freeze
 
     field :hios_id,                     type: String
     field :hios_base_id,                type: String

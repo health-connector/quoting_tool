@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Operations
   class ProductBuilder
     include Dry::Transaction::Operation
@@ -11,14 +13,14 @@ module Operations
       basic_dental_services: 'Basic Dental Care - Adult',
       major_dental_services: 'Major Dental Care - Adult',
       preventive_dental_services: 'Routine Dental Services (Adult)'
-    }
+    }.freeze
 
     TF_NAME_MAP = {
       'employee_only' => 'Employee Only',
       'employee_and_spouse' => 'Employee and Spouse',
       'employee_and_one_or_more_dependents' => 'Employee and Dependents',
       'family' => 'Family'
-    }
+    }.freeze
 
     attr_accessor :qhp, :health_data_map, :dental_data_map
 
@@ -45,7 +47,7 @@ module Operations
 
         shared_attrs = {
           benefit_market_kind: "aca_#{parse_market}",
-          title: cost_share_variance.plan_marketing_name.squish!,
+          title: cost_share_variance.plan_marketing_name.squish,
           hios_id: is_health_product? ? cost_share_variance.hios_plan_and_variant_id : hios_base_id,
           hios_base_id:,
           csr_variant_id:,
@@ -198,7 +200,7 @@ module Operations
 
     def major_dental_services(variance)
       visit = variance.qhp_service_visits.where(visit_type: VISIT_TYPES[:major_dental_services]).first
-      visit.co_insurance_in_network_tier_1 if visit
+      visit&.co_insurance_in_network_tier_1
     end
 
     def preventive_dental_services(variance)

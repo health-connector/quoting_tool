@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ProductSerializer
   include JSONAPI::Serializer
 
@@ -16,7 +18,7 @@ class ProductSerializer
     '59763' => 'Tufts Health Direct',
     '42690' => 'Blue Cross Blue Shield MA',
     '82569' => 'WellSense Health Plan'
-  }
+  }.freeze
 
   attributes :deductible, :name, :group_size_factors, :group_tier_factors, :participation_factors, :hsa_eligible,
              :out_of_pocket_in_network
@@ -53,9 +55,7 @@ class ProductSerializer
     object.dental? ? object.preventive_dental_services : nil
   end
 
-  attribute :metal_level do |object|
-    object.metal_level_kind
-  end
+  attribute :metal_level, &:metal_level_kind
 
   attribute :id do |object|
     object.id.to_s

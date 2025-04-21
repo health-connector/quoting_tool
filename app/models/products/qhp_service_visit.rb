@@ -1,14 +1,18 @@
-class Products::QhpServiceVisit
-  include Mongoid::Document
-  include Mongoid::Timestamps
+# frozen_string_literal: true
 
-  embedded_in :qhp_cost_share_variance
+module Products
+  class QhpServiceVisit
+    include Mongoid::Document
+    include Mongoid::Timestamps
 
-  field :visit_type, type: String
-  field :copay_in_network_tier_1, type: String
-  field :copay_in_network_tier_2, type: String
-  field :copay_out_of_network, type: String
-  field :co_insurance_in_network_tier_1, type: String
-  field :co_insurance_in_network_tier_2, type: String
-  field :co_insurance_out_of_network, type: String
+    embedded_in :qhp_cost_share_variance
+
+    field :visit_type, type: String
+    field :copay_in_network_tier_1, type: String
+    field :copay_in_network_tier_2, type: String
+    field :copay_out_of_network, type: String
+    field :co_insurance_in_network_tier_1, type: String
+    field :co_insurance_in_network_tier_2, type: String
+    field :co_insurance_out_of_network, type: String
+  end
 end

@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Products
   class HealthProduct < Product
-    PRODUCT_PACKAGE_KINDS = %i[single_issuer metal_level single_product]
-    METAL_LEVEL_KINDS     = %i[bronze silver gold platinum catastrophic]
+    PRODUCT_PACKAGE_KINDS = %i[single_issuer metal_level single_product].freeze
+    METAL_LEVEL_KINDS     = %i[bronze silver gold platinum catastrophic].freeze
 
     HEALTH_PLAN_MAP = {
       hmo: 'Health Maintenance Organization', # designated primary care physician (PCP) who's
@@ -13,7 +15,7 @@ module Products
       #   providers at higher cost
       epo: 'Exclusive Provider Network' # hmo/ppo hybrid. PCP referral for specialist not required, but
       #   must pay out-of-pocket for doctors outside network
-    }
+    }.freeze
 
     field :hios_id,                     type: String
     field :hios_base_id,                type: String

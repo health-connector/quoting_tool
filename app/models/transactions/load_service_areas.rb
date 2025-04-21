@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Transactions
   class LoadServiceAreas
     include Dry::Transaction
@@ -73,7 +75,7 @@ module Transactions
           records = Locations::CountyZip.where({ county_name: })
 
           if params[:additional_zip].present?
-            extracted_zips = extracted_zip_codes(params[:additional_zip]).each { |t| t.squish! }
+            extracted_zips = extracted_zip_codes(params[:additional_zip]).each(&:squish!)
             records = records.where(:zip.in => extracted_zips)
           end
 
@@ -94,7 +96,7 @@ module Transactions
           end
         end
       rescue Exception => e
-        Failure({ message: "#{e}" })
+        Failure({ message: e.to_s })
       end
       Success({ message: "Successfully created/updated #{input[:result].size} Service Area records" })
     end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ## Product premium costs for a specified time period
 # Effective periods:
 #   DC & MA SHOP Health: Q1, Q2, Q3, Q4

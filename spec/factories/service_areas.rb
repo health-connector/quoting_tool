@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :service_area, class: 'Locations::ServiceArea' do
     active_year { Date.today.year }

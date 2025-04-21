@@ -1,24 +1,28 @@
-class Products::QhpDeductable
-  include Mongoid::Document
-  include Mongoid::Timestamps
+# frozen_string_literal: true
 
-  embedded_in :qhp_cost_share_variance
+module Products
+  class QhpDeductable
+    include Mongoid::Document
+    include Mongoid::Timestamps
 
-  # Plan deductable list
-  field :deductible_type, type: String
-  field :in_network_tier_1_individual, type: String
-  field :in_network_tier_1_family, type: String
-  field :coinsurance_in_network_tier_1, type: String
+    embedded_in :qhp_cost_share_variance
 
-  field :in_network_tier_two_individual, type: String
-  field :in_network_tier_two_family, type: String
-  field :coinsurance_in_network_tier_2, type: String
+    # Plan deductable list
+    field :deductible_type, type: String
+    field :in_network_tier_1_individual, type: String
+    field :in_network_tier_1_family, type: String
+    field :coinsurance_in_network_tier_1, type: String
 
-  field :out_of_network_individual, type: String
-  field :out_of_network_family, type: String
-  field :coinsurance_out_of_network, type: String
+    field :in_network_tier_two_individual, type: String
+    field :in_network_tier_two_family, type: String
+    field :coinsurance_in_network_tier_2, type: String
 
-  field :combined_in_or_out_network_individual, type: String
-  field :combined_in_or_out_network_family, type: String
-  field :combined_in_out_network_tier_2, type: String
+    field :out_of_network_individual, type: String
+    field :out_of_network_family, type: String
+    field :coinsurance_out_of_network, type: String
+
+    field :combined_in_or_out_network_individual, type: String
+    field :combined_in_or_out_network_family, type: String
+    field :combined_in_out_network_tier_2, type: String
+  end
 end

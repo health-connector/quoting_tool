@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Validations
   class CensusRecordValidator < Dry::Validation::Contract
     params do

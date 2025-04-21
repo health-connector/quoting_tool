@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :county_zip, class: 'Locations::CountyZip' do
     sequence :county_name do |n|

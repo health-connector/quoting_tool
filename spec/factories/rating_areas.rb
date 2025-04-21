@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :rating_area, class: 'Locations::RatingArea' do
     exchange_provided_code { 'R-MA001' }

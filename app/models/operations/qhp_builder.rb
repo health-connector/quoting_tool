@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Operations
   class QhpBuilder
     include Dry::Transaction::Operation
     include Dry::Monads[:result]
 
     INVALID_PLAN_IDS = %w[88806MA0020005 88806MA0040005 88806MA0020051 18076MA0010001 80538MA0020001
-                          80538MA0020002 11821MA0020001 11821MA0040001]
+                          80538MA0020002 11821MA0020001 11821MA0040001].freeze
 
     attr_accessor :package, :product, :qhp, :service_area_map, :health_data_map, :dental_data_map
 
@@ -109,7 +111,7 @@ module Operations
     end
 
     def qhp_params
-      product[:plan_attributes][:active_year] = product[:plan_attributes][:plan_effective_date][-4..-1].to_i
+      product[:plan_attributes][:active_year] = product[:plan_attributes][:plan_effective_date][-4..].to_i
       package[:header].merge!(product[:plan_attributes])
     end
 

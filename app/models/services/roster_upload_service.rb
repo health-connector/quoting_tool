@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Services
   class RosterUploadService
     include ActiveModel::Validations
@@ -30,7 +32,7 @@ module Services
       state
       zip
       newly_designated
-    ]
+    ].freeze
 
     EmployeeTerminationMap = Struct.new(:employee, :employment_terminated_on)
     EmployeePersistMap = Struct.new(:employee)

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Validations
   class FileValidator < Dry::Validation::Contract
     TEMPLATE_DATE = Date.new(2016, 10, 26)

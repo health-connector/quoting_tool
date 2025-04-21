@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def parse_text(cell)
   cell.blank? ? nil : sanitize_value(cell)
 end

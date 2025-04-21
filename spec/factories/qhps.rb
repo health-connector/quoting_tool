@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :qhp, class: 'Products::Qhp' do
     issuer_id { '11111' }

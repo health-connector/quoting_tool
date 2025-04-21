@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Documents
   class Document
     include Mongoid::Document
     include Mongoid::Timestamps
 
-    ACCESS_RIGHTS = %w[public pii_restricted]
+    ACCESS_RIGHTS = %w[public pii_restricted].freeze
 
     embedded_in :documentable, polymorphic: true
 

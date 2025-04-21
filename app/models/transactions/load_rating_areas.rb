@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Transactions
   class LoadRatingAreas
     include Dry::Transaction

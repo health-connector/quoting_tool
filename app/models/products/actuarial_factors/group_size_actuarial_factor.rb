@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Products
   module ActuarialFactors
     class GroupSizeActuarialFactor < ActuarialFactor
