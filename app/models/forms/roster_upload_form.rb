@@ -16,7 +16,7 @@ module Forms
     attribute :census_titles, Array
     attribute :output_json, Hash
 
-    validates_presence_of :file, :template_version, :template_date
+    validates :file, :template_version, :template_date, presence: true
 
     validate :roster_records
     validate :roster_template

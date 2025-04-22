@@ -82,10 +82,10 @@ module Products
 
     field :plan_id, type: BSON::ObjectId
 
-    validates_presence_of :issuer_id, :state_postal_code, :standard_component_id, :plan_marketing_name, :hios_product_id,
-                          :network_id, :service_area_id, :is_new_plan, :plan_type, :metal_level,
-                          :qhp_or_non_qhp, :emp_contribution_amount_for_hsa_or_hra, :child_only_offering,
-                          :plan_effective_date, :out_of_country_coverage, :out_of_service_area_coverage, :national_network
+    validates :issuer_id, :state_postal_code, :standard_component_id, :plan_marketing_name, :hios_product_id,
+              :network_id, :service_area_id, :is_new_plan, :plan_type, :metal_level,
+              :qhp_or_non_qhp, :emp_contribution_amount_for_hsa_or_hra, :child_only_offering,
+              :plan_effective_date, :out_of_country_coverage, :out_of_service_area_coverage, :national_network, presence: true
 
     scope :by_hios_ids_and_active_year, ->(sc_id, year) { where(:standard_component_id.in => sc_id, active_year: year) }
 
@@ -158,7 +158,7 @@ module Products
     end
 
     def self.get_cost_share_variances
-      Rails.cache.fetch("csvs-hios-ids-#{@hios_ids}-year-#{@year}", expires_in: 5.hour) do
+      Rails.cache.fetch("csvs-hios-ids-#{@hios_ids}-year-#{@year}", expires_in: 5.hours) do
         Products::QhpCostShareVariance.find_qhp_cost_share_variances(@hios_ids, @year, '')
       end
     end

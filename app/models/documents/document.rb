@@ -58,7 +58,7 @@ module Documents
 
     field :size, type: String
 
-    validates_presence_of :title, :creator, :publisher, :type, :format, :source, :language
+    validates :title, :creator, :publisher, :type, :format, :source, :language, presence: true
 
     validates :rights,
               allow_blank: true,

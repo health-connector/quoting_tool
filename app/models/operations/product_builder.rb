@@ -68,7 +68,7 @@ module Operations
                   info = health_data_map[[hios_base_id, qhp.active_year]] || {}
                   {
                     health_plan_kind: qhp.plan_type.downcase,
-                    ehb: qhp.ehb_percent_premium.present? ? qhp.ehb_percent_premium : 1.0,
+                    ehb: qhp.ehb_percent_premium.presence || 1.0,
                     pcp_in_network_copay: pcp_in_network_copay(cost_share_variance),
                     hospital_stay_in_network_copay: hospital_stay_in_network_copay(cost_share_variance),
                     emergency_in_network_copay: emergency_in_network_copay(cost_share_variance),
@@ -80,7 +80,7 @@ module Operations
                     drug_in_network_co_insurance: service_visit_co_insurance(cost_share_variance, :rx),
                     is_standard_plan: info[:is_standard_plan],
                     network_information: info[:network_information],
-                    title: (info[:title] || cost_share_variance.plan_marketing_name.squish!),
+                    title: info[:title] || cost_share_variance.plan_marketing_name.squish!,
                     product_package_kinds: info[:product_package_kinds],
                     rx_formulary_url: info[:rx_formulary_url],
                     provider_directory_url: info[:provider_directory_url]
@@ -93,7 +93,7 @@ module Operations
                     product_package_kinds: ::Products::DentalProduct::PRODUCT_PACKAGE_KINDS,
                     is_standard_plan: info[:is_standard_plan],
                     network_information: info[:network_information],
-                    title: (info[:title] || cost_share_variance.plan_marketing_name.squish!),
+                    title: info[:title] || cost_share_variance.plan_marketing_name.squish!,
                     provider_directory_url: info[:provider_directory_url],
                     basic_dental_services: basic_dental_services(cost_share_variance),
                     major_dental_services: major_dental_services(cost_share_variance),

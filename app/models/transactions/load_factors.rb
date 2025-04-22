@@ -85,7 +85,7 @@ module Transactions
     end
 
     def create_records(input)
-      year = input[:year]
+      input[:year]
 
       NEW_RATING_FACTOR_PAGES.each do |rating_factor_class, sheet_info|
         result_ary = input[:result][sheet_info[:page]]

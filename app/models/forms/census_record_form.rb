@@ -12,7 +12,7 @@ module Forms
     attribute :ssn, String
     attribute :dob, String
 
-    validates_presence_of :employee_relationship, :dob
+    validates :employee_relationship, :dob, presence: true
     validate :date_format
 
     def date_format

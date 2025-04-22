@@ -50,7 +50,7 @@ module Products
                 class_name: '::Products::PremiumTable'
 
     # validates_presence_of :hbx_id
-    validates_presence_of :application_period, :benefit_market_kind, :title, :service_area
+    validates :application_period, :benefit_market_kind, :title, :service_area, presence: true
 
     validates :benefit_market_kind,
               presence: true,
@@ -150,11 +150,11 @@ module Products
 
     def service_area=(val)
       @service_area = val
-      if val.nil?
-        write_attribute(:service_area_id, nil)
-      else
-        write_attribute(:service_area_id, val.id)
-      end
+      self[:service_area_id] = if val.nil?
+                                 nil
+                               else
+                                 val.id
+                               end
     end
 
     def ehb
@@ -268,7 +268,7 @@ module Products
     end
 
     def drop_premium_table(premium_table)
-      premium_tables.delete(premium_table) unless premium_table.blank?
+      premium_tables.delete(premium_table) if premium_table.present?
     end
 
     def is_valid_premium_table_effective_period?(compare_premium_table)

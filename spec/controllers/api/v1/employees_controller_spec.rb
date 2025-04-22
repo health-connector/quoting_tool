@@ -42,13 +42,13 @@ RSpec.describe Api::V1::EmployeesController do
       end
     end
 
-    before(:each) do
+    before do
       allow(ResourceRegistry::Registry).to receive(:new).and_return(mock_registry)
       allow(Date).to receive(:today).and_return(Date.new(2020, 6, 15)) # Mock current date
     end
 
     context 'when rates are not available for projected month' do
-      before :each do
+      before do
         allow(controller).to receive(:has_rates_for).and_return({
                                                                   '2020-08-01' => false,
                                                                   '2020-09-01' => false
@@ -57,11 +57,11 @@ RSpec.describe Api::V1::EmployeesController do
         get :start_on_dates
       end
 
-      it 'should return success' do
+      it 'returns success' do
         expect(response).to have_http_status(:success)
       end
 
-      it 'should return empty set for dates' do
+      it 'returns empty set for dates' do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['dates']).to eq []
         expect(parsed_response['is_late_rate']).to eq true
@@ -69,7 +69,7 @@ RSpec.describe Api::V1::EmployeesController do
     end
 
     context 'when rates are available for projected month' do
-      before :each do
+      before do
         allow(controller).to receive(:has_rates_for).and_return({
                                                                   '2020-08-01' => true,
                                                                   '2020-09-01' => true
@@ -78,11 +78,11 @@ RSpec.describe Api::V1::EmployeesController do
         get :start_on_dates
       end
 
-      it 'should return success' do
+      it 'returns success' do
         expect(response).to have_http_status(:success)
       end
 
-      it 'should return set for dates' do
+      it 'returns set for dates' do
         parsed_response = JSON.parse(response.body)
         expect(parsed_response['dates']).to eq ['2020/08/01', '2020/09/01']
         expect(parsed_response['is_late_rate']).to eq false

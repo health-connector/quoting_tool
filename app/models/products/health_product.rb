@@ -44,9 +44,9 @@ module Products
     field :emergency_in_network_co_insurance,       type: String
     field :drug_in_network_co_insurance,            type: String
 
-    validates_presence_of :hios_id, :health_plan_kind, :ehb
+    validates :hios_id, :health_plan_kind, :ehb, presence: true
 
-    validates_numericality_of :ehb, greater_than: 0.0, less_than_or_equal_to: 1.0, allow_nil: false
+    validates :ehb, numericality: { greater_than: 0.0, less_than_or_equal_to: 1.0, allow_nil: false }
 
     validate :product_package_kinds
 

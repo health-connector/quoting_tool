@@ -20,7 +20,7 @@ module Operations
     end
 
     def assign_age(rate)
-      case (rate[:age_number])
+      case rate[:age_number]
       when '0-14'
         14
       when '0-20'

@@ -17,9 +17,9 @@ module Locations
     # specify which here.
     field :covered_states, type: Array
 
-    validates_presence_of :active_year, allow_blank: false
-    validates_presence_of :issuer_provided_code, allow_nil: false
-    validates_presence_of :issuer_hios_id, allow_nil: false
+    validates :active_year, presence: { allow_blank: false }
+    validates :issuer_provided_code, presence: { allow_nil: false }
+    validates :issuer_hios_id, presence: { allow_nil: false }
     validate :location_specified
 
     index({ county_zip_ids: 1 })

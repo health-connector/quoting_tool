@@ -8,17 +8,17 @@ RSpec.describe Transactions::LoadFactors, type: :transaction do
 
   describe 'sic factors' do
     context 'succesful' do
-      let(:file) { File.join(Rails.root, 'spec/test_data/rating_factors.xlsx') }
+      let(:file) { Rails.root.join('spec/test_data/rating_factors.xlsx').to_s }
 
-      it 'should be success' do
+      it 'is success' do
         expect(subject.success?).to eq true
       end
 
-      it 'should create new sic actuarial factor' do
+      it 'creates new sic actuarial factor' do
         expect(::Products::ActuarialFactors::SicActuarialFactor.all.size).not_to eq 0
       end
 
-      it 'should return success message' do
+      it 'returns success message' do
         expect(subject.success[:message]).to eq 'Successfully created/updated Rating Factor records'
       end
     end
@@ -26,17 +26,17 @@ RSpec.describe Transactions::LoadFactors, type: :transaction do
 
   describe 'group size rating factors' do
     context 'succesful' do
-      let(:file) { File.join(Rails.root, 'spec/test_data/rating_factors.xlsx') }
+      let(:file) { Rails.root.join('spec/test_data/rating_factors.xlsx').to_s }
 
-      it 'should be success' do
+      it 'is success' do
         expect(subject.success?).to eq true
       end
 
-      it 'should create new group size rating factor' do
+      it 'creates new group size rating factor' do
         expect(::Products::ActuarialFactors::GroupSizeActuarialFactor.all.size).not_to eq 0
       end
 
-      it 'should return success message' do
+      it 'returns success message' do
         expect(subject.success[:message]).to eq 'Successfully created/updated Rating Factor records'
       end
     end
@@ -44,17 +44,17 @@ RSpec.describe Transactions::LoadFactors, type: :transaction do
 
   describe 'participation rating factors' do
     context 'succesful' do
-      let(:file) { File.join(Rails.root, 'spec/test_data/rating_factors.xlsx') }
+      let(:file) { Rails.root.join('spec/test_data/rating_factors.xlsx').to_s }
 
-      it 'should be success' do
+      it 'is success' do
         expect(subject.success?).to eq true
       end
 
-      it 'should create new participation rating actuarial factor' do
+      it 'creates new participation rating actuarial factor' do
         expect(::Products::ActuarialFactors::ParticipationRateActuarialFactor.all.size).not_to eq 0
       end
 
-      it 'should return success message' do
+      it 'returns success message' do
         expect(subject.success[:message]).to eq 'Successfully created/updated Rating Factor records'
       end
     end
@@ -62,17 +62,17 @@ RSpec.describe Transactions::LoadFactors, type: :transaction do
 
   describe 'compositr rating tier factors' do
     context 'succesful' do
-      let(:file) { File.join(Rails.root, 'spec/test_data/rating_factors.xlsx') }
+      let(:file) { Rails.root.join('spec/test_data/rating_factors.xlsx').to_s }
 
-      it 'should be success' do
+      it 'is success' do
         expect(subject.success?).to eq true
       end
 
-      it 'should create new compositr rating tier actuarial factor' do
+      it 'creates new compositr rating tier actuarial factor' do
         expect(::Products::ActuarialFactors::CompositeRatingTierActuarialFactor.all.size).not_to eq 0
       end
 
-      it 'should return success message' do
+      it 'returns success message' do
         expect(subject.success[:message]).to eq 'Successfully created/updated Rating Factor records'
       end
     end

@@ -3,7 +3,7 @@
 module Products
   module ActuarialFactors
     class GroupSizeActuarialFactor < ActuarialFactor
-      validates_numericality_of :max_integer_factor_key, allow_blank: false
+      validates :max_integer_factor_key, numericality: { allow_blank: false }
 
       def self.value_for(issuer_hios_id, year, val)
         record = where(issuer_hios_id:, active_year: year).first

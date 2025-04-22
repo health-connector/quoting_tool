@@ -7,13 +7,12 @@ ruby '3.4.3'
 
 # Ruby 3.1+ compatibility - these standard libraries are now separate gems
 # Temp fix for kube pod restarts
+gem 'csv'
+gem 'mutex_m'
 gem 'net-imap', require: false
 gem 'net-pop', require: false
 gem 'net-smtp', require: false
-gem 'csv'
 gem 'observer'
-gem 'mutex_m'
-
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.2.2.1'
@@ -56,7 +55,7 @@ gem 'jmespath', '~> 1.6.1'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'climate_control' #
+  gem 'climate_control'
   gem 'factory_bot_rails', '~> 4.11'
   gem 'pry-byebug', '~> 3.11.0'
   gem 'rspec-rails', '~> 7.1.1'
@@ -73,12 +72,11 @@ group :development do
   gem 'web-console',            '>= 3'
 
   gem 'rubocop',                require: false
-  gem 'rubocop-git', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rails', require: false
   gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-git', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
-
 end
 
 group :test do

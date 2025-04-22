@@ -47,7 +47,7 @@ module Api
       end
 
       def rates_available?(date)
-        Rails.cache.fetch(date.to_s, expires_in: 1.days) do
+        Rails.cache.fetch(date.to_s, expires_in: 1.day) do
           Products::Product.health_products.effective_with_premiums_on(date).present?
         end
       end

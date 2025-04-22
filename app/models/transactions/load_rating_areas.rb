@@ -27,7 +27,7 @@ module Transactions
     def load_file_data(input)
       sheet = input[:sheet]
       year = input[:year]
-      columns = input[:sheet].row(1).map(&:parameterize).map(&:underscore)
+      input[:sheet].row(1).map(&:parameterize).map(&:underscore)
       output = Hash.new { |results, k| results[k] = [] }
 
       (2..sheet.last_row).each do |i|
@@ -65,7 +65,7 @@ module Transactions
           rating_area.county_zip_ids = location_ids
           begin
             rating_area.save!
-          rescue StandardError => e
+          rescue StandardError
             return Failure({ message: "Failed to Save Rating Area record for #{rating_area.id}" })
           end
         else
@@ -75,7 +75,7 @@ module Transactions
           rating_area.county_zip_ids = location_ids
           begin
             rating_area.save!
-          rescue StandardError => e
+          rescue StandardError
             return Failure({ message: "Error creating Rating Area record for #{rating_area_id}" })
           end
         end

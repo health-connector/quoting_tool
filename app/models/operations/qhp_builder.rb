@@ -73,8 +73,8 @@ module Operations
     def validate_and_persist_qhp
       return if INVALID_PLAN_IDS.include?(qhp.standard_component_id.strip)
 
-      result = ProductBuilder.new.call({ qhp:, health_data_map:, dental_data_map:,
-                                         service_area_map: })
+      ProductBuilder.new.call({ qhp:, health_data_map:, dental_data_map:,
+                                service_area_map: })
       return unless qhp.save!
 
       Success({ message: ['Succesfully created QHP'] })

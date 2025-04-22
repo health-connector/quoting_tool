@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe Transactions::LoadPlans, type: :transaction do
   let(:county_zip) { FactoryBot.create(:county_zip, zip: '12345', county_name: 'County 1') }
 
-  let(:files) { Dir.glob(File.join(Rails.root, 'spec/test_data/plans', '*.xml')) }
-  let(:additional_files) { Dir.glob(File.join(Rails.root, 'spec/test_data/plans/2020/master_xml.xlsx')) }
+  let(:files) { Dir.glob(Rails.root.join('spec/test_data/plans/*.xml').to_s) }
+  let(:additional_files) { Dir.glob(Rails.root.join('spec/test_data/plans/2020/master_xml.xlsx').to_s) }
 
   let(:product_builder) { instance_double(Operations::ProductBuilder) }
 
@@ -27,19 +27,19 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
       ).call(files)
     end
 
-    it 'should be success' do
+    it 'is success' do
       expect(subject.success?).to eq true
     end
 
-    it 'should create new health plans' do
+    it 'creates new health plans' do
       expect(subject.success?).to eq true
     end
 
-    it 'should create new dental plans' do
+    it 'creates new dental plans' do
       expect(subject.success?).to eq true
     end
 
-    it 'should return success message' do
+    it 'returns success message' do
       expect(subject.success[:message]).to eq 'Plans Succesfully Created'
     end
   end
@@ -55,11 +55,11 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
       ).call(files)
     end
 
-    it 'should not create product' do
+    it 'does not create product' do
       expect(Products::Product.all.size).to eq 0
     end
 
-    it 'should still process plans but with empty service area' do
+    it 'stills process plans but with empty service area' do
       result = subject
       expect(result.success?).to eq true
       expect(result.success[:message]).to eq 'Plans Succesfully Created'

@@ -27,7 +27,7 @@ module Transactions
         xml = Nokogiri::XML(File.open(file))
         product_hash = Parsers::Products::PlanBenefitTemplateParser.parse(xml.root.canonicalize,
                                                                           single: true).to_hash
-        result += product_hash[:packages_list][:packages]
+        result + product_hash[:packages_list][:packages]
       end
 
       data = input[:additional_files].inject([]) do |result, file|
@@ -37,7 +37,7 @@ module Transactions
         health_sheet = xlsx.sheet("#{year}_QHP")
         health_columns = health_sheet.row(1).map(&:parameterize).map(&:underscore)
 
-        health_data = (2..health_sheet.last_row).each_with_object([]) do |id, result|
+        (2..health_sheet.last_row).each_with_object([]) do |id, result|
           row = Hash[[health_columns, health_sheet.row(id)].transpose]
 
           result << {
@@ -86,7 +86,7 @@ module Transactions
           }
         end
 
-        result += [health_data, dental_data]
+        result + [health_data, dental_data]
       end
 
       Success({ result: output, data: })
@@ -109,8 +109,8 @@ module Transactions
         dental_data_map[[data[:hios_id], data[:year]]] = data
       end
 
-      builder = Operations::QhpBuilder.new.call({ packages: input[:result], health_data_map:,
-                                                  dental_data_map:, service_area_map: })
+      Operations::QhpBuilder.new.call({ packages: input[:result], health_data_map:,
+                                        dental_data_map:, service_area_map: })
       Success({ message: 'Plans Succesfully Created' })
     end
 

@@ -116,7 +116,7 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
   end
 
   context 'without service area' do
-    it 'should set service_area_id to nil' do
+    it 'sets service_area_id to nil' do
       product = Products::HealthProduct.new({
                                               service_area_id: nil,
                                               metal_level_kind: :silver,
@@ -125,7 +125,7 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
                                                                             1)..Date.new(Date.today.year, 12, 31)),
                                               title: 'Test Product'
                                             })
-      expect(product).to_not be_nil
+      expect(product).not_to be_nil
       expect(product.service_area_id).to be_nil
     end
   end

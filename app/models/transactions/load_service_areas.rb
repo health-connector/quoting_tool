@@ -71,7 +71,7 @@ module Transactions
             issuer_hios_id: params[:issuer_hios_id]
           ).first
 
-          county_name, state_code, county_code = extract_county_name_state_and_county_codes(params[:info_str])
+          county_name, = extract_county_name_state_and_county_codes(params[:info_str])
           records = Locations::CountyZip.where({ county_name: })
 
           if params[:additional_zip].present?

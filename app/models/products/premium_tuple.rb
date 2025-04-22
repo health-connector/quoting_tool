@@ -11,7 +11,7 @@ module Products
     field :age,   type: Integer
     field :cost,  type: Float
 
-    validates_presence_of :age, :cost
+    validates :age, :cost, presence: true
 
     default_scope -> { order(:age.asc) }
 

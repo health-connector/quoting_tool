@@ -25,7 +25,7 @@ module Transactions
       output = input[:files].inject([]) do |result, file|
         xml = Nokogiri::XML(File.open(file))
         product_hash = Parsers::Products::PlanRateGroupListParser.parse(xml.root.canonicalize, single: true).to_hash
-        result += product_hash[:plan_rate_group_attributes]
+        result + product_hash[:plan_rate_group_attributes]
       end
       Success({ result: output })
     end
@@ -36,7 +36,7 @@ module Transactions
     end
 
     def create_records(input)
-      builder = Operations::RateBuilder.new.call({ rate_groups: input[:result], rating_area_map: })
+      Operations::RateBuilder.new.call({ rate_groups: input[:result], rating_area_map: })
       Success({ message: 'Rates Succesfully Loaded' })
     end
 

@@ -15,8 +15,8 @@ module Locations
     # specify which here.
     field :covered_states, type: Array
 
-    validates_presence_of :active_year, allow_blank: false
-    validates_presence_of :exchange_provided_code, allow_nil: false
+    validates :active_year, presence: { allow_blank: false }
+    validates :exchange_provided_code, presence: { allow_nil: false }
 
     validate :location_specified
 

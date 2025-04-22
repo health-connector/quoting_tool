@@ -14,9 +14,9 @@ module Products
 
       embeds_many :actuarial_factor_entries, class_name: '::Products::ActuarialFactors::ActuarialFactorEntry'
 
-      validates_presence_of :issuer_hios_id, allow_blank: false
-      validates_numericality_of :default_factor_value, allow_blank: false
-      validates_numericality_of :active_year, allow_blank: false
+      validates :issuer_hios_id, presence: { allow_blank: false }
+      validates :default_factor_value, numericality: { allow_blank: false }
+      validates :active_year, numericality: { allow_blank: false }
 
       def lookup(key)
         entry = actuarial_factor_entries.detect { |rfe| rfe.factor_key == key }

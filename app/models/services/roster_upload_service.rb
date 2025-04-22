@@ -55,7 +55,6 @@ module Services
     end
 
     def load_census_records_form
-      census_records = []
       columns = sheet.row(2)
       (4..sheet.last_row).each_with_object([]) do |id, result|
         row = Hash[[columns, sheet.row(id)].transpose]
