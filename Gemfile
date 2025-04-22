@@ -73,8 +73,12 @@ group :development do
   gem 'web-console',            '>= 3'
 
   gem 'rubocop',                require: false
-  gem 'rubocop-git'
-  gem 'rubocop-rspec'
+  gem 'rubocop-git', require: false
+  gem 'rubocop-rspec', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-factory_bot', require: false
+  gem 'rubocop-rspec_rails', require: false
+
 end
 
 group :test do
