@@ -806,7 +806,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     const filename = `${this.planType() || 'download'}.pdf`;
 
     html2PDF(table, {
-      jsPDF: { unit: 'pt', format: 'a4', orientation: 'landscape' }, // Consider landscape if table is wide
+      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }, // Consider landscape if table is wide
       imageType: 'image/png',
       output: filename, // Let save() handle download name
       html2canvas: { scale: 2, useCORS: true }, // Improve quality, allow external images
