@@ -128,7 +128,6 @@ const sicCodes: DetailedSicCode[] = sicCodesData as unknown as DetailedSicCode[]
 
 @Component({
   selector: 'app-employer-details',
-  standalone: true,
   templateUrl: './employer-details.component.html',
   styleUrls: ['./employer-details.component.scss'],
   providers: [NgbModal, EmployerDetailsService],

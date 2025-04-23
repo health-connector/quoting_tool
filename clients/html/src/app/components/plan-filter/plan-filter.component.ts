@@ -86,7 +86,6 @@ const DEFAULT_ICON_COL = 'col-6'; // TODO: Revisit if this is the best way to tr
 
 @Component({
   selector: 'app-plan-filter',
-  standalone: true,
   templateUrl: './plan-filter.component.html',
   styleUrls: ['./plan-filter.component.css'],
   providers: [PlanProviderService],

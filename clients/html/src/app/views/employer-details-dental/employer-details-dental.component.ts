@@ -12,7 +12,6 @@ interface EmployerDetails {
 
 @Component({
   selector: 'app-employer-details-dental',
-  standalone: true,
   template: `
     <div class="container mt-3">
       <app-nav [validForm]="true" myPath="Dental" />

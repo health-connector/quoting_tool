@@ -22,7 +22,6 @@ function parseNumeric(value: string | number | undefined | null): number {
 
 @Pipe({
   name: 'orderBy',
-  standalone: true,
 })
 export class OrderByPipe implements PipeTransform {
   // Type the input value and arguments more specifically

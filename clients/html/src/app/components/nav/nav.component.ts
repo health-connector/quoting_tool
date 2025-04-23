@@ -4,7 +4,6 @@ import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-nav',
-  standalone: true,
   template: `
     <div class="row">
       <div class="col-12">

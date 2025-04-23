@@ -11,7 +11,6 @@ interface TreeItem {
 
 @Component({
   selector: 'app-treeview-wrapper',
-  standalone: true,
   template: `
     <div class="treeview">
       @if (showFilter()) {
@@ -23,7 +22,7 @@ interface TreeItem {
               placeholder="Search..."
               [(ngModel)]="filterText"
               (ngModelChange)="onFilterTextChange()"
-              />
+            />
           </div>
         </div>
       }
@@ -75,7 +74,7 @@ interface TreeItem {
         }
       </div>
     </div>
-    `,
+  `,
   styles: [
     `
       .treeview {
@@ -107,9 +106,9 @@ interface TreeItem {
       .item-children {
         margin-left: 1.5rem;
       }
-    `
+    `,
   ],
-  imports: [FormsModule]
+  imports: [FormsModule],
 })
 export class TreeviewWrapperComponent implements OnInit {
   items = input<TreeItem[]>([]);

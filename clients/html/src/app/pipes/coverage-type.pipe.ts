@@ -2,7 +2,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'coverageType',
-  standalone: true,
 })
 export class CoverageTypePipe implements PipeTransform {
   transform(value: string): string {
