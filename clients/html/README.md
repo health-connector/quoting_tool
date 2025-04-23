@@ -1,27 +1,98 @@
 # Quoting Tool
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.3.
+A web-based application for generating insurance quotes, built with Angular. This tool allows users to upload employee rosters, filter and compare plans, and generate quote documents. A mock API server is included for local development and testing.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- Upload employee rosters (template provided)
+- Filter and compare insurance plans
+- Generate and download quote documents
+- Responsive UI with Bootstrap
+- Mock API server for development
 
-## Code scaffolding
+## Prerequisites
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- Node.js (v18 or later recommended)
+- npm (v9 or later)
+- macOS, Windows, or Linux
 
-## Build
+## Installation
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+1. Clone this repository.
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. (Optional) Install mock server dependencies:
+   ```bash
+   cd mock-server
+   npm install
+   cd ..
+   ```
 
-## Running unit tests
+## Running the Application
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### 1. Start the Mock API Server (for local development)
 
-## Running end-to-end tests
+In a separate terminal:
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```bash
+cd mock-server
+npm start
+```
 
-## Further help
+The mock server runs at http://localhost:3002.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### 2. Start the Angular Development Server
+
+In the project root:
+
+```bash
+npm start
+```
+
+Visit http://localhost:4200 in your browser.
+
+## Building for Production
+
+```bash
+npm run build:prod
+```
+
+The production build will be in the `dist/` directory.
+
+## Testing
+
+- Unit tests: `npm test`
+- End-to-end tests: `npm run e2e`
+
+## Roster Upload Template
+
+A sample Excel template for employee roster uploads is provided at:
+
+```
+src/assets/roster_upload_template.xlsx
+```
+
+## Project Structure
+
+- `src/app/` - Main Angular application code
+- `src/assets/` - Static assets (images, templates)
+- `mock-server/` - Mock API server for development
+- `e2e/` - End-to-end test setup
+
+## How It Works
+
+1. Upload an employee roster using the provided template.
+2. The app fetches plan data from the mock API server.
+3. Filter, compare, and select plans.
+4. Download quote documents as needed.
+
+## Further Help
+
+- Angular CLI docs: https://angular.io/cli
+- For mock server endpoints, see `mock-server/README.md`
+
+---
+
+_Last updated: April 23, 2025_
