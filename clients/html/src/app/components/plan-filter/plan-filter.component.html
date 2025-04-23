@@ -299,18 +299,20 @@
                         ></i>
                       }
                     </th>
-                    @if (this.planFilter === 'single_product' && this.planType() !== 'dental') {
-                      <th [ngStyle]="{ width: '17%' }" scope="col">
-                        {{ getTableHeader('col-5') }}
-                        @if (!pdfView) {
-                          <i
-                            class="fas fa-question-circle ms-2"
-                            placement="right"
-                            [ngbTooltip]="getToolTip('monthlyCost')"
-                          ></i>
-                        }
-                      </th>
-                    }
+                    <th
+                      *ngIf="planFilter === 'single_product' && planType() !== 'dental'"
+                      [ngStyle]="{ width: '17%' }"
+                      scope="col"
+                    >
+                      {{ getTableHeader('col-5') }}
+                      @if (!pdfView) {
+                        <i
+                          class="fas fa-question-circle ms-2"
+                          placement="right"
+                          [ngbTooltip]="getToolTip('monthlyCost')"
+                        ></i>
+                      }
+                    </th>
                     <th
                       scope="col"
                       (click)="sortData(getTableHeader('col-6')[0]); setIcon('col-6')"
@@ -400,8 +402,16 @@
                       </td>
                       <td>{{ carrier['group_deductible'] }}</td>
                       <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
-
-                      <td>{{ carrier['sponsor_cost'] | currency }}</td>
+                      <td *ngIf="planFilter === 'single_product' && planType() !== 'dental'">
+                        <span>
+                          <strong>Employee -</strong> {{ carrier['employee_cost'] || 0 | currency }}<br />
+                          <strong>Emp & Spouse -</strong> {{ carrier['employee_spouse_cost'] || 0 | currency }}<br />
+                          <strong>Emp & Children -</strong> {{ carrier['employee_children_cost'] || 0 | currency
+                          }}<br />
+                          <strong>Family -</strong> {{ carrier['family_cost'] || 0 | currency }}
+                        </span>
+                      </td>
+                      <td>{{ carrier['sponsor_cost'] || 0 | currency }}</td>
                     </tr>
                   }
                 </tbody>

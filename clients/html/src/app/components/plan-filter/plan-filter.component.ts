@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, input, OnDestroy } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
+import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
@@ -28,6 +28,7 @@ import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
 import { PlanProviderService } from '../../services/plan-provider.service';
 // Import ContributionRelationship enum
 import { ContributionRelationship } from '../../config/contribution_relationship';
+import { ContributionTierName } from '../../config/contribution_tier_name';
 
 // --- Interfaces ---
 interface ProductInformation {
@@ -48,6 +49,10 @@ interface QuotedProduct {
   total_cost: number;
   deductible: string; // For display and sorting
   sponsor_cost: number; // For sorting
+  employee_cost?: number; // For display
+  employee_spouse_cost?: number; // For display
+  employee_children_cost?: number; // For display
+  family_cost?: number; // For display
   [key: string]: unknown; // Allow dynamic access
 }
 
@@ -98,6 +103,7 @@ const DEFAULT_ICON_COL = 'col-6'; // TODO: Revisit if this is the best way to tr
     DatePipe,
     PlanFilterPipe,
     OrderByPipe,
+    NgIf, // <-- Add NgIf here
   ],
   host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
@@ -374,8 +380,20 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
       console.log('[DEBUG] First quote total_cost:', quotesFromCalculator[0].total_cost);
     }
 
-    const newQuotes: QuotedProduct[] = quotesFromCalculator.map(
-      (quote): QuotedProduct => ({
+    // Map tier costs to display properties for each quote
+    const newQuotes: QuotedProduct[] = quotesFromCalculator.map((quote: any) => {
+      // Defensive: tier_costs may be a Map or object
+      let tierCosts: any = quote.tier_costs;
+      // If it's a Map, convert to object for easier access
+      if (typeof tierCosts?.get === 'function') {
+        tierCosts = {
+          [ContributionTierName.EMPLOYEE_ONLY]: tierCosts.get(ContributionTierName.EMPLOYEE_ONLY),
+          [ContributionTierName.EMPLOYEE_AND_SPOUSE]: tierCosts.get(ContributionTierName.EMPLOYEE_AND_SPOUSE),
+          [ContributionTierName.EMPLOYEE_AND_DEPENDENTS]: tierCosts.get(ContributionTierName.EMPLOYEE_AND_DEPENDENTS),
+          [ContributionTierName.FAMILY]: tierCosts.get(ContributionTierName.FAMILY),
+        };
+      }
+      return {
         ...quote,
         product_information: {
           ...quote.product_information,
@@ -383,12 +401,17 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
         },
         deductible: String(quote.product_information.deductible ?? ''), // Top-level for sorting/display
         sponsor_cost: quote.total_cost, // Using total_cost as sponsor_cost (since contribution is 100%)
-      }),
-    );
+        employee_cost: tierCosts?.[ContributionTierName.EMPLOYEE_ONLY]?.total_cost ?? 0,
+        employee_spouse_cost: tierCosts?.[ContributionTierName.EMPLOYEE_AND_SPOUSE]?.total_cost ?? 0,
+        employee_children_cost: tierCosts?.[ContributionTierName.EMPLOYEE_AND_DEPENDENTS]?.total_cost ?? 0,
+        family_cost: tierCosts?.[ContributionTierName.FAMILY]?.total_cost ?? 0,
+      };
+    });
 
     // Debug check for the first mapped quote
     if (newQuotes.length > 0) {
       console.log('[DEBUG] First mapped quote sponsor_cost:', newQuotes[0].sponsor_cost);
+      console.log('[DEBUG] First mapped quote employee_cost:', newQuotes[0].employee_cost);
     }
 
     this.defaultCarriers = newQuotes;
