@@ -150,6 +150,12 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   public yearlyMedicalDeductibleFrom: number | null = null;
   public yearlyMedicalDeductibleTo: number | null = null;
 
+  // Checkbox tracking for UI state
+  public checkedMetalLevels: Record<string, boolean> = {};
+  public checkedProductTypes: Record<string, boolean> = {};
+  public checkedInsuranceCompanies: Record<string, boolean> = {};
+  public checkedHSAs: Record<string, boolean> = {};
+
   // --- Filter Options (Derived) ---
   public metalLevelOptions: string[] = [];
   public carriers: string[] = [];
@@ -451,6 +457,22 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     const target = event.target as HTMLInputElement;
     const isChecked = target.checked;
 
+    // Update the checked state in the corresponding tracking object
+    switch (type) {
+      case 'metalLevel':
+        if (typeof value === 'string') this.checkedMetalLevels[value] = isChecked;
+        break;
+      case 'productType':
+        if (typeof value === 'string') this.checkedProductTypes[value] = isChecked;
+        break;
+      case 'insuranceCompany':
+        if (typeof value === 'string') this.checkedInsuranceCompanies[value] = isChecked;
+        break;
+      case 'hsa':
+        if (typeof value === 'boolean') this.checkedHSAs[value.toString()] = isChecked;
+        break;
+    }
+
     const updateSelection = <T extends { key: string; value: string | boolean }>(
       list: T[],
       key: string,
@@ -458,7 +480,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     ) => {
       if (isChecked) {
         // Add only if the correct type and not already present
-        if (typeof val === typeof list[0]?.value && !list.some((item) => item.value === val)) {
+        if (!list.some((item) => item.value === val)) {
           list.push({ key, value: val } as T);
         }
       } else {
@@ -499,21 +521,72 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   }
 
   private _applyCategoricalFilters(plans: QuotedProduct[]): QuotedProduct[] {
-    const filterGroups = [
-      { selectedItems: this.selectedMetalLevels, key: FILTER_KEYS.METAL_LEVEL },
-      { selectedItems: this.selectedProductTypes, key: FILTER_KEYS.PRODUCT_TYPE },
-      { selectedItems: this.selectedInsuranceCompanies, key: FILTER_KEYS.PROVIDER_NAME },
-      { selectedItems: this.selectedHSAs, key: FILTER_KEYS.HSA_ELIGIBLE },
-    ];
+    // Debug logs to see what filters are being applied
+    console.log('Metal levels selected:', this.selectedMetalLevels);
+    console.log('Product types selected:', this.selectedProductTypes);
+    console.log('Insurance companies selected:', this.selectedInsuranceCompanies);
+    console.log('HSA options selected:', this.selectedHSAs);
 
-    let filteredPlans = plans;
-    filterGroups.forEach((group) => {
-      if (group.selectedItems.length > 0) {
-        filteredPlans = filteredPlans.filter((plan) =>
-          group.selectedItems.some((item) => plan.product_information[item.key] === item.value),
-        );
-      }
-    });
+    // If no filters are selected in any category, return all plans
+    if (
+      this.selectedMetalLevels.length === 0 &&
+      this.selectedProductTypes.length === 0 &&
+      this.selectedInsuranceCompanies.length === 0 &&
+      this.selectedHSAs.length === 0
+    ) {
+      return plans;
+    }
+
+    // Start with all plans
+    let filteredPlans = [...plans];
+
+    // Apply metal level filter if any are selected
+    if (this.selectedMetalLevels.length > 0) {
+      const metalValues = this.selectedMetalLevels.map((item) => item.value);
+      filteredPlans = filteredPlans.filter((plan) =>
+        metalValues.includes(plan.product_information.metal_level as string),
+      );
+      console.log('After metal level filter:', filteredPlans.length);
+    }
+
+    // Apply product type filter if any are selected
+    if (this.selectedProductTypes.length > 0) {
+      const productTypeValues = this.selectedProductTypes.map((item) => item.value);
+      filteredPlans = filteredPlans.filter((plan) => productTypeValues.includes(plan.product_information.product_type));
+      console.log('After product type filter:', filteredPlans.length);
+    }
+
+    // Apply insurance company filter if any are selected
+    if (this.selectedInsuranceCompanies.length > 0) {
+      const providerValues = this.selectedInsuranceCompanies.map((item) => item.value);
+      filteredPlans = filteredPlans.filter((plan) => providerValues.includes(plan.product_information.provider_name));
+      console.log('After insurance company filter:', filteredPlans.length);
+    }
+
+    // Apply HSA eligibility filter if any are selected
+    if (this.selectedHSAs.length > 0) {
+      // Get the boolean values from selectedHSAs
+      const hsaValues = this.selectedHSAs.map((item) => {
+        // Convert string 'true'/'false' to boolean if needed
+        if (typeof item.value === 'string') {
+          return item.value === 'true';
+        }
+        return item.value;
+      });
+
+      console.log('HSA values for filtering:', hsaValues);
+
+      filteredPlans = filteredPlans.filter((plan) => {
+        const planHsaValue = plan.product_information.hsa_eligible;
+        console.log('Plan HSA value:', planHsaValue, 'Type:', typeof planHsaValue);
+        return hsaValues.includes(planHsaValue);
+      });
+      console.log('After HSA filter:', filteredPlans.length);
+    }
+
+    // Log the number of plans after filtering
+    console.log('Plans after all filtering:', filteredPlans.length);
+
     return filteredPlans;
   }
 
@@ -583,8 +656,16 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     this.planPremiumsFrom = null;
     this.planPremiumsTo = null;
 
-    // Reset UI checkboxes
-    document.querySelectorAll<HTMLInputElement>('.checkbox-input').forEach((checkbox) => (checkbox.checked = false));
+    // Reset checkbox tracking objects
+    this.checkedMetalLevels = {};
+    this.checkedProductTypes = {};
+    this.checkedInsuranceCompanies = {};
+    this.checkedHSAs = {};
+
+    // Reset UI checkboxes explicitly to ensure consistency
+    document.querySelectorAll<HTMLInputElement>('.form-check-input').forEach((checkbox) => {
+      checkbox.checked = false;
+    });
 
     // Reset sorting
     this.sortDirection = true;

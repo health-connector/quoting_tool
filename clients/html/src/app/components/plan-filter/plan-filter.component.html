@@ -62,6 +62,7 @@
                           type="checkbox"
                           [value]="metalLevel"
                           id="checkbox-metal-{{ i }}"
+                          [checked]="checkedMetalLevels[metalLevel] === true"
                           (click)="selectedFilter(metalLevel, $event, 'metalLevel')"
                         />
                         <label class="form-check-label" for="checkbox-metal-{{ i }}">
@@ -86,6 +87,7 @@
                           class="form-check-input"
                           type="checkbox"
                           [value]="product"
+                          [checked]="checkedProductTypes[product] === true"
                           (click)="selectedFilter(product, $event, 'productType')"
                           id="checkbox-plan-{{ i }}"
                         />
@@ -112,6 +114,7 @@
                           type="checkbox"
                           [value]="hsa"
                           id="checkbox-hsa-{{ i }}"
+                          [checked]="checkedHSAs[hsa.toString()] === true"
                           (click)="selectedFilter(hsa, $event, 'hsa')"
                         />
                         <label class="form-check-label" for="checkbox-hsa-{{ i }}">
@@ -204,6 +207,7 @@
                           type="checkbox"
                           id="checkbox-carrier-{{ i }}"
                           [value]="carrier"
+                          [checked]="checkedInsuranceCompanies[carrier] === true"
                           (click)="selectedFilter(carrier, $event, 'insuranceCompany')"
                         />
                         <label class="form-check-label" for="checkbox-carrier-{{ i }}">
