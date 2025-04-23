@@ -323,16 +323,10 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   // Called by PlanProviderService (or subscription) when products are fetched
   public onProductsLoaded(products: Product[]): void {
     console.log('[PlanFilterComponent] onProductsLoaded received products:', products.length);
-    this.isLoading = true; // Start processing
+    this.isLoading = false; // Stop loading indicator
     this.sponsorProducts = products;
-    this.kindFilteredProducts = [...products]; // Initially, all fetched products are kind-filtered
-
-    // Apply initial package filter if one exists, otherwise use all products
-    this._applyPackageFilter();
-    this._recalculateQuotes();
-
-    this.showPlansTable = true;
-    this.isLoading = false; // Finish processing
+    // Store products but don't filter or display them until a benefit model is selected
+    // Don't set this.showPlansTable = true yet - wait for user to select a plan filter
   }
 
   private _recalculateQuotes(): void {
@@ -425,7 +419,8 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     this._applyPackageFilter();
     this._recalculateQuotes(); // Recalculate quotes for the new set of kindFilteredProducts
     this.resetFiltersAndSort(); // Reset filters when package changes
-    this.showPlansTable = true; // Ensure table is visible
+    this.showPlansTable = this.planFilter !== null; // Only show plans table if a filter is selected
+    this.filterSelected = this.planFilter !== null; // Only enable filter button if a model is selected
   }
 
   private _applyPackageFilter(): void {
