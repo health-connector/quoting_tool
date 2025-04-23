@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { CustomDateParserFormatter } from './custom_date_parser_formatter';
-import { FooterComponent } from './components/footer/footer.component';
 import { RouterOutlet } from '@angular/router';
+import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 
 @Component({
-  providers: [{ provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter }],
   selector: 'app-root',
   standalone: true,
   template: `
