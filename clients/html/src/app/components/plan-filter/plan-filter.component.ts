@@ -628,17 +628,24 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     // Update options based on *default* carriers to show all possibilities
     const uniqueValues = <T>(items: T[]) => Array.from(new Set(items));
 
+    // Custom order for Metal Level
+    const metalOrder = ['Platinum', 'Gold', 'Silver', 'Bronze'];
     this.metalLevelOptions = uniqueValues(
-      this.defaultCarriers.map((p) => p.product_information.metal_level).filter((level): level is string => !!level), // Ensure level is defined and string
-    ).sort();
+      this.defaultCarriers.map((p) => p.product_information.metal_level).filter((level): level is string => !!level),
+    ).sort((a, b) => metalOrder.indexOf(a) - metalOrder.indexOf(b));
 
     this.carriers = uniqueValues(this.defaultCarriers.map((p) => p.product_information.provider_name)).sort();
 
-    this.products = uniqueValues(this.defaultCarriers.map((p) => p.product_information.product_type)).sort();
+    // Custom order for Plan Type
+    const planTypeOrder = ['HMO', 'PPO', 'EPO', 'POS'];
+    this.products = uniqueValues(this.defaultCarriers.map((p) => p.product_information.product_type)).sort(
+      (a, b) => planTypeOrder.indexOf(a) - planTypeOrder.indexOf(b),
+    );
 
+    // Custom order for HSA Eligible: Yes (true), No (false)
     this.hsaEligible = uniqueValues(this.defaultCarriers.map((p) => p.product_information.hsa_eligible)).sort((a, b) =>
-      a === b ? 0 : a ? -1 : 1,
-    ); // Show true before false
+      a === true ? -1 : 1,
+    );
 
     // Update count based on *currently filtered* carriers
     this.filterLength = this.filteredCarriers.length;
