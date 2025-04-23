@@ -755,8 +755,9 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   public validateNumber(event: KeyboardEvent): boolean {
     const charCode = event.which ?? event.keyCode;
     // Allow backspace, delete, arrows, home, end, etc. (control keys) and numbers
-    const isControlKey = charCode < 32 || (charCode >= 37 && charCode <= 40); // Basic control keys
-    const isNumber = charCode >= 48 && charCode <= 57;
+    const isControlKey = charCode < 32 || (charCode >= 37 && charCode <= 40);
+    // Allow top row numbers (48-57) and numberpad numbers (96-105)
+    const isNumber = (charCode >= 48 && charCode <= 57) || (charCode >= 96 && charCode <= 105);
 
     if (isControlKey || isNumber) {
       return true;
