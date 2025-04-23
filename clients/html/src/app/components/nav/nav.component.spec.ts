@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { NavComponent } from './nav.component';
+import { provideRouter } from '@angular/router';
 
 describe('NavComponent', () => {
   let component: NavComponent;
@@ -10,9 +10,10 @@ describe('NavComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-    schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    imports: [RouterTestingModule, NavComponent]
-}).compileComponents();
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [NavComponent],
+      providers: [provideRouter([])],
+    }).compileComponents();
   }));
 
   beforeEach(() => {
@@ -25,8 +26,8 @@ describe('NavComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should diplay the nav link items', () => {
-    expect(component.navLinks.length === 3);
+  it('should display the nav link items', () => {
+    expect(component.navLinks.length === 3).toBeTrue();
   });
 
   it('should have Employer Details, Health and Dental options', () => {

@@ -11,6 +11,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { CoverageTypePipe } from '../../pipes/coverage-type.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { By } from '@angular/platform-browser';
 
 describe('EmployerDetailsComponent', () => {
   let component: EmployerDetailsComponent;
@@ -66,13 +67,29 @@ describe('EmployerDetailsComponent', () => {
     expect(title.innerText).toEqual('Employer Information');
   });
 
-  xit('should have Employee Roster section', () => {
-    const title = fixture.nativeElement.querySelectorAll('h2')[1];
-    const uploadEmployeeRosterBtn = fixture.nativeElement.querySelector('.upload-employee-roster');
-    const addNewEmployeeBtn = fixture.nativeElement.querySelector('.add-new-employee');
-    expect(title.innerText).toEqual('Employee Roster');
-    expect(uploadEmployeeRosterBtn.innerText).toEqual('Upload Employee Roster');
-    expect(addNewEmployeeBtn.innerText).toEqual('Add Employee');
+  it('should have Employee Roster section with correct elements', () => {
+    // Ensure showEmployeeRoster is false so the buttons are present
+    component.showEmployeeRoster = false;
+    fixture.detectChanges();
+
+    // Use debugElement and By for more robust querying
+    const debugElement = fixture.debugElement;
+
+    // Find the specific H2 element by its text content, making the test less brittle to structure changes
+    const h2Elements = debugElement.queryAll(By.css('h2'));
+    const titleElement = h2Elements.find((el) => el.nativeElement.textContent.trim() === 'Employee Roster');
+    expect(titleElement).withContext('Expected to find an H2 element with text "Employee Roster"').toBeTruthy();
+
+    // Find buttons using By.css for consistency
+    const uploadEmployeeRosterBtn = debugElement.query(By.css('.upload-employee-roster'));
+    const addNewEmployeeBtn = debugElement.query(By.css('.add-new-employee'));
+
+    // Assert buttons exist and check their text content using textContent.trim() for robustness
+    expect(uploadEmployeeRosterBtn).withContext('Expected to find the "Upload Employee Roster" button').toBeTruthy();
+    expect(uploadEmployeeRosterBtn.nativeElement.textContent.trim()).toContain('Upload Employee Roster');
+
+    expect(addNewEmployeeBtn).withContext('Expected to find the "Add Employee" button').toBeTruthy();
+    expect(addNewEmployeeBtn.nativeElement.textContent.trim()).toContain('Add Employee');
   });
 
   it('should have valid quote form if required fields are filled in', () => {
@@ -97,12 +114,18 @@ describe('EmployerDetailsComponent', () => {
     expect(component.quoteForm.valid).toBeTruthy();
   });
 
-  xit('add new employee button should add new employee to form', () => {
+  it('add new employee button should add new employee to form', () => {
+    // Ensure the button is present
+    component.showEmployeeRoster = false;
+    fixture.detectChanges();
+
     const button = fixture.nativeElement.querySelector('.add-new-employee');
     expect(component.quoteForm.controls.employees.value.length).toEqual(0);
     button.click();
+    fixture.detectChanges();
     expect(component.quoteForm.controls.employees.value.length).toEqual(1);
     button.click();
+    fixture.detectChanges();
     expect(component.quoteForm.controls.employees.value.length).toEqual(2);
   });
 });
