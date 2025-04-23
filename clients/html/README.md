@@ -1,6 +1,8 @@
 # Quoting Tool
 
-A web-based application for generating insurance quotes, built with Angular. This tool allows users to upload employee rosters, filter and compare plans, and generate quote documents. A mock API server is included for local development and testing.
+A web-based application for generating insurance quotes, built with Angular. This tool allows users to upload employee rosters, filter and compare plans, and generate quote documents.
+
+> **Important:** This Angular application is located in the `clients/html` folder inside your Ruby on Rails application. For the quoting tool to work correctly, you must have the Ruby on Rails server running on port 3000. The Angular app communicates with the Rails backend for core functionality.
 
 ## Features
 
@@ -32,7 +34,13 @@ A web-based application for generating insurance quotes, built with Angular. Thi
 
 ## Running the Application
 
-### 1. Start the Mock API Server (for local development)
+### 1. Start the Ruby on Rails Server (required)
+
+The application relies on the Rails backend to retrieve data. Make sure your Rails server is running on port 3000 before starting the Angular app.
+
+### 2. (Optional) Start the Mock API Server (secondary backup)
+
+The mock-server is provided as a secondary backup for development and testing purposes only. It is not intended for production use. If you do not have the Rails backend available, you can use the mock-server to simulate API responses.
 
 In a separate terminal:
 
@@ -43,7 +51,7 @@ npm start
 
 The mock server runs at http://localhost:3002.
 
-### 2. Start the Angular Development Server
+### 3. Start the Angular Development Server
 
 In the project root:
 
@@ -84,14 +92,14 @@ src/assets/roster_upload_template.xlsx
 ## How It Works
 
 1. Upload an employee roster using the provided template.
-2. The app fetches plan data from the mock API server.
+2. The app fetches plan data from the Rails backend (or the mock API server as a backup).
 3. Filter, compare, and select plans.
 4. Download quote documents as needed.
 
 ## Further Help
 
 - Angular CLI docs: https://angular.io/cli
-- For mock server endpoints, see `mock-server/README.md`
+- For mock server endpoints, see `mock-server/README.md` (for backup/testing only)
 
 ---
 

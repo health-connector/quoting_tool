@@ -7,7 +7,7 @@ import { Component } from '@angular/core';
       <div class="container">
         <div class="row">
           <div class="col-6">
-            <i class="far fa-copyright"></i> 2017-2019 Massachusetts Health Connector. All Rights Reserved.
+            <i class="far fa-copyright"></i> 2017-{{ currentYear }} Massachusetts Health Connector. All Rights Reserved.
           </div>
           <div class="col-6">
             <ul class="list-unstyled list-inline float-right">
@@ -18,7 +18,11 @@ import { Component } from '@angular/core';
       </div>
     </div>
   `,
-  styleUrls: ['./footer.component.scss'],
-  standalone: true
 })
-export class FooterComponent {}
+export class FooterComponent {
+  currentYear: number;
+
+  ngOnInit() {
+    this.currentYear = new Date().getFullYear();
+  }
+}
