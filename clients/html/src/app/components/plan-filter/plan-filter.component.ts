@@ -26,6 +26,8 @@ import { RosterEntry } from '../../data/sponsor_roster';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
 import { PlanProviderService } from '../../services/plan-provider.service';
+// Import ContributionRelationship enum
+import { ContributionRelationship } from '../../config/contribution_relationship';
 
 // --- Interfaces ---
 interface ProductInformation {
@@ -219,16 +221,53 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   private _initializeCalculatorsAndRoster(effectiveDate: Date, planType: PlanType): void {
     if (!this.employerDetails) return;
 
-    this.sponsorRoster = this.employerDetails.employees.map(
-      (employee): RosterEntry => ({
+    // Convert employee data to proper RosterEntry format
+    this.sponsorRoster = this.employerDetails.employees.map((employee): RosterEntry => {
+      // Convert dependents to proper format with ContributionRelationship enum
+      const processedDependents = employee.dependents.map((dep) => {
+        // Convert string relationship to ContributionRelationship enum
+        let relationship;
+        switch (dep.relationship.trim()) {
+          case 'Self':
+            relationship = ContributionRelationship.SELF;
+            break;
+          case 'Spouse':
+            relationship = ContributionRelationship.SPOUSE;
+            break;
+          case 'Child':
+            relationship = ContributionRelationship.CHILD;
+            break;
+          case 'Domestic Partner':
+            relationship = ContributionRelationship.DOMESTIC_PARTNER;
+            break;
+          default:
+            console.warn(`Unknown relationship type: ${dep.relationship}, defaulting to SELF`);
+            relationship = ContributionRelationship.SELF;
+        }
+
+        return {
+          dob: new Date(dep.dob),
+          relationship: relationship,
+        };
+      });
+
+      // Create a complete roster entry with all required fields
+      return {
         ...employee,
         dob: new Date(employee.dob),
         dependents: employee.dependents.map((dep) => ({
           ...dep,
           dob: new Date(dep.dob),
         })),
-      }),
-    );
+        // Add roster_dependents property needed by the calculator
+        roster_dependents: processedDependents,
+        will_enroll: true, // Ensure this is set
+        coverageKind: planType, // Set the coverage kind
+      };
+    });
+
+    // Debug log only first employee to avoid cluttering the console
+    console.log('[DEBUG] First roster entry:', this.sponsorRoster[0]);
 
     this.tieredContributionModel = defaultTieredContributionModel();
     this.tieredCalculator = this._createCalculator(effectiveDate, this.tieredContributionModel, planType, true);
@@ -330,6 +369,11 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
     const quotesFromCalculator = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter);
 
+    // Debug check for the first calculated quote
+    if (quotesFromCalculator.length > 0) {
+      console.log('[DEBUG] First quote total_cost:', quotesFromCalculator[0].total_cost);
+    }
+
     const newQuotes: QuotedProduct[] = quotesFromCalculator.map(
       (quote): QuotedProduct => ({
         ...quote,
@@ -338,9 +382,14 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
           deductible: String(quote.product_information.deductible ?? ''), // Ensure string
         },
         deductible: String(quote.product_information.deductible ?? ''), // Top-level for sorting/display
-        sponsor_cost: quote.total_cost, // Assuming total_cost is used for sponsor_cost sorting
+        sponsor_cost: quote.total_cost, // Using total_cost as sponsor_cost (since contribution is 100%)
       }),
     );
+
+    // Debug check for the first mapped quote
+    if (newQuotes.length > 0) {
+      console.log('[DEBUG] First mapped quote sponsor_cost:', newQuotes[0].sponsor_cost);
+    }
 
     this.defaultCarriers = newQuotes;
     console.log('[PlanFilterComponent] recalculate finished. defaultCarriers:', this.defaultCarriers.length);
@@ -549,6 +598,11 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
     // Re-apply filters (which will now be empty) to reset the displayed list
     this.applyFiltersAndUpdateDisplay();
+  }
+
+  // Helper method for string operations
+  public isPercentageValue(value: any): boolean {
+    return String(value).includes('%');
   }
 
   // --- Sorting ---

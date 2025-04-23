@@ -40,7 +40,8 @@ class FilteredRelationshipRosterEntry {
   }
 
   private kickTooOldChildren(start_date: Date, deps: Array<RosterDependent>) {
-    return deps.filter(function (rd) {
+    // Using arrow function to preserve the 'this' context
+    return deps.filter((rd) => {
       if (rd.relationship === ContributionRelationship.CHILD) {
         const age = this.coverageAge(start_date, rd.dob);
         if (age > 26) {
@@ -70,12 +71,12 @@ class FilteredRelationshipRosterEntry {
     }
     let filtered_deps = deps;
     if (!rel_map.get(ContributionTierName.EMPLOYEE_AND_DEPENDENTS)) {
-      filtered_deps = deps.filter(function (d) {
+      filtered_deps = deps.filter((d) => {
         return d.relationship !== ContributionRelationship.CHILD;
       });
     }
     if (!rel_map.get(ContributionTierName.EMPLOYEE_AND_SPOUSE)) {
-      filtered_deps = filtered_deps.filter(function (d) {
+      filtered_deps = filtered_deps.filter((d) => {
         return d.relationship === ContributionRelationship.CHILD;
       });
     }
@@ -92,7 +93,7 @@ class FilteredRelationshipRosterEntry {
     if (remaining_deps.length < 1) {
       return ContributionTierName.EMPLOYEE_ONLY;
     }
-    let remain_to_pick = allowed_buckets.filter(function (ab) {
+    let remain_to_pick = allowed_buckets.filter((ab) => {
       return ab !== ContributionTierName.EMPLOYEE_ONLY;
     });
     if (remain_to_pick.length < 2) {
@@ -113,7 +114,7 @@ class FilteredRelationshipRosterEntry {
       remain_to_pick.indexOf(ContributionTierName.EMPLOYEE_AND_SPOUSE) > -1 &&
       rels.indexOf(ContributionRelationship.CHILD) > -1
     ) {
-      remain_to_pick = remain_to_pick.filter(function (ab) {
+      remain_to_pick = remain_to_pick.filter((ab) => {
         return ab !== ContributionTierName.EMPLOYEE_AND_SPOUSE;
       });
     }
@@ -136,7 +137,7 @@ class FilteredRelationshipRosterEntry {
   }
 
   private remainingRelationships(remaining_deps) {
-    return remaining_deps.map(function (rd) {
+    return remaining_deps.map((rd) => {
       return rd.relationship;
     });
   }
@@ -156,7 +157,7 @@ class BucketCount {
 
   public toLevels(product) {
     let denominator = 0.0;
-    this.counts.forEach(function (v, k) {
+    this.counts.forEach((v, k) => {
       denominator = denominator + v * product.group_tier_factor(k);
     });
     const bucket_map = new Map<ContributionTierName, number>();
@@ -200,48 +201,48 @@ export class TieredCoverageCostCalculatorService {
     this.participation = this.calculateParticipation(roster);
     this.filteredRoster = this.filterRoster(startDate, contributionModel, roster);
     const relCMap = new Map<ContributionTierName, number>();
-    contributionModel.levels.forEach(function (cl) {
+    contributionModel.levels.forEach((cl) => {
       relCMap.set(cl.name, cl.contribution);
     });
     this.relContributions = relCMap;
     this.kind = kind;
   }
 
-  private calculateParticipation(roster: Array<RosterEntry>) {
-    const will_enroll = roster.filter(function (re) {
+  private calculateParticipation = (roster: Array<RosterEntry>) => {
+    const will_enroll = roster.filter((re) => {
       return re.will_enroll;
     });
     const percentage = (will_enroll.length / roster.length) * 100.0;
     return Math.round(percentage).toString();
-  }
+  };
 
-  private calculateGroupSize(roster: Array<RosterEntry>) {
-    const will_enroll = roster.filter(function (re) {
+  private calculateGroupSize = (roster: Array<RosterEntry>) => {
+    const will_enroll = roster.filter((re) => {
       return re.will_enroll;
     });
     if (will_enroll.length < 1) {
       return '1';
     }
     return Math.round(will_enroll.length).toString();
-  }
+  };
 
-  private tierOfferedMap(contributionModel: TieredContributionModel) {
+  private tierOfferedMap = (contributionModel: TieredContributionModel) => {
     const rel_map = new Map<ContributionTierName, boolean>();
-    contributionModel.levels.forEach(function (cl) {
+    contributionModel.levels.forEach((cl) => {
       rel_map.set(cl.name, cl.offered);
     });
     return rel_map;
-  }
+  };
 
-  private allowedTiers(contributionModel: TieredContributionModel) {
+  private allowedTiers = (contributionModel: TieredContributionModel) => {
     const rel_map = new Array<ContributionTierName>();
-    contributionModel.levels.forEach(function (cl) {
+    contributionModel.levels.forEach((cl) => {
       if (cl.offered) {
         rel_map.push(cl.name);
       }
     });
     return rel_map;
-  }
+  };
 
   private filterRoster(start_d: Date, contributionModel: TieredContributionModel, roster: Array<RosterEntry>) {
     const rel_map = this.tierOfferedMap(contributionModel);

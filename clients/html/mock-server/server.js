@@ -26,20 +26,7 @@ try {
   console.error('Error loading mock plans data:', error);
 }
 
-const mockStartDates = [
-  '2024-01-01',
-  '2024-02-01',
-  '2024-03-01',
-  '2024-04-01',
-  '2024-05-01',
-  '2024-06-01',
-  '2024-07-01',
-  '2024-08-01',
-  '2024-09-01',
-  '2024-10-01',
-  '2024-11-01',
-  '2024-12-01',
-];
+const mockStartDates = ['2025-05-01', '2025-06-01'];
 
 const mockSampleMessage = {
   message: 'Hello from the mock API!',
