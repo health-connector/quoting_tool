@@ -9,7 +9,9 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "format": "pretty-quick",
-    "build:prod": "ng build --configuration production --output-path=dist --base-href /get-a-quote/"
+    "build:prod": "ng build --configuration production --output-path=dist --base-href /get-a-quote/",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "private": true,
   "dependencies": {
@@ -39,10 +41,14 @@
     "@angular/cli": "^19.2.9",
     "@angular/compiler-cli": "^19.2.8",
     "@angular/language-service": "^19.2.8",
+    "@cypress/schematic": "^3.0.0",
     "@types/jasmine": "~5.1.7",
     "@types/jasminewd2": "^2.0.13",
     "@types/node": "^22.14.1",
     "angular-eslint": "19.3.0",
+    "cypress": "latest",
+    "cypress-file-upload": "^5.0.8",
+    "cypress-plugin-tab": "^1.0.5",
     "eslint": "^9.25.1",
     "husky": "^9.1.7",
     "jasmine-core": "~5.6.0",
@@ -56,7 +62,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^3.5.3",
     "pretty-quick": "^4.1.1",
-    "protractor": "~7.0.0",
     "ts-node": "~10.9.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "8.31.0"
