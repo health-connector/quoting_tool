@@ -1,14 +1,17 @@
 # frozen_string_literal: true
 
 module Products
+  # Represents a health insurance product
+  # Contains health-specific attributes, validations, and behaviors
   class HealthProduct < Product
     PRODUCT_PACKAGE_KINDS = %i[single_issuer metal_level single_product].freeze
     METAL_LEVEL_KINDS     = %i[bronze silver gold platinum catastrophic].freeze
 
+    # Hash mapping health plan kinds to their display names
     HEALTH_PLAN_MAP = {
       hmo: 'Health Maintenance Organization', # designated primary care physician (PCP) who's
       #   referral is required for specialists who are in-network
-      ppo: 'Preferred provider Organization', # health plan with a “preferred” network of providers
+      ppo: 'Preferred provider Organization', # health plan with a "preferred" network of providers
       #   in an area
       pos: 'Point of Service', # hmo/ppo hybrid. PCP referral for specialist required.
       #   In-network providers are lower cost, may access out-of-network
@@ -50,9 +53,9 @@ module Products
 
     validate :product_package_kinds
 
-    index({ hios_id: 1, "active_period.min": 1, "active_period.max": 1, name: 1 },
+    index({ hios_id: 1, 'active_period.min': 1, 'active_period.max': 1, name: 1 },
           { name: 'products_health_product_hios_active_period_name_index' })
-    index({ "active_period.min": 1, "active_period.max": 1, market: 1, coverage_kind: 1, nationwide: 1, name: 1 },
+    index({ 'active_period.min': 1, 'active_period.max': 1, market: 1, coverage_kind: 1, nationwide: 1, name: 1 },
           { name: 'health_products_a_period_market_c_kind_nationwide_name_index' })
     index({ csr_variant_id: 1 }, { sparse: true, name: 'product_health_products_csr_variant_index' })
 
@@ -80,19 +83,26 @@ module Products
     alias is_standard_plan? is_standard_plan
     alias is_reference_plan_eligible? is_reference_plan_eligible
 
+    # Returns the metal level as a string
+    #
+    # @return [String] The metal level
     def metal_level
       metal_level_kind.to_s
     end
 
+    # Returns the health plan kind as a string
+    #
+    # @return [String] The health plan kind
     def product_type
       health_plan_kind.to_s
     end
 
     private
 
+    # Validates that product package kinds are valid
     def validate_product_package_kinds
       if !product_package_kinds.is_a?(Array) || product_package_kinds.detect do |pkg|
-           !PRODUCT_PACKAGE_KINDS.include?(pkg)
+           PRODUCT_PACKAGE_KINDS.exclude?(pkg)
          end
         errors.add(:product_package_kinds, :invalid)
       end

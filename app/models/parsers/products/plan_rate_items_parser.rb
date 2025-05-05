@@ -2,17 +2,30 @@
 
 module Parsers
   module Products
+    # PlanRateItemsParser is responsible for parsing individual rate items within plan rates.
+    # These items define the pricing details for different enrollment scenarios, age brackets,
+    # tobacco usage, and other factors that affect insurance premium calculations.
+    #
+    # Each rate item contains both the original values and the derived computed values,
+    # which are typically denoted with a *_value suffix.
     class PlanRateItemsParser
       include HappyMapper
 
       tag 'items'
 
+      # Date range fields
       element :effective_date_value, String, tag: 'effectiveDateValue'
       element :expiration_date_value, String, tag: 'expirationDateValue'
+
+      # Plan identification fields
       element :plan_id_value, String, tag: 'planIdValue'
       element :rate_area_id_value, String, tag: 'rateAreaIdValue'
+
+      # Rating factors
       element :age_number_value, String, tag: 'ageNumberValue'
       element :tobacco_value, String, tag: 'tobaccoValue'
+
+      # Premium rate fields for different enrollment scenarios
       element :primary_enrollee_value, String, tag: 'primaryEnrolleeValue'
       element :couple_enrollee_value, String, tag: 'coupleEnrolleeValue'
       element :couple_enrollee_one_dependent_value, String, tag: 'coupleEnrolleeOneDependentValue'
@@ -21,6 +34,8 @@ module Parsers
       element :primary_enrollee_one_dependent_value, String, tag: 'primaryEnrolleeOneDependentValue'
       element :primary_enrollee_two_dependent_value, String, tag: 'primaryEnrolleeTwoDependentValue'
       element :primary_enrollee_many_dependent_value, String, tag: 'primaryEnrolleeManyDependentValue'
+
+      # Corresponding fields without _value suffix (may represent processed values)
       element :effective_date, String, tag: 'effectiveDate'
       element :expiration_date, String, tag: 'expirationDate'
       element :plan_id, String, tag: 'planId'
@@ -35,127 +50,62 @@ module Parsers
       element :primary_enrollee_one_dependent, String, tag: 'primaryEnrolleeOneDependent'
       element :primary_enrollee_two_dependent, String, tag: 'primaryEnrolleeTwoDependent'
       element :primary_enrollee_many_dependent, String, tag: 'primaryEnrolleeManyDependent'
+
+      # Additional metadata
       element :is_issuer_data, String, tag: 'isIssuerData'
       element :primary_enrollee_tobacco, String, tag: 'primaryEnrolleeTobacco'
       element :primary_enrollee_tobacco_value, String, tag: 'primaryEnrolleeTobaccoValue'
 
+      # Converts the parsed rate items to a standardized hash format,
+      # cleaning and normalizing all text fields
+      # @return [Hash] Structured and sanitized rate item data
       def to_hash
         {
-          effective_date_value: effective_date_value.present? ? effective_date_value.gsub(/\n/, '').strip : '',
-          expiration_date_value: expiration_date_value.present? ? expiration_date_value.gsub(/\n/, '').strip : '',
-          plan_id_value: plan_id_value.present? ? plan_id_value.gsub(/\n/, '').strip : '',
-          rate_area_id_value: rate_area_id_value.present? ? rate_area_id_value.gsub(/\n/, '').strip : '',
-          age_number_value: age_number_value.present? ? age_number_value.gsub(/\n/, '').strip : '',
-          tobacco_value: tobacco_value.present? ? tobacco_value.gsub(/\n/, '').strip : '',
-          primary_enrollee_value: primary_enrollee_value.present? ? primary_enrollee_value.gsub(/\n/, '').strip : '',
-          couple_enrollee_value: couple_enrollee_value.present? ? couple_enrollee_value.gsub(/\n/, '').strip : '',
-          couple_enrollee_one_dependent_value: if couple_enrollee_one_dependent_value.present?
-                                                 couple_enrollee_one_dependent_value.gsub(
-                                                   /\n/, ''
-                                                 ).strip
-                                               else
-                                                 ''
-                                               end,
-          couple_enrollee_two_dependent_value: if couple_enrollee_two_dependent_value.present?
-                                                 couple_enrollee_two_dependent_value.gsub(
-                                                   /\n/, ''
-                                                 ).strip
-                                               else
-                                                 ''
-                                               end,
-          couple_enrollee_many_dependent_value: if couple_enrollee_many_dependent_value.present?
-                                                  couple_enrollee_many_dependent_value.gsub(
-                                                    /\n/, ''
-                                                  ).strip
-                                                else
-                                                  ''
-                                                end,
-          primary_enrollee_one_dependent_value: if primary_enrollee_one_dependent_value.present?
-                                                  primary_enrollee_one_dependent_value.gsub(
-                                                    /\n/, ''
-                                                  ).strip
-                                                else
-                                                  ''
-                                                end,
-          primary_enrollee_two_dependent_value: if primary_enrollee_two_dependent_value.present?
-                                                  primary_enrollee_two_dependent_value.gsub(
-                                                    /\n/, ''
-                                                  ).strip
-                                                else
-                                                  ''
-                                                end,
-          primary_enrollee_many_dependent_value: if primary_enrollee_many_dependent_value.present?
-                                                   primary_enrollee_many_dependent_value.gsub(
-                                                     /\n/, ''
-                                                   ).strip
-                                                 else
-                                                   ''
-                                                 end,
-          effective_date: effective_date.present? ? effective_date.gsub(/\n/, '').strip : '',
-          expiration_date: expiration_date.present? ? expiration_date.gsub(/\n/, '').strip : '',
-          plan_id: plan_id.present? ? plan_id.gsub(/\n/, '').strip : '',
-          rate_area_id: rate_area_id.present? ? rate_area_id.gsub(/\n/, '').strip : '',
-          age_number: age_number.present? ? age_number.gsub(/\n/, '').strip : '',
-          tobacco: tobacco.present? ? tobacco.gsub(/\n/, '').strip : '',
-          primary_enrollee: primary_enrollee.present? ? primary_enrollee.gsub(/\n/, '').gsub('$', '').strip : '',
-          couple_enrollee: couple_enrollee.present? ? couple_enrollee.gsub(/\n/, '').strip : '',
-          couple_enrollee_one_dependent: if couple_enrollee_one_dependent.present?
-                                           couple_enrollee_one_dependent.gsub(
-                                             /\n/, ''
-                                           ).strip
-                                         else
-                                           ''
-                                         end,
-          couple_enrollee_two_dependent: if couple_enrollee_two_dependent.present?
-                                           couple_enrollee_two_dependent.gsub(
-                                             /\n/, ''
-                                           ).strip
-                                         else
-                                           ''
-                                         end,
-          couple_enrollee_many_dependent: if couple_enrollee_many_dependent.present?
-                                            couple_enrollee_many_dependent.gsub(
-                                              /\n/, ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end,
-          primary_enrollee_one_dependent: if primary_enrollee_one_dependent.present?
-                                            primary_enrollee_one_dependent.gsub(
-                                              '$', ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end,
-          primary_enrollee_two_dependent: if primary_enrollee_two_dependent.present?
-                                            primary_enrollee_two_dependent.gsub(
-                                              /\n/, ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end,
-          primary_enrollee_many_dependent: if primary_enrollee_many_dependent.present?
-                                             primary_enrollee_many_dependent.gsub(
-                                               /\n/, ''
-                                             ).strip
-                                           else
-                                             ''
-                                           end,
-          is_issuer_data: is_issuer_data.present? ? is_issuer_data.gsub(/\n/, '').strip : '',
-          primary_enrollee_tobacco: if primary_enrollee_tobacco.present?
-                                      primary_enrollee_tobacco.gsub(/\n/,
-                                                                    '').strip
-                                    else
-                                      ''
-                                    end,
-          primary_enrollee_tobacco_value: if primary_enrollee_tobacco_value.present?
-                                            primary_enrollee_tobacco_value.gsub(
-                                              /\n/, ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end
+          effective_date_value: safely_retrive_value(effective_date_value),
+          expiration_date_value: safely_retrive_value(expiration_date_value),
+          plan_id_value: safely_retrive_value(plan_id_value),
+          rate_area_id_value: safely_retrive_value(rate_area_id_value),
+          age_number_value: safely_retrive_value(age_number_value),
+          tobacco_value: safely_retrive_value(tobacco_value),
+          primary_enrollee_value: safely_retrive_value(primary_enrollee_value),
+          primary_enrollee_one_dependent_value: safely_retrive_value(primary_enrollee_one_dependent_value),
+          primary_enrollee_two_dependent_value: safely_retrive_value(primary_enrollee_two_dependent_value),
+          primary_enrollee_many_dependent_value: safely_retrive_value(primary_enrollee_many_dependent_value),
+          effective_date: safely_retrive_value(effective_date),
+          expiration_date: safely_retrive_value(expiration_date),
+          plan_id: safely_retrive_value(plan_id),
+          rate_area_id: safely_retrive_value(rate_area_id),
+          age_number: safely_retrive_value(age_number),
+          tobacco: safely_retrive_value(tobacco),
+          primary_enrollee: safely_retrive_value(primary_enrollee),
+          primary_enrollee_one_dependent: safely_retrive_value(primary_enrollee_one_dependent),
+          primary_enrollee_two_dependent: safely_retrive_value(primary_enrollee_two_dependent),
+          primary_enrollee_many_dependent: safely_retrive_value(primary_enrollee_many_dependent),
+          is_issuer_data: safely_retrive_value(is_issuer_data),
+          primary_enrollee_tobacco: safely_retrive_value(primary_enrollee_tobacco),
+          primary_enrollee_tobacco_value: safely_retrive_value(primary_enrollee_tobacco_value)
+        }.merge(couple_hash)
+      end
+
+      def couple_hash
+        {
+          couple_enrollee_value: safely_retrive_value(couple_enrollee_value),
+          couple_enrollee_one_dependent_value: safely_retrive_value(couple_enrollee_one_dependent_value),
+          couple_enrollee_two_dependent_value: safely_retrive_value(couple_enrollee_two_dependent_value),
+          couple_enrollee_many_dependent_value: safely_retrive_value(couple_enrollee_many_dependent_value),
+          couple_enrollee: safely_retrive_value(couple_enrollee),
+          couple_enrollee_one_dependent: safely_retrive_value(couple_enrollee_one_dependent),
+          couple_enrollee_two_dependent: safely_retrive_value(couple_enrollee_two_dependent),
+          couple_enrollee_many_dependent: safely_retrive_value(couple_enrollee_many_dependent)
         }
+      end
+
+      def safely_retrive_value(value)
+        if value.present?
+          value.gsub("\n", '').gsub('$', '').strip
+        else
+          ''
+        end
       end
     end
   end

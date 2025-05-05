@@ -56,7 +56,7 @@ gem 'jmespath', '~> 1.6.1'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'climate_control'
-  gem 'factory_bot_rails', '~> 4.11'
+  gem 'factory_bot_rails', '~> 6.4.4'
   gem 'pry-byebug', '~> 3.11.0'
   gem 'rspec-rails', '~> 7.1.1'
   gem 'yard', '~> 0.9.36', require: false

@@ -4,35 +4,35 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::EmployeesController do
   describe '#start_on_dates' do
-    let!(:health_product) { FactoryBot.create(:health_product, service_area_id: service_area.id) }
-    let!(:dental_product) { FactoryBot.create(:dental_product, service_area_id: service_area.id) }
-    let!(:rating_area) { FactoryBot.create(:rating_area, county_zip_ids: [county_zip.id]) }
-    let(:service_area) { FactoryBot.create(:service_area, county_zip_ids: [county_zip.id]) }
-    let(:county_zip) { FactoryBot.create(:county_zip) }
+    let(:health_product) { create(:health_product, service_area_id: service_area.id) }
+    let(:dental_product) { create(:dental_product, service_area_id: service_area.id) }
+    let!(:rating_area) { create(:rating_area, county_zip_ids: [county_zip.id]) }
+    let(:service_area) { create(:service_area, county_zip_ids: [county_zip.id]) }
+    let(:county_zip) { create(:county_zip) }
 
     let!(:premium_tuples) do
-      tuples = []
-      (1..65).each do |age|
-        tuples << ::Products::PremiumTuple.new(
+      (1..65).map do |age|
+        Products::PremiumTuple.new(
           age:,
           cost: age
         )
       end
-      tuples
     end
 
     let(:mock_registry) do
-      instance_double('ResourceRegistry::Registry').tap do |registry|
+      instance_double(ResourceRegistry::Registry).tap do |registry|
         allow(registry).to receive(:resolve).with('aca_shop_market.open_enrollment.minimum_length_days').and_return(10)
         allow(registry).to receive(:resolve).with('aca_shop_market.open_enrollment.monthly_end_on').and_return(15)
         allow(registry).to receive(:resolve).with('aca_shop_market.open_enrollment.maximum_length_months').and_return(2)
-        allow(registry).to receive(:resolve).with('aca_shop_market.initial_application.earliest_start_prior_to_effective_on_months').and_return(3)
+        allow(registry).to receive(:resolve).with(
+          'aca_shop_market.initial_application.earliest_start_prior_to_effective_on_months'
+        ).and_return(3)
       end
     end
 
-    let!(:premium_tables) do
-      ::Products::Product.all.health_products.each do |product|
-        product.premium_tables << ::Products::PremiumTable.new(
+    let(:premium_tables) do
+      Products::Product.all.health_products.each do |product|
+        product.premium_tables << Products::PremiumTable.new(
           effective_period: Date.new(2020, 4, 1)..Date.new(2020, 6, 1),
           rating_area_id: rating_area.id,
           premium_tuples:
@@ -62,9 +62,9 @@ RSpec.describe Api::V1::EmployeesController do
       end
 
       it 'returns empty set for dates' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['dates']).to eq []
-        expect(parsed_response['is_late_rate']).to eq true
+        expect(parsed_response['is_late_rate']).to be true
       end
     end
 
@@ -83,9 +83,9 @@ RSpec.describe Api::V1::EmployeesController do
       end
 
       it 'returns set for dates' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['dates']).to eq ['2020/08/01', '2020/09/01']
-        expect(parsed_response['is_late_rate']).to eq false
+        expect(parsed_response['is_late_rate']).to be false
       end
     end
   end

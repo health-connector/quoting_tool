@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Operations::QhpBuilder, type: :operation do
   describe '#call' do
     context 'when processing QHP data' do
-      let(:qhp_builder) { Operations::QhpBuilder.new }
+      let(:qhp_builder) { described_class.new }
       let(:product_builder) { instance_double(Operations::ProductBuilder) }
 
       before do
@@ -14,7 +14,7 @@ RSpec.describe Operations::QhpBuilder, type: :operation do
           .and_return(Dry::Monads::Success.new({ message: 'Success' }))
 
         qhp_double = double('Qhp',
-                            :plan_effective_date => Date.today,
+                            :plan_effective_date => Time.zone.today,
                             :plan_effective_date= => nil,
                             :plan_expiration_date= => nil,
                             :attributes= => nil,
@@ -25,17 +25,15 @@ RSpec.describe Operations::QhpBuilder, type: :operation do
                             :qhp_cost_share_variances => [],
                             :qhp_cost_share_variances= => nil,
                             :standard_component_id => '99999XX9999999',
-                            :active_year => Date.today.year)
+                            :active_year => Time.zone.today.year)
 
-        allow(Products::Qhp).to receive(:where).and_return([])
-        allow(Products::Qhp).to receive(:new).and_return(qhp_double)
+        allow(Products::Qhp).to receive_messages(where: [], new: qhp_double)
 
-        allow(qhp_builder).to receive(:build_objects).and_return(true)
-        allow(qhp_builder).to receive(:validate_and_persist_qhp).and_return(true)
+        allow(qhp_builder).to receive_messages(build_objects: true, validate_and_persist_qhp: true)
       end
 
       it 'returns a success monad with appropriate message' do
-        current_year = Date.today.year
+        current_year = Time.zone.today.year
         input = {
           packages: [
             {

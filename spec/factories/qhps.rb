@@ -21,13 +21,13 @@ FactoryBot.define do
     emp_contribution_amount_for_hsa_or_hra { '1000' }
     child_only_offering { 'no' }
     is_wellness_program_offered { 'yes' }
-    plan_effective_date { Date.today.beginning_of_year }
+    plan_effective_date { Time.zone.today.beginning_of_year }
     out_of_country_coverage { 'yes' }
     out_of_service_area_coverage { 'yes' }
     national_network { 'yes' }
     summary_benefit_and_coverage_url { 'www.example.com' }
     dental_plan_only_ind { 'no' }
-    active_year { Date.today.year }
+    active_year { Time.zone.today.year }
     market_coverage { 'shop' }
   end
 end

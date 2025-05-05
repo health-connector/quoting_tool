@@ -2,6 +2,8 @@
 
 module Products
   module ActuarialFactors
+    # Represents a single actuarial factor entry with a key-value pair
+    # Embedded in ActuarialFactor documents
     class ActuarialFactorEntry
       include Mongoid::Document
 

@@ -1,24 +1,34 @@
 # frozen_string_literal: true
 
 module Transactions
+  # Handles loading various rating factors from spreadsheets
+  # and creating the corresponding actuarial factor records in the database.
+  #
+  # Processes multiple types of rating factors:
+  # - SIC code rating factors
+  # - Employer group size rating factors
+  # - Employer participation rate factors
+  # - Composite rating tier factors
   class LoadFactors
     include Dry::Transaction
 
-    ROW_DATA_BEGINS_ON ||= 3
+    ROW_DATA_BEGINS_ON = 3
 
-    NEW_RATING_FACTOR_PAGES ||= {
-      'SicCodeRatingFactorSet': { page: 0, max_integer_factor_key: nil },
-      'EmployerGroupSizeRatingFactorSet': { page: 1, max_integer_factor_key: 50 },
-      'EmployerParticipationRateRatingFactorSet': { page: 2, max_integer_factor_key: nil },
-      'CompositeRatingTierFactorSet': { page: 3, max_integer_factor_key: nil }
+    # Maps each rating factor type to its sheet index and maximum integer factor key
+    NEW_RATING_FACTOR_PAGES = {
+      SicCodeRatingFactorSet: { page: 0, max_integer_factor_key: nil },
+      EmployerGroupSizeRatingFactorSet: { page: 1, max_integer_factor_key: 50 },
+      EmployerParticipationRateRatingFactorSet: { page: 2, max_integer_factor_key: nil },
+      CompositeRatingTierFactorSet: { page: 3, max_integer_factor_key: nil }
     }.freeze
-    RATING_FACTOR_DEFAULT ||= 1.0
+    RATING_FACTOR_DEFAULT = 1.0
 
-    COMPOSITE_TIER_TRANSLATIONS ||= {
-      'Employee': 'employee_only',
+    # Maps composite tier names from the spreadsheet to system values
+    COMPOSITE_TIER_TRANSLATIONS = {
+      Employee: 'employee_only',
       'Employee + Spouse': 'employee_and_spouse',
       'Employee + Dependent(s)': 'employee_and_one_or_more_dependents',
-      'Family': 'family'
+      Family: 'family'
     }.with_indifferent_access
 
     step :load_file_info
@@ -29,17 +39,30 @@ module Transactions
 
     private
 
+    # Opens the spreadsheet file and extracts year information from the filepath
+    #
+    # @param input [String] Path to the spreadsheet file
+    # @return [Dry::Monads::Result::Success] Hash containing the file and year
     def load_file_info(input)
       year = input.split('/')[-2].to_i
       file = Roo::Spreadsheet.open(input)
       Success({ file:, year: })
     end
 
+    # Validates the file information to ensure it meets requirements
+    # Currently a placeholder for future validation implementation
+    #
+    # @param input [Hash] Contains the file and year from the previous step
+    # @return [Dry::Monads::Result::Success] Same input passed through
     def validate_file_info(input)
       # validate here by adding new Validator
       Success(input)
     end
 
+    # Extracts rating factor data from the spreadsheet for all factor types
+    #
+    # @param input [Hash] Contains the file and year from previous steps
+    # @return [Dry::Monads::Result::Success] Hash containing the results and year
     def load_file_data(input)
       file = input[:file]
       year = input[:year]
@@ -79,11 +102,20 @@ module Transactions
       Success({ result: output, year: })
     end
 
+    # Validates the extracted records before creation
+    # Currently a placeholder for future validation implementation
+    #
+    # @param input [Hash] Contains the result array from previous step
+    # @return [Dry::Monads::Result::Success] Same input passed through
     def validate_records(input)
       # validate records here by adding new Validator
       Success(input)
     end
 
+    # Creates actuarial factor records in the database for each factor type
+    #
+    # @param input [Hash] Contains the results and year from previous steps
+    # @return [Dry::Monads::Result::Success] Success with completion message
     def create_records(input)
       input[:year]
 
@@ -124,28 +156,52 @@ module Transactions
       Success({ message: 'Successfully created/updated Rating Factor records' })
     end
 
+    # Returns the maximum column index for carriers in the spreadsheet
+    #
+    # @return [Integer] Column index
     def carrier_end_column
       13
     end
 
+    # Checks if the rating factor class is for employer group size
+    #
+    # @param klass [Symbol] Rating factor class name
+    # @return [Boolean] True if it's a group size rating factor
     def is_group_size_rating_tier?(klass)
       'EmployerGroupSizeRatingFactorSet'.eql? klass.to_s
     end
 
+    # Checks if the rating factor class is for composite rating tier
+    #
+    # @param klass [Symbol] Rating factor class name
+    # @return [Boolean] True if it's a composite rating factor
     def is_composite_rating_tier?(klass)
       'CompositeRatingTierFactorSet'.eql? klass.to_s
     end
 
+    # Checks if the rating factor class is for participation rate
+    #
+    # @param klass [Symbol] Rating factor class name
+    # @return [Boolean] True if it's a participation rate factor
     def is_participation_rate_rating_tier?(klass)
       'EmployerParticipationRateRatingFactorSet'.eql? klass.to_s
     end
 
+    # Sanitizes text input by removing extra whitespace
+    #
+    # @param input [String, nil] Text to be sanitized
+    # @return [String, nil] Sanitized text or nil
     def parse_text(input)
       return nil if input.nil?
 
       input.squish!
     end
 
+    # Transforms the input factor key to the appropriate format based on factor type
+    #
+    # @param input [Object] Raw factor key value from spreadsheet
+    # @param klass [Symbol] Rating factor class name
+    # @return [String, Integer] Properly formatted factor key
     def get_factory_key(input, klass)
       return COMPOSITE_TIER_TRANSLATIONS[input.to_s] if is_composite_rating_tier?(klass)
 

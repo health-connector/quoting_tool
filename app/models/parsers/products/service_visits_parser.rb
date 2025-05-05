@@ -2,6 +2,8 @@
 
 module Parsers
   module Products
+    # ServiceVisitsParser parses XML data for service visits information
+    # This class maps XML elements to Ruby attributes for medical service visit data
     class ServiceVisitsParser
       include HappyMapper
 
@@ -15,21 +17,24 @@ module Parsers
       element :co_insurance_in_network_tier_2, String, tag: 'coInsuranceInNetworkTier2'
       element :co_insurance_out_of_network, String, tag: 'coInsuranceOutOfNetwork'
 
+      # Converts parsed service visit data to a normalized hash
+      #
+      # @return [Hash] normalized data with cleaned string values
       def to_hash
         {
-          visit_type: visit_type.gsub(/\n/, '').strip,
-          copay_in_network_tier_1: copay_in_network_tier_1.gsub(/\n/, '').strip,
-          copay_in_network_tier_2: copay_in_network_tier_2.present? ? copay_in_network_tier_2.gsub(/\n/, '').strip : '',
-          copay_out_of_network: copay_out_of_network.gsub(/\n/, '').strip,
-          co_insurance_in_network_tier_1: co_insurance_in_network_tier_1.gsub(/\n/, '').strip,
+          visit_type: visit_type.gsub("\n", '').strip,
+          copay_in_network_tier_1: copay_in_network_tier_1.gsub("\n", '').strip,
+          copay_in_network_tier_2: copay_in_network_tier_2.present? ? copay_in_network_tier_2.gsub("\n", '').strip : '',
+          copay_out_of_network: copay_out_of_network.gsub("\n", '').strip,
+          co_insurance_in_network_tier_1: co_insurance_in_network_tier_1.gsub("\n", '').strip,
           co_insurance_in_network_tier_2: if co_insurance_in_network_tier_2.present?
                                             co_insurance_in_network_tier_2.gsub(
-                                              /\n/, ''
+                                              "\n", ''
                                             ).strip
                                           else
                                             ''
                                           end,
-          co_insurance_out_of_network: co_insurance_out_of_network.gsub(/\n/, '').strip
+          co_insurance_out_of_network: co_insurance_out_of_network.gsub("\n", '').strip
         }
       end
     end

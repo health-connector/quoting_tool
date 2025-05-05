@@ -7,7 +7,7 @@ RSpec.describe Api::V1::ProductsController do
   let(:zip_code) { '02108' }
   let(:state) { 'MA' }
   let(:sic_code) { '0112' }
-  let(:start_date) { Date.today.beginning_of_month }
+  let(:start_date) { Time.zone.today.beginning_of_month }
 
   describe '#plans' do
     let(:base_params) do
@@ -26,8 +26,7 @@ RSpec.describe Api::V1::ProductsController do
     let(:dental_data) { [{ 'metal_level' => dental_metal_level }] }
 
     before do
-      allow(Rails.cache).to receive(:read).and_return(nil)
-      allow(Rails.cache).to receive(:write).and_return(true)
+      allow(Rails.cache).to receive_messages(read: nil, write: true)
     end
 
     context 'when requesting health plans' do
@@ -35,9 +34,8 @@ RSpec.describe Api::V1::ProductsController do
 
       before do
         allow(controller).to receive(:plans).and_call_original
-        allow(controller).to receive(:service_area_ids).and_return([BSON::ObjectId.new])
-        allow(controller).to receive(:rating_area_id).and_return(BSON::ObjectId.new)
-        allow(controller).to receive(:county_zips).and_return([BSON::ObjectId.new])
+        allow(controller).to receive_messages(service_area_ids: [BSON::ObjectId.new],
+                                              rating_area_id: BSON::ObjectId.new, county_zips: [BSON::ObjectId.new])
 
         health_products = [double('HealthProduct')]
         allow(Products::Product).to receive(:where).and_return(health_products)
@@ -54,12 +52,12 @@ RSpec.describe Api::V1::ProductsController do
       end
 
       it 'returns JSON with success status' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['status']).to eq 'success'
       end
 
       it 'returns products with correct metal level' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['plans'][0]['metal_level']).to eq health_metal_level
       end
     end
@@ -69,9 +67,8 @@ RSpec.describe Api::V1::ProductsController do
 
       before do
         allow(controller).to receive(:plans).and_call_original
-        allow(controller).to receive(:service_area_ids).and_return([BSON::ObjectId.new])
-        allow(controller).to receive(:rating_area_id).and_return(BSON::ObjectId.new)
-        allow(controller).to receive(:county_zips).and_return([BSON::ObjectId.new])
+        allow(controller).to receive_messages(service_area_ids: [BSON::ObjectId.new],
+                                              rating_area_id: BSON::ObjectId.new, county_zips: [BSON::ObjectId.new])
 
         dental_products = [double('DentalProduct')]
         allow(Products::Product).to receive(:where).and_return(dental_products)
@@ -88,12 +85,12 @@ RSpec.describe Api::V1::ProductsController do
       end
 
       it 'returns JSON with success status' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['status']).to eq 'success'
       end
 
       it 'returns products with correct metal level' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['plans'][0]['metal_level']).to eq dental_metal_level
       end
     end
@@ -114,12 +111,12 @@ RSpec.describe Api::V1::ProductsController do
       end
 
       it 'returns success status' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['status']).to eq 'success'
       end
 
       it 'returns metadata' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response).to have_key('metadata')
       end
     end
@@ -132,12 +129,12 @@ RSpec.describe Api::V1::ProductsController do
       end
 
       it 'returns failure status' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['status']).to eq 'failure'
       end
 
       it 'returns empty metadata' do
-        parsed_response = JSON.parse(response.body)
+        parsed_response = response.parsed_body
         expect(parsed_response['metadata']).to eq ''
       end
     end

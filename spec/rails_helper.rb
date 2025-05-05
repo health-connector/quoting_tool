@@ -59,3 +59,5 @@ RSpec.configure do |config|
     TimeKeeper.set_date_of_record_unprotected!(Date.current)
   end
 end
+
+Rails.root.glob('spec/support/**/*.rb').each { |f| require f }

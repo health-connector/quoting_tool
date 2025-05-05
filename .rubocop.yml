@@ -1,0 +1,160 @@
+plugins:
+  - rubocop-factory_bot
+  - rubocop-rails
+  - rubocop-rspec_rails
+  - rubocop-rspec
+
+Metrics/BlockLength:
+  Enabled: true
+  Exclude:
+    - 'describe'
+    - 'context'
+    - 'it'
+    - 'before'
+    - 'after'
+    - 'let'
+    - 'let!'
+    - 'subject'
+    - 'around'
+    - 'before(:all)'
+    - 'after(:all)'
+    - 'before(:each)'
+    - 'after(:each)'
+    - 'FactoryBot.define'
+    - 'factory'
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "vendor/**/*"
+    - 'node_modules/**/*'
+
+# this is because we use mongoid instead of activerecord
+Rails/FindEach:
+  Enabled: false
+
+# we don't use activerecord, is flagging dry-rb results as active record
+Rails/DeprecatedActiveModelErrorsMethods:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/SubjectDeclaration:
+  Enabled: false
+
+RSpec/RepeatedExample:
+  Enabled: false
+
+RSpec/ContextWording:
+  Enabled: false
+
+#remaning disabled cops are copied from other projects
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/ExtraSpacing:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundModuleBody:
+  Enabled: false
+
+Layout/SpaceInsideBlockBraces:
+  Enabled: false
+
+Layout/TrailingEmptyLines:
+  Enabled: false
+
+Metrics/AbcSize:
+  Max: 50
+
+Metrics/ClassLength:
+  Max: 300
+
+Metrics/ModuleLength:
+  Max: 200
+
+Metrics/CyclomaticComplexity:
+  Max: 11
+
+Layout/LineLength:
+  Max: 150
+
+Metrics/MethodLength:
+  Max: 25
+
+Metrics/PerceivedComplexity:
+  Max: 15
+
+Naming/VariableNumber:
+  Enabled: false
+
+Naming/ConstantName:
+  Enabled: false
+
+Style/BlockComments:
+  Enabled: false
+
+Style/EachWithObject:
+  Enabled: false
+
+Style/EmptyLiteral:
+  Enabled: false
+
+Style/EmptyMethod:
+  Enabled: false
+
+Style/ExpandPathArguments:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/RedundantPercentQ:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/TernaryParentheses:
+  Enabled: false
+
+Style/GlobalVars:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Gemspec/OrderedDependencies:
+  Enabled: false

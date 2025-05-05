@@ -7,7 +7,7 @@ FactoryBot.define do
     end
 
     benefit_market_kind { :aca_shop }
-    application_period { Date.today.beginning_of_year..Date.today.end_of_year }
+    application_period { Time.zone.today.all_year }
     issuer_hios_ids { ['11111'] }
     product_package_kinds { [:single_product] }
     kind { :dental }

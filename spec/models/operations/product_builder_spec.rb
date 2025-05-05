@@ -5,22 +5,20 @@ require 'rails_helper'
 RSpec.describe Operations::ProductBuilder, type: :operation do
   # Keep this test super simple - focus on the public API, not implementation details
 
-  let(:product_builder) { Operations::ProductBuilder.new }
+  let(:product_builder) { described_class.new }
 
   before do
     # Mock all methods that cause issues
-    allow(product_builder).to receive(:group_size_factors).and_return({ factors: {}, max_group_size: 1 })
-    allow(product_builder).to receive(:group_tier_factors).and_return([])
-    allow(product_builder).to receive(:participation_factors).and_return({})
-    allow(product_builder).to receive(:parse_market).and_return('shop')
+    allow(product_builder).to receive_messages(group_size_factors: { factors: {}, max_group_size: 1 },
+                                               group_tier_factors: [], participation_factors: {}, parse_market: 'shop')
   end
 
   context 'successful' do
-    let(:service_area) { FactoryBot.create(:service_area, issuer_provided_code: '11111') }
+    let(:service_area) { create(:service_area, issuer_provided_code: '11111') }
 
     let(:qhp) do
-      instance_double('Products::Qhp',
-                      active_year: Date.today.year,
+      instance_double(Products::Qhp,
+                      active_year: Time.zone.today.year,
                       issuer_id: '11111',
                       service_area_id: 'MAS001',
                       metal_level: 'Silver',
@@ -33,7 +31,7 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
     end
 
     let(:variance) do
-      instance_double('Products::QhpCostShareVariance',
+      instance_double(Products::QhpCostShareVariance,
                       hios_plan_and_variant_id: '12345XX1234567-01',
                       plan_marketing_name: 'Test Plan',
                       qhp_service_visits: [],
@@ -41,14 +39,14 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
     end
 
     let(:service_area_map) do
-      { [service_area.issuer_provided_code, 'MAS001', Date.today.year] => service_area.id }
+      { [service_area.issuer_provided_code, 'MAS001', Time.zone.today.year] => service_area.id }
     end
 
     let(:health_data_map) do
-      { ['12345XX1234567', Date.today.year] => {
+      { ['12345XX1234567', Time.zone.today.year] => {
         hios_id: '12345XX1234567',
         provider_directory_url: '',
-        year: Date.today.year,
+        year: Time.zone.today.year,
         rx_formulary_url: '',
         is_standard_plan: true,
         network_information: 'Test network info',
@@ -62,35 +60,34 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
     before do
       # Setup our test
       allow(qhp).to receive(:qhp_cost_share_variances).and_return([variance])
-      allow(product_builder).to receive(:retrieve_metal_level).and_return('silver')
-      allow(product_builder).to receive(:is_health_product?).and_return(true)
       allow(variance).to receive(:product_id=)
 
       # Mock all the service visit lookups
-      service_visit = instance_double('Products::QhpServiceVisit',
+      service_visit = instance_double(Products::QhpServiceVisit,
                                       copay_in_network_tier_1: '$25 In Network',
                                       co_insurance_in_network_tier_1: '20%')
-      allow(variance).to receive(:qhp_service_visits).and_return([])
       allow(variance).to receive(:qhp_service_visits).with(hash_including(:visit_type)).and_return([service_visit])
 
       # Mock deductable
-      deductable = instance_double('Products::QhpDeductable',
+      deductable = instance_double(Products::QhpDeductable,
                                    in_network_tier_1_individual: '$2000',
                                    in_network_tier_1_family: '$4000')
-      allow(variance).to receive(:qhp_deductable).and_return(deductable)
 
       # Mock maximum out of pocket
-      max_out_of_pocket = instance_double('Products::QhpMaximumOutOfPocket',
+      max_out_of_pocket = instance_double(Products::QhpMaximumOutOfPocket,
                                           in_network_tier_1_family_amount: '$10000')
-      allow(variance).to receive(:qhp_maximum_out_of_pockets).and_return([max_out_of_pocket])
+      allow(variance).to receive_messages(qhp_service_visits: [], qhp_deductable: deductable,
+                                          qhp_maximum_out_of_pockets: [max_out_of_pocket])
 
       # Mock the visit value parsing
-      allow(product_builder).to receive(:pcp_in_network_copay).and_return('25')
-      allow(product_builder).to receive(:hospital_stay_in_network_copay).and_return('25.00')
-      allow(product_builder).to receive(:emergency_in_network_copay).and_return('25')
-      allow(product_builder).to receive(:drug_in_network_copay).and_return('25')
-      allow(product_builder).to receive(:out_of_pocket_in_network).and_return('10000')
-      allow(product_builder).to receive(:service_visit_co_insurance).and_return('20')
+      allow(product_builder).to receive_messages(retrieve_metal_level: 'silver',
+                                                 health_product?: true,
+                                                 pcp_in_network_copay: '25',
+                                                 hospital_stay_in_network_copay: '25.00',
+                                                 emergency_in_network_copay: '25',
+                                                 drug_in_network_copay: '25',
+                                                 out_of_pocket_in_network: '10000',
+                                                 service_visit_co_insurance: '20')
 
       # Mock saving the product - use a double instead of any_instance_of
       health_product = instance_double(Products::HealthProduct, save!: true, id: BSON::ObjectId.new)
@@ -121,8 +118,8 @@ RSpec.describe Operations::ProductBuilder, type: :operation do
                                               service_area_id: nil,
                                               metal_level_kind: :silver,
                                               benefit_market_kind: 'aca_shop',
-                                              application_period: (Date.new(Date.today.year, 1,
-                                                                            1)..Date.new(Date.today.year, 12, 31)),
+                                              application_period: (Date.new(Time.zone.today.year, 1,
+                                                                            1)..Date.new(Time.zone.today.year, 12, 31)),
                                               title: 'Test Product'
                                             })
       expect(product).not_to be_nil

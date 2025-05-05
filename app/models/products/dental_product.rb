@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Products
+  # Represents a dental insurance product
+  # Contains dental-specific attributes and behaviors
   class DentalProduct < Product
     PRODUCT_PACKAGE_KINDS = %i[single_product multi_product].freeze
     METAL_LEVEL_KINDS     = [:dental].freeze
@@ -29,10 +31,16 @@ module Products
 
     alias is_standard_plan? is_standard_plan
 
+    # Returns the dental level as a string
+    #
+    # @return [String] The dental level
     def metal_level
       dental_level.to_s
     end
 
+    # Returns the dental plan kind as a string
+    #
+    # @return [String] The dental plan kind
     def product_type
       dental_plan_kind.to_s
     end

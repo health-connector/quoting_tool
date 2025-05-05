@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 module Locations
+  # The ServiceArea model represents geographical areas where insurance products are offered.
+  # Service areas define the regions where an insurance issuer's products are available to consumers.
+  # Each service area may include multiple counties, zip codes, or entire states.
   class ServiceArea
     include Mongoid::Document
     include Mongoid::Timestamps
@@ -25,13 +28,17 @@ module Locations
     index({ county_zip_ids: 1 })
     index({ covered_state_codes: 1 })
 
+    # Validates that at least one location is specified for the service area
+    # @return [Boolean] Whether the validation passes
     def location_specified
-      if county_zip_ids.blank? && covered_states.blank?
-        errors.add(:base, 'a location covered by the service area must be specified')
-      end
+      errors.add(:base, 'a location covered by the service area must be specified') if county_zip_ids.blank? && covered_states.blank?
       true
     end
 
+    # Finds all service areas that cover a specific address at a given point in time
+    # @param address [Object] Address object with county, zip, and state attributes
+    # @param during [Date] The date for which to find applicable service areas (defaults to current date)
+    # @return [Array<ServiceArea>] The applicable service areas for the address
     def self.service_areas_for(address, during: TimeKeeper.date_of_record)
       county_name = address.county.blank? ? '' : address.county.titlecase
       zip_code = address.zip

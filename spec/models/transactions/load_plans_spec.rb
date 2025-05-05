@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Transactions::LoadPlans, type: :transaction do
-  let(:county_zip) { FactoryBot.create(:county_zip, zip: '12345', county_name: 'County 1') }
+  let(:county_zip) { create(:county_zip, zip: '12345', county_name: 'County 1') }
 
   let(:files) { Dir.glob(Rails.root.join('spec/test_data/plans/*.xml').to_s) }
   let(:additional_files) { Dir.glob(Rails.root.join('spec/test_data/plans/2020/master_xml.xlsx').to_s) }
@@ -12,31 +12,35 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
 
   before do
     allow(Operations::ProductBuilder).to receive(:new).and_return(product_builder)
-    allow(product_builder).to receive(:group_size_factors).and_return({ factors: {}, max_group_size: 1 })
-    allow(product_builder).to receive(:group_tier_factors).and_return([])
-    allow(product_builder).to receive(:participation_factors).and_return({})
-    allow(product_builder).to receive(:call).and_return(Dry::Monads::Success.new({ message: 'Success',
-                                                                                   product: double('Product') }))
+    allow(product_builder).to receive_messages(
+      group_size_factors: {
+        factors: {},
+        max_group_size: 1
+      },
+      group_tier_factors: [],
+      participation_factors: {},
+      call: Dry::Monads::Success.new({ message: 'Success', product: double('Product') })
+    )
   end
 
   context 'succesful' do
-    let!(:service_area) { FactoryBot.create(:service_area, county_zip_ids: [county_zip.id], active_year: 2020) }
+    let(:service_area) { create(:service_area, county_zip_ids: [county_zip.id], active_year: 2020) }
     let!(:subject) do
-      Transactions::LoadPlans.new.with_step_args(
+      described_class.new.with_step_args(
         load_file_info: [additional_files]
       ).call(files)
     end
 
     it 'is success' do
-      expect(subject.success?).to eq true
+      expect(subject.success?).to be true
     end
 
     it 'creates new health plans' do
-      expect(subject.success?).to eq true
+      expect(subject.success?).to be true
     end
 
     it 'creates new dental plans' do
-      expect(subject.success?).to eq true
+      expect(subject.success?).to be true
     end
 
     it 'returns success message' do
@@ -50,7 +54,7 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
     end
 
     let(:subject) do
-      Transactions::LoadPlans.new.with_step_args(
+      described_class.new.with_step_args(
         load_file_info: [additional_files]
       ).call(files)
     end
@@ -61,7 +65,7 @@ RSpec.describe Transactions::LoadPlans, type: :transaction do
 
     it 'stills process plans but with empty service area' do
       result = subject
-      expect(result.success?).to eq true
+      expect(result.success?).to be true
       expect(result.success[:message]).to eq 'Plans Succesfully Created'
     end
   end

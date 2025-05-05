@@ -9,14 +9,14 @@ def sanitize_value(value)
   value.gsub(/[[:cntrl:]]|^\p{Space}+|\p{Space}+$/, '')
 end
 
-puts ':: Started Creating SBC documents ::'
+Rails.logger.debug ':: Started Creating SBC documents ::'
 
-roster = Roo::Spreadsheet.open(ENV['sbc_path'])
+roster = Roo::Spreadsheet.open(ENV.fetch('sbc_path', nil))
 sheet = roster.sheet(0)
 columns = sheet.row(1)
 
 output = (2..sheet.last_row).each_with_object([]) do |id, result|
-  row = Hash[[columns, sheet.row(id)].transpose]
+  row = [columns, sheet.row(id)].transpose.to_h
 
   result << {
     product_name: parse_text(row['product_name']),
@@ -29,13 +29,14 @@ end
 
 count = 0
 output.each do |info|
-  product = ::Products::Product.where(
+  product = Products::Product.where(
     :hios_id => info[:hios_id],
-    :"application_period.min".gte => Date.new(info[:year], 1, 1), :"application_period.max".lte => Date.new(info[:year], 1, 1).end_of_year
+    :'application_period.min'.gte => Date.new(info[:year], 1, 1),
+    :'application_period.max'.lte => Date.new(info[:year], 1, 1).end_of_year
   ).first
 
   if product.blank?
-    puts "No product for #{info[:hios_id]} #{info[:year]}"
+    Rails.logger.debug { "No product for #{info[:hios_id]} #{info[:year]}" }
     next
   end
   product.title = info[:product_name]
@@ -45,10 +46,8 @@ output.each do |info|
   product.save
   count += 1
 
-  unless Rails.env.test?
-    puts "Product #{product.title} #{product.hios_id} updated, Document uri #{product.sbc_document.identifier}"
-  end
+  Rails.logger.debug { "Product #{product.title} #{product.hios_id} updated, uri #{product.sbc_document.identifier}" } unless Rails.env.test?
 end
-puts "Total #{count} plans/products updated." unless Rails.env.test?
+Rails.logger.debug { "Total #{count} plans/products updated." } unless Rails.env.test?
 
-puts ':: Created SBC documents ::'
+Rails.logger.debug ':: Created SBC documents ::'

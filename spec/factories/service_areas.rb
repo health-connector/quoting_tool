@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :service_area, class: 'Locations::ServiceArea' do
-    active_year { Date.today.year }
+    active_year { Time.zone.today.year }
     issuer_provided_code { 'MAS001' }
     issuer_hios_id { '11111' }
     issuer_provided_title { 'Issuer Provided Title' }
