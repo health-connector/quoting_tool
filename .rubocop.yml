@@ -1,3 +1,5 @@
++require: rubocop-rails
+
 plugins:
   - rubocop-factory_bot
   - rubocop-rails
