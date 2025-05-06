@@ -77,6 +77,7 @@ module Transactions
     #
     # @param input [Hash] Contains the service area records and year from previous steps
     # @return [Dry::Monads::Result] Success with message or Failure with error message
+    # rubocop:disable Metrics/MethodLength, Metrics/BlockLength
     def create_records(input)
       year = input[:year]
       input[:result].each do |params|
@@ -127,6 +128,7 @@ module Transactions
       end
       Success({ message: "Successfully created/updated #{input[:result].size} Service Area records" })
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/BlockLength
 
     # Sanitizes text input by removing extra whitespace
     #

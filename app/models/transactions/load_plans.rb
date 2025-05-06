@@ -40,6 +40,7 @@ module Transactions
     #
     # @param input [Hash] Contains file paths from previous steps
     # @return [Dry::Monads::Result::Success] Hash containing the combined plan data
+    # rubocop:disable Metrics/AbcSize, Metrics/BlockLength, Metrics/CyclomaticComplexity, Metrics/MethodLength, Lint/ShadowingOuterLocalVariable
     def load_file_data(input)
       output = input[:files].inject([]) do |result, file|
         Rails.logger.debug { "processing file: #{file}" }
@@ -110,6 +111,7 @@ module Transactions
 
       Success({ result: output, data: })
     end
+    # rubocop:enable Metrics/AbcSize, Metrics/BlockLength, Metrics/CyclomaticComplexity, Metrics/MethodLength, Lint/ShadowingOuterLocalVariable
 
     # Validates the extracted records before creation
     # Currently a placeholder for future validation implementation

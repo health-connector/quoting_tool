@@ -63,6 +63,7 @@ module Transactions
     #
     # @param input [Hash] Contains the file and year from previous steps
     # @return [Dry::Monads::Result::Success] Hash containing the results and year
+    # rubocop:disable Metrics/MethodLength, Lint/ShadowingOuterLocalVariable
     def load_file_data(input)
       file = input[:file]
       year = input[:year]
@@ -101,6 +102,7 @@ module Transactions
 
       Success({ result: output, year: })
     end
+    # rubocop:enable Metrics/MethodLength, Lint/ShadowingOuterLocalVariable
 
     # Validates the extracted records before creation
     # Currently a placeholder for future validation implementation
@@ -122,16 +124,7 @@ module Transactions
       NEW_RATING_FACTOR_PAGES.each do |rating_factor_class, sheet_info|
         result_ary = input[:result][sheet_info[:page]]
 
-        object_class = case rating_factor_class
-                       when :SicCodeRatingFactorSet
-                         ::Products::ActuarialFactors::SicActuarialFactor
-                       when :EmployerGroupSizeRatingFactorSet
-                         ::Products::ActuarialFactors::GroupSizeActuarialFactor
-                       when :EmployerParticipationRateRatingFactorSet
-                         ::Products::ActuarialFactors::ParticipationRateActuarialFactor
-                       when :CompositeRatingTierFactorSet
-                         ::Products::ActuarialFactors::CompositeRatingTierActuarialFactor
-                       end
+        object_class = resolve_rating_factor_class(rating_factor_class)
 
         result_ary.each do |json|
           record = object_class.where(
@@ -154,6 +147,16 @@ module Transactions
         end
       end
       Success({ message: 'Successfully created/updated Rating Factor records' })
+    end
+
+    def resolve_rating_factor_class(rating_factor_class)
+      classes = {
+        :SicCodeRatingFactorSet => ::Products::ActuarialFactors::SicActuarialFactor,
+        :EmployerGroupSizeRatingFactorSet => ::Products::ActuarialFactors::GroupSizeActuarialFactor,
+        :EmployerParticipationRateRatingFactorSet => ::Products::ActuarialFactors::ParticipationRateActuarialFactor,
+        :CompositeRatingTierFactorSet => ::Products::ActuarialFactors::CompositeRatingTierActuarialFactor
+      }
+      classes[rating_factor_class]
     end
 
     # Returns the maximum column index for carriers in the spreadsheet
