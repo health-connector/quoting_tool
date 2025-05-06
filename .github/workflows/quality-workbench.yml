@@ -23,12 +23,15 @@ jobs:
         with:
           bundler-cache: true
           rubygems: latest
+      - name: bundle install
+        run: |
+          bundle installll
       - name: Run rubocop
         run: rubocop
       - name: build bearer report
         if: failure() 
         run: |
-          rubocop >> $GITHUB_STEP_SUMMARY
+          rubocop >> 
   rspec:
     runs-on: ubuntu-latest
     services:
