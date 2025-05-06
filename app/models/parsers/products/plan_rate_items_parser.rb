@@ -10,6 +10,7 @@ module Parsers
     # which are typically denoted with a *_value suffix.
     class PlanRateItemsParser
       include HappyMapper
+      include ValueRetrievalHelper
 
       tag 'items'
 
@@ -98,14 +99,6 @@ module Parsers
           couple_enrollee_two_dependent: safely_retrive_value(couple_enrollee_two_dependent),
           couple_enrollee_many_dependent: safely_retrive_value(couple_enrollee_many_dependent)
         }
-      end
-
-      def safely_retrive_value(value)
-        if value.present?
-          value.gsub("\n", '').gsub('$', '').strip
-        else
-          ''
-        end
       end
     end
   end

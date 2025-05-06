@@ -7,7 +7,7 @@ module Parsers
     # and other administrative data related to the plan rates.
     class PlanRateHeaderParser
       include HappyMapper
-
+      include ValueRetrievalHelper
       tag 'header'
 
       # Administrative fields
@@ -35,19 +35,19 @@ module Parsers
       # @return [Hash] Structured and sanitized header data
       def to_hash
         {
-          application_id: application_id.present? ? application_id.gsub("\n", '').strip : '',
-          last_modified_date: last_modified_date.present? ? last_modified_date.gsub("\n", '').strip : '',
-          last_modified_by: last_modified_by.present? ? last_modified_by.gsub("\n", '').strip : '',
-          statements: statements.present? ? statements.gsub("\n", '').strip : '',
-          status: status.present? ? status.gsub("\n", '').strip : '',
-          attestation_indicator: attestation_indicator.present? ? attestation_indicator.gsub("\n", '').strip : '',
-          tin: tin.present? ? tin.gsub("\n", '').strip : '',
-          issuer_id: issuer_id.present? ? issuer_id.gsub("\n", '').strip : '',
-          submission_type: submission_type.present? ? submission_type.gsub("\n", '').strip : '',
-          market_type: market_type.present? ? market_type.gsub("\n", '').strip : '',
-          market_division_type: market_division_type.present? ? market_division_type.gsub("\n", '').strip : '',
-          market_coverage_type: market_coverage_type.present? ? market_coverage_type.gsub("\n", '').strip : '',
-          template_version: template_version.present? ? template_version.gsub("\n", '').strip : ''
+          application_id: safely_retrive_value(application_id),
+          last_modified_date: safely_retrive_value(last_modified_date),
+          last_modified_by: safely_retrive_value(last_modified_by),
+          statements: safely_retrive_value(statements),
+          status: safely_retrive_value(status),
+          attestation_indicator: safely_retrive_value(attestation_indicator),
+          tin: safely_retrive_value(tin),
+          issuer_id: safely_retrive_value(issuer_id),
+          submission_type: safely_retrive_value(submission_type),
+          market_type: safely_retrive_value(market_type),
+          market_division_type: safely_retrive_value(market_division_type),
+          market_coverage_type: safely_retrive_value(market_coverage_type),
+          template_version: safely_retrive_value(template_version)
         }
       end
     end
