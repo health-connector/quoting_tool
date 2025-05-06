@@ -15,23 +15,36 @@ env:
   MONGODB_URL: 127.0.0.1
 
 jobs:
+  # rubocop:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ruby/setup-ruby@v1
+  #       with:
+  #         bundler-cache: true
+  #         rubygems: latest
+  #     - name: bundle install
+  #       run: |
+  #         bundle install
+  #     - name: Run rubocop
+  #       run: bundle exec rubocop
+  #     - name: rubocop report
+  #       if: failure() 
+  #       run: |
+  #         bundle exec rubocop >> $GITHUB_STEP_SUMMARY
+
   rubocop:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-          rubygems: latest
       - name: bundle install
         run: |
+          bundle config path vendor/bundle
           bundle install
-      - name: Run rubocop
-        run: bundle exec rubocop
-      - name: rubocop report
-        if: failure() 
+      - name: run rubocop
         run: |
-          bundle exec rubocop >> $GITHUB_STEP_SUMMARY
+          bundle exec rubocop
   
   rspec:
     runs-on: ubuntu-latest
