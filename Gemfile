@@ -71,12 +71,12 @@ group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console',            '>= 3'
 
-  gem 'rubocop',                require: false
-  gem 'rubocop-factory_bot', require: false
-  gem 'rubocop-git', require: false
-  gem 'rubocop-rails', require: false
-  gem 'rubocop-rspec', require: false
-  gem 'rubocop-rspec_rails', require: false
+  gem 'rubocop'
+  gem 'rubocop-factory_bot'
+  gem 'rubocop-git'
+  gem 'rubocop-rails'
+  gem 'rubocop-rspec'
+  gem 'rubocop-rspec_rails'
 end
 
 group :test do
