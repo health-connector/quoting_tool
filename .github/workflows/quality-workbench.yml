@@ -27,11 +27,12 @@ jobs:
         run: |
           bundle install
       - name: Run rubocop
-        run: rubocop
-      - name: build bearer report
+        run: bundle exec rubocop
+      - name: rubocop report
         if: failure() 
         run: |
-          rubocop >> 
+          bundle exec rubocop >> $GITHUB_STEP_SUMMARY
+  
   rspec:
     runs-on: ubuntu-latest
     services:
