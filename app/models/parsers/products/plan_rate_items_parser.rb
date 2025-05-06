@@ -61,44 +61,13 @@ module Parsers
       # cleaning and normalizing all text fields
       # @return [Hash] Structured and sanitized rate item data
       def to_hash
-        {
-          effective_date_value: safely_retrive_value(effective_date_value),
-          expiration_date_value: safely_retrive_value(expiration_date_value),
-          plan_id_value: safely_retrive_value(plan_id_value),
-          rate_area_id_value: safely_retrive_value(rate_area_id_value),
-          age_number_value: safely_retrive_value(age_number_value),
-          tobacco_value: safely_retrive_value(tobacco_value),
-          primary_enrollee_value: safely_retrive_value(primary_enrollee_value),
-          primary_enrollee_one_dependent_value: safely_retrive_value(primary_enrollee_one_dependent_value),
-          primary_enrollee_two_dependent_value: safely_retrive_value(primary_enrollee_two_dependent_value),
-          primary_enrollee_many_dependent_value: safely_retrive_value(primary_enrollee_many_dependent_value),
-          effective_date: safely_retrive_value(effective_date),
-          expiration_date: safely_retrive_value(expiration_date),
-          plan_id: safely_retrive_value(plan_id),
-          rate_area_id: safely_retrive_value(rate_area_id),
-          age_number: safely_retrive_value(age_number),
-          tobacco: safely_retrive_value(tobacco),
-          primary_enrollee: safely_retrive_value(primary_enrollee),
-          primary_enrollee_one_dependent: safely_retrive_value(primary_enrollee_one_dependent),
-          primary_enrollee_two_dependent: safely_retrive_value(primary_enrollee_two_dependent),
-          primary_enrollee_many_dependent: safely_retrive_value(primary_enrollee_many_dependent),
-          is_issuer_data: safely_retrive_value(is_issuer_data),
-          primary_enrollee_tobacco: safely_retrive_value(primary_enrollee_tobacco),
-          primary_enrollee_tobacco_value: safely_retrive_value(primary_enrollee_tobacco_value)
-        }.merge(couple_hash)
+        self.class.elements.to_h do |el|
+          [el.name.to_sym, safely_retrive_value(send(el.name), strip_dollar_sign: remove_dollar_fields.include?(el.name))]
+        end
       end
 
-      def couple_hash
-        {
-          couple_enrollee_value: safely_retrive_value(couple_enrollee_value),
-          couple_enrollee_one_dependent_value: safely_retrive_value(couple_enrollee_one_dependent_value),
-          couple_enrollee_two_dependent_value: safely_retrive_value(couple_enrollee_two_dependent_value),
-          couple_enrollee_many_dependent_value: safely_retrive_value(couple_enrollee_many_dependent_value),
-          couple_enrollee: safely_retrive_value(couple_enrollee),
-          couple_enrollee_one_dependent: safely_retrive_value(couple_enrollee_one_dependent),
-          couple_enrollee_two_dependent: safely_retrive_value(couple_enrollee_two_dependent),
-          couple_enrollee_many_dependent: safely_retrive_value(couple_enrollee_many_dependent)
-        }
+      def remove_dollar_fields
+        ["primary_enrollee", "primary_enrollee_one_dependent"]
       end
     end
   end

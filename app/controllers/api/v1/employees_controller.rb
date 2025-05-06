@@ -44,7 +44,7 @@ module Api
         end_on = current_date - QuotingToolRegistry[:quoting_tool_app].setting(
           :earliest_start_prior_to_effective_on_months
         ).item.months
-        dates_rates_hash = has_rates_for(start_on..end_on)
+        dates_rates_hash = rates_for?(start_on..end_on)
         dates = dates_rates_hash.collect { |k, v| k.to_date.to_s.gsub!('-', '/') if v }.compact
 
         render json: { dates:, is_late_rate: !dates_rates_hash.values.all? }
@@ -55,7 +55,7 @@ module Api
       # Checks if rates are available for a range of dates
       # @param dates [Range] Range of dates to check for rate availability
       # @return [Hash] Hash mapping date strings to boolean indicating rate availability
-      def has_rates_for(dates)
+      def rates_for?(dates)
         dates.each_with_object({}) do |key, result|
           result[key.to_s] = rates_available?(key) if key == key.beginning_of_month
         end

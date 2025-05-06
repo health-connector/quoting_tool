@@ -6,6 +6,7 @@ module Parsers
     # Contains detailed information about a specific health plan
     class PlanAttributesParser
       include HappyMapper
+      include ValueRetrievalHelper
 
       tag 'planAttributes'
 
@@ -77,107 +78,21 @@ module Parsers
       # Converts the parsed plan attributes data into a structured hash format
       # @return [Hash] Clean, normalized plan attribute data
       def to_hash
-        qhp_hash = {
-          standard_component_id: standard_component_id.gsub("\n", '').strip,
-          plan_marketing_name: plan_marketing_name.gsub("\n", '').strip,
-          hios_product_id: hios_product_id.gsub("\n", '').strip,
-          hpid: hpid.present? ? hpid.gsub("\n", '').strip : '',
-          network_id: network_id.gsub("\n", '').strip,
-          service_area_id: service_area_id.gsub("\n", '').strip,
-          formulary_id: formulary_id.gsub("\n", '').strip,
-          is_new_plan: is_new_plan.gsub("\n", '').strip,
-          plan_type: plan_type.gsub("\n", '').strip,
-          metal_level: if metal_level.gsub("\n",
-                                           '').strip.downcase == 'expanded bronze'
-                         'bronze'
-                       else
-                         metal_level.gsub("\n",
-                                          '').strip
-                       end,
-          unique_plan_design: unique_plan_design.gsub("\n", '').strip,
-          qhp_or_non_qhp: qhp_or_non_qhp.gsub("\n", '').strip,
-          insurance_plan_pregnancy_notice_req_ind: insurance_plan_pregnancy_notice_req_ind.gsub("\n", '').strip,
-          insurance_plan_benefit_exclusion_text: insurance_plan_benefit_exclusion_text.gsub("\n", '').strip,
-          indian_plan_variation: indian_plan_variation.gsub("\n", '').strip,
-          hsa_eligibility: begin
-            hsa_eligibility.gsub("\n", '').strip
-          rescue StandardError
-            ''
-          end,
-          employer_hsa_hra_contribution_indicator: begin
-            employer_hsa_hra_contribution_indicator.gsub("\n",
-                                                         '').strip
-          rescue StandardError
-            ''
-          end,
-          emp_contribution_amount_for_hsa_or_hra: begin
-            emp_contribution_amount_for_hsa_or_hra.gsub("\n",
-                                                        '').strip
-          rescue StandardError
-            ''
-          end,
-          child_only_offering: child_only_offering.gsub("\n", '').strip,
-          child_only_plan_id: child_only_plan_id.gsub("\n", '').strip,
-          is_wellness_program_offered: is_wellness_program_offered.gsub("\n", '').strip,
-          is_disease_mgmt_programs_offered: is_disease_mgmt_programs_offered.gsub("\n", '').strip,
-          ehb_apportionment_for_pediatric_dental: ehb_apportionment_for_pediatric_dental.gsub("\n", '').strip,
-          guaranteed_vs_estimated_rate: guaranteed_vs_estimated_rate.gsub("\n", '').strip,
-          maximum_coinsurance_for_specialty_drugs: begin
-            maximum_coinsurance_for_specialty_drugs.gsub("\n",
-                                                         '').strip
-          rescue StandardError
-            ''
-          end,
-          max_num_days_for_charging_inpatient_copay: begin
-            max_num_days_for_charging_inpatient_copay.gsub("\n",
-                                                           '').strip
-          rescue StandardError
-            ''
-          end,
-          begin_primary_care_deductible_or_coinsurance_after_set_number_copays: begin
-            begin_primary_care_deductible_or_coinsurance_after_set_number_copays.gsub(
-              "\n", ''
-            ).strip
-          rescue StandardError
-            ''
-          end,
-          begin_primary_care_cost_sharing_after_set_number_visits: begin
-            begin_primary_care_cost_sharing_after_set_number_visits.gsub(
-              "\n", ''
-            ).strip
-          rescue StandardError
-            ''
-          end,
-          plan_effective_date: plan_effective_date.gsub("\n", '').strip,
-          plan_expiration_date: plan_expiration_date.gsub("\n", '').strip,
-          out_of_country_coverage: out_of_country_coverage.gsub("\n", '').strip,
-          out_of_country_coverage_description: out_of_country_coverage_description.gsub("\n", '').strip,
-          out_of_service_area_coverage: out_of_service_area_coverage.gsub("\n", '').strip,
-          out_of_service_area_coverage_description: out_of_service_area_coverage_description.gsub("\n", '').strip,
-          national_network: national_network.gsub("\n", '').strip,
-          ehb_percent_premium: (ehb_percent_premium.present? ? ehb_percent_premium.gsub("\n", '').strip : ''),
-          summary_benefit_and_coverage_url: begin
-            summary_benefit_and_coverage_url.gsub("\n", '').strip
-          rescue StandardError
-            ''
-          end,
-          enrollment_payment_url: enrollment_payment_url.present? ? enrollment_payment_url.gsub("\n", '').strip : '',
-          plan_brochure: begin
-            plan_brochure.gsub("\n", '').strip
-          rescue StandardError
-            ''
-          end
-        }
-        if is_specialist_referral_required.present?
-          qhp_hash.merge!(is_specialist_referral_required: is_specialist_referral_required.gsub("\n",
-                                                                                                '').strip)
+        result = self.class.elements.to_h do |el|
+          [el.name.to_sym, safely_retrive_value(send(el.name))]
         end
-        if health_care_specialist_referral_type.present?
-          qhp_hash.merge!(health_care_specialist_referral_type: health_care_specialist_referral_type.gsub("\n",
-                                                                                                          '').strip)
-        end
-        qhp_hash
+        result[:metal_level] = normalized_metal_level(result[:metal_level])
+        result
       end
+
+      private
+
+      def normalized_metal_level(field)
+        metal_level = safely_retrive_value(field)
+        return 'bronze' if metal_level.downcase == 'expanded bronze'
+        metal_level
+      end
+
     end
   end
 end

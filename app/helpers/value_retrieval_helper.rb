@@ -23,9 +23,10 @@ module ValueRetrievalHelper
   # This method removes newline characters and dollar signs from the value
   # and ensures that nil values are converted to empty strings.
   # It is used to sanitize the data before returning it in the hash.
-  def safely_retrive_value(value)
+  def safely_retrive_value(value, strip_dollar_sign: false)
     if value.present?
-      value.gsub("\n", '').gsub('$', '').strip
+      value = value.gsub('$', '') if strip_dollar_sign
+      value.gsub("\n", '').strip
     else
       ''
     end

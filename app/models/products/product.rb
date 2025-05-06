@@ -325,7 +325,7 @@ module Products
     # @raise [DuplicatePremiumTableError] If a premium table already exists for the period
     # @return [Product] Self
     def add_premium_table(new_premium_table)
-      raise InvalidEffectivePeriodError unless is_valid_premium_table_effective_period?(new_premium_table)
+      raise InvalidEffectivePeriodError unless valid_premium_table_effective_period?(new_premium_table)
 
       if premium_table_effective_on(new_premium_table.effective_period.min).present? ||
          premium_table_effective_on(new_premium_table.effective_period.max).present?
@@ -342,7 +342,7 @@ module Products
     # @raise [InvalidEffectivePeriodError] If the premium table's effective period is invalid
     # @return [Product] Self
     def update_premium_table(updated_premium_table)
-      raise InvalidEffectivePeriodError unless is_valid_premium_table_effective_period?(updated_premium_table)
+      raise InvalidEffectivePeriodError unless valid_premium_table_effective_period?(updated_premium_table)
 
       drop_premium_table(premium_table_effective_on(updated_premium_table.effective_period.min))
       add_premium_table(updated_premium_table)
@@ -357,7 +357,7 @@ module Products
     # Validates whether a premium table's effective period is valid for this product
     # @param compare_premium_table [PremiumTable] Premium table to validate
     # @return [Boolean] True if valid, false otherwise
-    def is_valid_premium_table_effective_period?(compare_premium_table)
+    def valid_premium_table_effective_period?(compare_premium_table)
       return false unless application_period.present? && compare_premium_table.effective_period.present?
 
       application_period.cover?(compare_premium_table.effective_period.min) &&

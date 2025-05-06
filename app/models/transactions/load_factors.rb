@@ -167,7 +167,7 @@ module Transactions
     #
     # @param klass [Symbol] Rating factor class name
     # @return [Boolean] True if it's a group size rating factor
-    def is_group_size_rating_tier?(klass)
+    def group_size_rating_tier?(klass)
       'EmployerGroupSizeRatingFactorSet'.eql? klass.to_s
     end
 
@@ -175,7 +175,7 @@ module Transactions
     #
     # @param klass [Symbol] Rating factor class name
     # @return [Boolean] True if it's a composite rating factor
-    def is_composite_rating_tier?(klass)
+    def composite_rating_tier?(klass)
       'CompositeRatingTierFactorSet'.eql? klass.to_s
     end
 
@@ -183,7 +183,7 @@ module Transactions
     #
     # @param klass [Symbol] Rating factor class name
     # @return [Boolean] True if it's a participation rate factor
-    def is_participation_rate_rating_tier?(klass)
+    def participation_rate_rating_tier?(klass)
       'EmployerParticipationRateRatingFactorSet'.eql? klass.to_s
     end
 
@@ -203,11 +203,11 @@ module Transactions
     # @param klass [Symbol] Rating factor class name
     # @return [String, Integer] Properly formatted factor key
     def get_factory_key(input, klass)
-      return COMPOSITE_TIER_TRANSLATIONS[input.to_s] if is_composite_rating_tier?(klass)
+      return COMPOSITE_TIER_TRANSLATIONS[input.to_s] if composite_rating_tier?(klass)
 
-      return input.to_i if is_group_size_rating_tier?(klass)
+      return input.to_i if group_size_rating_tier?(klass)
 
-      return (input * 100).to_i if is_participation_rate_rating_tier?(klass)
+      return (input * 100).to_i if participation_rate_rating_tier?(klass)
 
       input
     end

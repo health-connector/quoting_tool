@@ -7,6 +7,7 @@ module Parsers
     # individual, family and tiered deductible amounts and related coinsurance values
     class DeductibleParser
       include HappyMapper
+      include ValueRetrievalHelper
 
       tag 'planDeductible'
 
@@ -36,49 +37,9 @@ module Parsers
       # Converts the parsed deductible data into a structured hash format
       # @return [Hash] Clean, normalized deductible attributes
       def to_hash
-        {
-          deductible_type: deductible_type.gsub("\n", '').strip,
-          in_network_tier_1_individual: in_network_tier_1_individual.gsub("\n", '').strip,
-          in_network_tier_1_family: in_network_tier_1_family.gsub("\n", '').strip,
-          coinsurance_in_network_tier_1: coinsurance_in_network_tier_1.gsub("\n", '').strip,
-          in_network_tier_two_individual: if in_network_tier_two_individual.present?
-                                            in_network_tier_two_individual.gsub(
-                                              "\n", ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end,
-          in_network_tier_two_family: if in_network_tier_two_family.present?
-                                        in_network_tier_two_family.gsub("\n",
-                                                                        '').strip
-                                      else
-                                        ''
-                                      end,
-          coinsurance_in_network_tier_2: if coinsurance_in_network_tier_2.present?
-                                           coinsurance_in_network_tier_2.gsub(
-                                             "\n", ''
-                                           ).strip
-                                         else
-                                           ''
-                                         end,
-          out_of_network_individual: out_of_network_individual.gsub("\n", '').strip,
-          out_of_network_family: out_of_network_family.gsub("\n", '').strip,
-          coinsurance_out_of_network: if coinsurance_out_of_network.present?
-                                        coinsurance_out_of_network.gsub("\n",
-                                                                        '').strip
-                                      else
-                                        ''
-                                      end,
-          combined_in_or_out_network_individual: combined_in_or_out_network_individual.gsub("\n", '').strip,
-          combined_in_or_out_network_family: combined_in_or_out_network_family.gsub("\n", '').strip,
-          combined_in_out_network_tier_2: if combined_in_out_network_tier_2.present?
-                                            combined_in_out_network_tier_2.gsub(
-                                              "\n", ''
-                                            ).strip
-                                          else
-                                            ''
-                                          end
-        }
+        self.class.elements.to_h do |el|
+          [el.name.to_sym, safely_retrive_value(send(el.name))]
+        end
       end
     end
   end

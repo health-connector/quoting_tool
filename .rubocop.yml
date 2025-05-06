@@ -38,6 +38,10 @@ Rails/FindEach:
 Rails/DeprecatedActiveModelErrorsMethods:
   Enabled: false
 
+# we are a api only used on the us
+Rails/I18nLocaleTexts:
+  Enabled: false
+
 RSpec/MultipleExpectations:
   Enabled: false
 

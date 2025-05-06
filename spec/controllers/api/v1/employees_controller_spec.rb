@@ -49,10 +49,10 @@ RSpec.describe Api::V1::EmployeesController do
 
     context 'when rates are not available for projected month' do
       before do
-        allow(controller).to receive(:has_rates_for).and_return({
-                                                                  '2020-08-01' => false,
-                                                                  '2020-09-01' => false
-                                                                })
+        allow(controller).to receive(:rates_for?).and_return({
+                                                               '2020-08-01' => false,
+                                                               '2020-09-01' => false
+                                                             })
 
         get :start_on_dates
       end
@@ -70,10 +70,10 @@ RSpec.describe Api::V1::EmployeesController do
 
     context 'when rates are available for projected month' do
       before do
-        allow(controller).to receive(:has_rates_for).and_return({
-                                                                  '2020-08-01' => true,
-                                                                  '2020-09-01' => true
-                                                                })
+        allow(controller).to receive(:rates_for?).and_return({
+                                                               '2020-08-01' => true,
+                                                               '2020-09-01' => true
+                                                             })
 
         get :start_on_dates
       end

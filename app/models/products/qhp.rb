@@ -218,7 +218,7 @@ module Products
       plan_hsa_status = {}
       @hios_ids = plans.map(&:hios_id)
       @year = plans.first.present? ? plans.first.active_year : ''
-      qcsvs = get_cost_share_variances
+      qcsvs = fetch_cost_share_variances
       qcsvs.map { |qcsv| plan_hsa_status[qcsv.plan.id.to_s] = qcsv.qhp.hsa_eligibility }
 
       plan_hsa_status
@@ -226,7 +226,7 @@ module Products
 
     # Retrieves QHP cost share variances for the specified plans and year
     # @return [Array<QhpCostShareVariance>] List of cost share variances
-    def self.get_cost_share_variances
+    def self.fetch_cost_share_variances
       Rails.cache.fetch("csvs-hios-ids-#{@hios_ids}-year-#{@year}", expires_in: 5.hours) do
         Products::QhpCostShareVariance.find_qhp_cost_share_variances(@hios_ids, @year, '')
       end
