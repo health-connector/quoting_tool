@@ -57,7 +57,7 @@ jobs:
         run: |
           bundle install
       - name: Run rubocop
-        run: rubocop
+        run: rubocop --plugin rubocop-rails
   rspec:
     runs-on: ubuntu-latest
     services:
