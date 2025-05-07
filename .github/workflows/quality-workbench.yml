@@ -61,6 +61,8 @@ jobs:
       - name: Run rubocop
         run: rubocop --help
       - name: Run rubocop
+        run: which rubocop 
+      - name: Run rubocop
         run: rubocop --plugin rubocop-rails
   rspec:
     runs-on: ubuntu-latest
