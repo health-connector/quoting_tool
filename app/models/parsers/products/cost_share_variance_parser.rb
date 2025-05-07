@@ -61,7 +61,7 @@ module Parsers
         {
           cost_share_variance_attributes: {
             hios_plan_and_variant_id: safely_retrive_value(hios_plan_and_variant_id),
-            plan_marketing_name: safely_retrive_value((plan_marketing_name.presence || plan_variant_marketing_name)),
+            plan_marketing_name: safely_retrive_value(plan_marketing_name.presence || plan_variant_marketing_name),
             metal_level: normalized_metal_level(metal_level),
             csr_variation_type: safely_retrive_value(csr_variation_type),
             issuer_actuarial_value: safely_retrive_value(issuer_actuarial_value),

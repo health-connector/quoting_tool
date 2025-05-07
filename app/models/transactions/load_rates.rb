@@ -94,8 +94,8 @@ module Transactions
     # @return [Boolean, nil] Parsed boolean value or nil
     def parse_boolean(value)
       value = parse_text(value)
-      return true   if value == true   || value =~ (/(true|t|yes|y|1)$/i)
-      return false  if value == false  || value =~ (/(false|f|no|n|0)$/i)
+      return true   if value == true   || value =~ /(true|t|yes|y|1)$/i
+      return false  if value == false  || value =~ /(false|f|no|n|0)$/i
 
       nil
     end
