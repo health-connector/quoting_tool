@@ -53,6 +53,9 @@ jobs:
         with:
           bundler-cache: false
           rubygems: latest
+      - name: bundle install
+        run: |
+          bundle install
       - name: Run rubocop
         run: bundle exec rubocop
   rspec:
