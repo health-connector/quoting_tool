@@ -237,8 +237,8 @@
                         class="form-control"
                         formControlName="dob"
                         ngbDatepicker
-                        [minDate]="{ year: 1924, month: 1, day: 1 }"
-                        [maxDate]="{ year: 2024, month: 12, day: 31 }"
+                        [minDate]="minDateForTemplate"
+                        [maxDate]="maxDateForTemplate"
                         #d="ngbDatepicker"
                         (click)="d.toggle()"
                       />
@@ -295,6 +295,8 @@
                                   placeholder="mm/dd/yyyy"
                                   (input)="formatInputDate($event)"
                                   class="form-control"
+                                  [minDate]="minDateForTemplate"
+                                  [maxDate]="maxDateForTemplate"
                                   formControlName="dob"
                                   ngbDatepicker
                                   #d="ngbDatepicker"
@@ -379,6 +381,8 @@
                         placeholder="mm/dd/yyyy"
                         (input)="formatInputDate($event)"
                         class="form-control"
+                        [minDate]="minDateForTemplate"
+                        [maxDate]="maxDateForTemplate"
                         formControlName="dob"
                         ngbDatepicker
                         #d="ngbDatepicker"
@@ -438,6 +442,8 @@
                                   placeholder="mm/dd/yyyy"
                                   (input)="formatInputDate($event)"
                                   class="form-control"
+                                  [minDate]="minDateForTemplate"
+                                  [maxDate]="maxDateForTemplate"
                                   formControlName="dob"
                                   ngbDatepicker
                                   #d="ngbDatepicker"
@@ -589,6 +595,8 @@
                                     placeholder="mm/dd/yyyy"
                                     (input)="formatInputDate($event)"
                                     class="form-control"
+                                    [minDate]="minDateForTemplate"
+                                    [maxDate]="maxDateForTemplate"
                                     formControlName="dob"
                                     ngbDatepicker
                                     #d="ngbDatepicker"
