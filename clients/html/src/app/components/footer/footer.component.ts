@@ -10,8 +10,8 @@ import { Component } from '@angular/core';
             <i class="far fa-copyright"></i> 2017-{{ currentYear }} Massachusetts Health Connector. All Rights Reserved.
           </div>
           <div class="col-6">
-            <ul class="list-unstyled list-inline float-right">
-              <li><i class="fas fa-envelope"></i> smallbusiness&#64;mahealthconnector.org</li>
+            <ul class="list-unstyled text-end">
+              <li class=""><i class="fas fa-envelope"></i> smallbusiness&#64;mahealthconnector.org</li>
             </ul>
           </div>
         </div>

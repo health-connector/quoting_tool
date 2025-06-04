@@ -13,6 +13,7 @@ body {
 .container {
   @include media-breakpoint-up(xxl) {
     max-width: 1140px;
+    max-width: 960px;
   }
 }
 
