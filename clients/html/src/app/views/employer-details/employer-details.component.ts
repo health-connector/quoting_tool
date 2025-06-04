@@ -695,7 +695,7 @@ export class EmployerDetailsComponent implements OnInit {
     const formValue = this.quoteForm.value;
     const detailsToSave = {
       ...formValue,
-      effectiveDate: this.convertNgbDateStructToISO(formValue.effectiveDate),
+      effectiveDate: formValue.effectiveDate, // Keep effective date as-is since it's already a string from the select
       employees: (formValue.employees || []).map((emp) => ({
         ...emp,
         dob: this.convertNgbDateStructToISO(emp.dob),
