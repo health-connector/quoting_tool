@@ -42,7 +42,10 @@ interface EmployerDetails {
             >
             allows you to offer plans of a specific benefit level (gold or silver) across all available health insurers.
             Learn more about our
-            <a href="https://www.mahealthconnector.org/business/employers/employee-choice" target="_blank"
+            <a
+              href="https://www.mahealthconnector.org/business/employers/employee-choice"
+              target="_blank"
+              class="btn-link"
               >benefit models</a
             >.<br /><br />
             <i class="fas fa-sticky-note pe-2 fa-lg"></i>
@@ -53,7 +56,9 @@ interface EmployerDetails {
           </p>
           <strong
             ><i class="fas fa-stethoscope pe-2"></i
-            ><a href="https://ma.checkbookhealth.org/mashop/index.cfm" target="_blank">Find My Doctor</a></strong
+            ><a href="https://ma.checkbookhealth.org/mashop/index.cfm" target="_blank" class="btn-link"
+              >Find My Doctor</a
+            ></strong
           >
         </div>
       </div>

@@ -25,7 +25,9 @@ interface EmployerDetails {
           </p>
           <strong
             ><i class="fas fa-stethoscope pe-2"></i
-            ><a href="https://ma.checkbookhealth.org/mashop/index.cfm" target="_blank">Find My Doctor</a></strong
+            ><a href="https://ma.checkbookhealth.org/mashop/index.cfm" target="_blank" class="btn-link"
+              >Find My Doctor</a
+            ></strong
           >
         </div>
       </div>

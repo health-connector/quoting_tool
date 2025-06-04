@@ -347,7 +347,10 @@
                         ><br /><strong>{{ carrier['product_name'] }}</strong
                         ><br />
                         @if (!pdfView) {
-                          <a href="javascript:void(0);" (click)="getSbcDocument(carrier['product_information']['id'])"
+                          <a
+                            href="javascript:void(0);"
+                            class="btn-link"
+                            (click)="getSbcDocument(carrier['product_information']['id'])"
                             >Summary of Benefit Coverage <i class="far fa-file-pdf fa-lg"></i
                           ></a>
                         }
