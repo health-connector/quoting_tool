@@ -207,6 +207,10 @@ export class EmployerDetailsComponent implements OnInit {
   showNewEmployee = false;
   excelArray: ParsedExcelRow[] = [];
 
+  // Date constraints for template use
+  public minDateForTemplate: NgbDateStruct;
+  public maxDateForTemplate: NgbDateStruct;
+
   relationOptions = [
     { key: 'Spouse', value: 'Spouse' },
     { key: 'Domestic Partner', value: 'Domestic Partner' },
@@ -275,10 +279,23 @@ export class EmployerDetailsComponent implements OnInit {
       'Dependent Date of Birth(s)',
     ];
 
-    const year = new Date().getFullYear();
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // getMonth() returns 0-11, so add 1
+    const currentDay = currentDate.getDate();
 
-    this.dpConfig.minDate = { year: year - 110, month: 1, day: 1 };
-    this.dpConfig.maxDate = { year: year + 1, month: 12, day: 31 };
+    // Configure datepicker for easy navigation when selecting birth dates for people over 100 years old
+    this.dpConfig.minDate = { year: currentYear - 110, month: 1, day: 1 };
+    this.dpConfig.maxDate = { year: currentYear, month: currentMonth, day: currentDay };
+
+    // Set date constraints for template use
+    this.minDateForTemplate = { year: currentYear - 110, month: 1, day: 1 };
+    this.maxDateForTemplate = { year: currentYear, month: currentMonth, day: currentDay };
+    this.dpConfig.navigation = 'select'; // Enable year and month dropdown selectors
+    this.dpConfig.displayMonths = 1; // Display one month at a time for better focus
+    this.dpConfig.outsideDays = 'collapsed'; // Hide days from other months
+    this.dpConfig.weekdays = true; // Show weekday headers
+    this.dpConfig.showWeekNumbers = false; // Hide week numbers to save space
   }
 
   ngOnInit() {
