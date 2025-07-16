@@ -1,0 +1,9 @@
+@import 'variable';
+
+@import '../../node_modules/bootstrap/scss/bootstrap';
+
+//In This scss you can write your scss
+@import 'custom';
+
+//This is for the icons (Required file)
+@import 'icons/font-awesome/css/fontawesome-all.css';

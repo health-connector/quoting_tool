@@ -8,8 +8,6 @@ export class SelectedSicService {
   private messageSource = new BehaviorSubject('default item');
   currentMessage = this.messageSource.asObservable();
 
-  constructor() {}
-
   changeMessage(message) {
     this.messageSource.next(message);
   }

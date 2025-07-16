@@ -1,15 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ApiRequestService } from './api-request.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SampleService {
-
-  constructor(private api_request: ApiRequestService) { }
-
+  private api_request = inject(ApiRequestService);
   // Gets the message from the Rails backend
-  getMessage()  {
+  getMessage() {
     return this.api_request.authedGet('samples');
   }
 }
