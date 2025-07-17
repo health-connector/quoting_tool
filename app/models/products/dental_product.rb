@@ -1,8 +1,11 @@
-module Products
-  class DentalProduct < Product
+# frozen_string_literal: true
 
-    PRODUCT_PACKAGE_KINDS = [:single_product, :multi_product]
-    METAL_LEVEL_KINDS     = [:dental]
+module Products
+  # Represents a dental insurance product
+  # Contains dental-specific attributes and behaviors
+  class DentalProduct < Product
+    PRODUCT_PACKAGE_KINDS = %i[single_product multi_product].freeze
+    METAL_LEVEL_KINDS     = [:dental].freeze
 
     field :hios_id,                     type: String
     field :hios_base_id,                type: String
@@ -14,7 +17,7 @@ module Products
     field :is_standard_plan,            type: Boolean,  default: false
 
     field :metal_level_kind,            type: Symbol
-    field :ehb,                         type: Float,    default: 0.0
+    field :ehb,                         type: Float, default: 0.0
 
     # Visits
 
@@ -24,14 +27,20 @@ module Products
 
     validates :metal_level_kind,
               presence: true,
-              inclusion: {in: METAL_LEVEL_KINDS, message: "%{value} is not a valid metal level kind"}
+              inclusion: { in: METAL_LEVEL_KINDS, message: '%<value>s is not a valid metal level kind' }
 
-    alias_method :is_standard_plan?, :is_standard_plan
+    alias is_standard_plan? is_standard_plan
 
+    # Returns the dental level as a string
+    #
+    # @return [String] The dental level
     def metal_level
       dental_level.to_s
     end
 
+    # Returns the dental plan kind as a string
+    #
+    # @return [String] The dental plan kind
     def product_type
       dental_plan_kind.to_s
     end

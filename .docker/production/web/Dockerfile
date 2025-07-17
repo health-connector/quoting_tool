@@ -3,10 +3,7 @@
 #############
 
 # base image
-FROM node:14.20 AS build
-
-RUN echo "deb http://archive.debian.org/debian stretch main" > /etc/apt/sources.list
-RUN echo "deb http://archive.debian.org/debian-security stretch/updates main" >> /etc/apt/sources.list
+FROM node:22-bookworm AS build
 
 # install chrome for protractor tests
 RUN apt-get update && apt-get install

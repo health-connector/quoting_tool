@@ -6,18 +6,24 @@ import { defaultRelationshipContributionModel } from './../../config/client_conf
 function createMockDependent(rel: ContributionRelationship, dob: Date): RosterDependent {
   return {
     dob: dob,
-    relationship: rel
+    relationship: rel,
   };
 }
 
 class MockRosterEntry {
+  public dependents: Array<{ dob: string | Date; relationship: string }>;
+
   constructor(
     public dob: Date,
     public will_enroll: boolean,
-    public roster_dependents: Array<RosterDependent>
-    ) {
-
-    }
+    public roster_dependents: Array<RosterDependent>,
+    public coverageKind: string,
+  ) {
+    this.dependents = roster_dependents.map((dep) => ({
+      dob: dep.dob,
+      relationship: dep.relationship.toString(),
+    }));
+  }
 }
 
 export function getDefaultValue<K, V>(m: Map<K, V>, k: K, default_value: V) {
@@ -57,8 +63,7 @@ class MockCalculationProduct {
     public basic_dental_services: string,
     public out_of_pocket_in_network: string,
     public id: string,
-  ) {
-  }
+  ) {}
 
   public group_tier_factor(): number {
     return 1.0;
@@ -94,15 +99,15 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
   const start_date = new Date(2019, 0, 1);
   const subscriber_1_dob = new Date(1999, 11, 15);
 
-  const gs_factors =  new Map<string, number>();
-  gs_factors.set('1', 1.00);
-  gs_factors.set('2', 1.00);
+  const gs_factors = new Map<string, number>();
+  gs_factors.set('1', 1.0);
+  gs_factors.set('2', 1.0);
 
-  const pr_factors =  new Map<string, number>();
+  const pr_factors = new Map<string, number>();
   pr_factors.set('100', 1);
 
   const rates = new Map<string, number>();
-  rates.set('19', 1.00);
+  rates.set('19', 1.0);
 
   const product = new MockCalculationProduct(
     'MockCalculationProduct',
@@ -129,26 +134,22 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
     '20%',
     '20%',
     '20%',
-    '1'
+    '1',
   );
 
   it('calculates the product quote', () => {
     const dependents = [];
 
-    const entry_1 = new MockRosterEntry(
-      subscriber_1_dob,
-      true,
-      dependents
-    );
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'health');
 
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'health'
+      'health',
     );
     const quote = service.calculateQuote(product);
-    expect(quote.total_cost).not.toBe(0.00);
+    expect(quote.total_cost).not.toBe(0.0);
   });
 
   it('should not calculate health product quote for 4th child age < 21', () => {
@@ -156,22 +157,18 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
-      createMockDependent(ContributionRelationship.CHILD, new Date())
+      createMockDependent(ContributionRelationship.CHILD, new Date()),
     ];
 
-    const entry_1 = new MockRosterEntry(
-      subscriber_1_dob,
-      true,
-      dependents
-    );
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'health');
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'health'
+      'health',
     );
     const quote = service.calculateQuote(product);
-    expect(quote.total_cost).toBe(4.00);
+    expect(quote.total_cost).toBe(4.0);
   });
 
   it('should calculate dental product quote for 4th child age < 21', () => {
@@ -179,21 +176,17 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
       createMockDependent(ContributionRelationship.CHILD, new Date()),
-      createMockDependent(ContributionRelationship.CHILD, new Date())
+      createMockDependent(ContributionRelationship.CHILD, new Date()),
     ];
 
-    const entry_1 = new MockRosterEntry(
-      subscriber_1_dob,
-      true,
-      dependents
-    );
+    const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'dental');
     const service = new RelationshipCoverageCostCalculatorService(
       start_date,
       defaultRelationshipContributionModel(),
       [entry_1],
-      'dental'
+      'dental',
     );
     const quote = service.calculateQuote(product);
-    expect(quote.total_cost).toBe(5.00);
+    expect(quote.total_cost).toBe(5.0);
   });
 });

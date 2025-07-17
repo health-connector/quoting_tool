@@ -1,14 +1,14 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiRequestService {
+  private http = inject(HttpClient);
   headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-  constructor(private http: HttpClient) {}
-
   // The API version
   public version = 1.0;
 
@@ -17,30 +17,36 @@ export class ApiRequestService {
   private cataract_api = environment.cataract_api;
 
   // Get the full URL to the API
-  private getFullPath(url: any) {
+  private getFullPath(url: string): string {
     return `${this.api}/api/v${this.version}/${url}`;
   }
 
-  private getCataractFullPath(url: any) {
+  private getCataractFullPath(url: string): string {
     return `${this.cataract_api}/api/v${this.version}/${url}`;
   }
 
   // Make an authed GET request
-  public authedGet(url: string, attrs?: any) {
-    return this.http.get(this.getFullPath(url), { params: attrs });
+  public authedGet<T>(
+    url: string,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+  ): Observable<T> {
+    return this.http.get<T>(this.getFullPath(url), { params });
   }
 
   // Make an authed POST request
-  public authedPost(url: string, body: any) {
-    return this.http.post(this.getFullPath(url), body);
+  public authedPost<T, D>(url: string, body: D): Observable<T> {
+    return this.http.post<T>(this.getFullPath(url), body);
   }
 
   // Make an authed PUT request
-  public authedPut(url: string, body: any) {
-    return this.http.put(this.getFullPath(url), body);
+  public authedPut<T, D>(url: string, body: D): Observable<T> {
+    return this.http.put<T>(this.getFullPath(url), body);
   }
 
-  public authedCataractGet(url: string, attrs?: any) {
-    return this.http.get(this.getCataractFullPath(url), { params: attrs });
+  public authedCataractGet<T>(
+    url: string,
+    params?: Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>>,
+  ): Observable<T> {
+    return this.http.get<T>(this.getCataractFullPath(url), { params });
   }
 }

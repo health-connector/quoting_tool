@@ -1,0 +1,19 @@
+.main-header {
+  background-color: var(--white);
+  border-bottom: solid 3px var(--secondary-color);
+  min-height: 50px;
+}
+
+.navbar {
+  padding: 0px;
+}
+
+.main-link {
+  font-weight: 600;
+  color: var(--gray-700);
+  font-size: 18px;
+}
+
+.navbar-brand {
+  border-right: solid 1px var(--shadow-color);
+}

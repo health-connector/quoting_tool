@@ -1,5 +1,5 @@
 import { Product, ProductData } from '../data/products';
-import { PackageTypes} from '../config/package_types';
+import { PackageTypes } from '../config/package_types';
 import { ContributionTierName } from '../config/contribution_tier_name';
 
 interface LoadedProductList {
@@ -88,14 +88,13 @@ export class ProductDataLoader {
     return [];
   }
 
-  public castJSON(parsed_data: any) {
+  public castJSON(parsed_data: LoadedProductList) {
     const data: LoadedProductList | null = <LoadedProductList>parsed_data;
     if (data != null) {
       const products = [];
-      const caster = this;
       Object.keys(data).forEach(function(k) {
         if (k !== 'default') {
-          products.push(caster.castSingleProduct(data[k]));
+          products.push(this.castSingleProduct(data[k]));
         }
       });
       return products;

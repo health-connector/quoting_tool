@@ -6,7 +6,10 @@ export interface RosterDependent {
 }
 
 export interface RosterEntry {
-  dob: Date;
+  // dob: Date;
+  dob: string | Date; // Ensure dob is here if needed
   roster_dependents: Array<RosterDependent>;
   will_enroll: boolean;
+  coverageKind: string; // Add this line
+  dependents: Array<{ dob: string | Date; relationship: string }>; // Add or update this line
 }

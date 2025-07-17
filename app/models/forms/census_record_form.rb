@@ -1,6 +1,10 @@
-module Forms
-  class CensusRecordForm
+# frozen_string_literal: true
 
+module Forms
+  # The CensusRecordForm handles validation and processing of individual employee census data.
+  # This form is typically used when importing or manually entering employee census information.
+  # It validates essential employee information and formats.
+  class CensusRecordForm
     include ActiveModel::Validations
     include Virtus.model
 
@@ -11,11 +15,14 @@ module Forms
     attribute :ssn, String
     attribute :dob, String
 
-    validates_presence_of :employee_relationship, :dob
+    validates :employee_relationship, :dob, presence: true
     validate :date_format
 
+    # Validates the date of birth format
+    # Adds an error if the DOB includes 'Invalid Format' text
+    # @return [void]
     def date_format
-      errors.add(:base, "DOB: #{dob}") if dob &.include?('Invalid Format')
+      errors.add(:base, "DOB: #{dob}") if dob&.include?('Invalid Format')
     end
   end
 end

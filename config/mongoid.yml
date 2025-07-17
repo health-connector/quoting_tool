@@ -141,7 +141,7 @@ production:
       # (required).
       database: <%= ENV['QUOTING_TOOL_DB_NAME'] || 'quoting_tool_prod' %>
       hosts:
-        - <%= ENV['QUOTING_TOOL_DB_HOST'] %>:<%= ENV['QUOTING_TOOL_DB_PORT'] %>
+        - "<%= ENV['QUOTING_TOOL_DB_HOST'] %>:<%= ENV['QUOTING_TOOL_DB_PORT'] %>"
       options:
       <% if ENV['QUOTING_TOOL_DB_AUTH'] %>
         replica_set: <%= ENV['QUOTING_TOOL_DB_REPLICA_SET_NAME'] %>
