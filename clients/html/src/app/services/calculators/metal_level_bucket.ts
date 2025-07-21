@@ -7,8 +7,8 @@ class CostResult {
 }
 
 export class MetalLevelBucket {
-  private expensiveFamilies: Map<String, CostResult> = new Map<String, CostResult>();
-  private cheapFamilies: Map<String, CostResult> = new Map<String, CostResult>();
+  private expensiveFamilies: Map<string, CostResult> = new Map<string, CostResult>();
+  private cheapFamilies: Map<string, CostResult> = new Map<string, CostResult>();
 
   constructor() {}
 

@@ -9,16 +9,16 @@ function padNumber(value: number) {
   }
 }
 
-function isNumber(value: any): boolean {
+function isNumber(value: unknown): boolean {
   return !isNaN(toInteger(value));
 }
 
-function toInteger(value: any): number {
+function toInteger(value: unknown): number {
   return parseInt(`${value}`, 10);
 }
 
-function toYear(value: any): number {
-  const year_digits = value.substring(0, 4).length;
+function toYear(value: unknown): number {
+  const year_digits = String(value).substring(0, 4).length;
   const birth_year = toInteger(value);
   const current_year = new Date().getFullYear();
 
@@ -35,11 +35,11 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
     if (value) {
       const dateParts = value.replace(/\s/g, '').trim().split('/');
       if (dateParts.length === 1 && isNumber(dateParts[0])) {
-        return {year: null, month: toInteger(dateParts[0]), day: null};
+        return { year: null, month: toInteger(dateParts[0]), day: null };
       } else if (dateParts.length === 2 && isNumber(dateParts[0]) && isNumber(dateParts[1])) {
-        return {year: null, month: toInteger(dateParts[0]), day: toInteger(dateParts[1])};
+        return { year: null, month: toInteger(dateParts[0]), day: toInteger(dateParts[1]) };
       } else if (dateParts.length === 3 && isNumber(dateParts[0]) && isNumber(dateParts[1]) && isNumber(dateParts[2])) {
-        return {year: toYear(dateParts[2]), month: toInteger(dateParts[0]), day: toInteger(dateParts[1])};
+        return { year: toYear(dateParts[2]), month: toInteger(dateParts[0]), day: toInteger(dateParts[1]) };
       }
     }
     return null;

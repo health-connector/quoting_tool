@@ -1,51 +1,75 @@
-class Api::V1::EmployeesController < ApplicationController
-  respond_to :json
+# frozen_string_literal: true
 
-  def upload
-    file = params.require(:file)
-    @roster_upload_form = ::Transactions::LoadCensusRecords.new.call(file)
+module Api
+  module V1
+    # Controller for managing employee-related operations
+    # Handles file uploads for census records and provides available start dates
+    class EmployeesController < ApplicationController
+      respond_to :json
 
-    if @roster_upload_form.success?
-      render :json => {status: "success", census_records: @roster_upload_form.value!.values}
-    else
-      render :json => {status: "failure", census_records: [], errors: @roster_upload_form.failure}
-    end
-  end
+      # Processes employee census records from an uploaded file
+      # @param file [File] The uploaded census file with employee data
+      # @return [JSON] Processed census records or error information
+      def upload
+        file = params.require(:file)
+        @roster_upload_form = ::Transactions::LoadCensusRecords.new.call(file)
 
-  def start_on_dates
-    current_date = Date.today
-    minimum_length = Registry.resolve "aca_shop_market.open_enrollment.minimum_length_days"
-    open_enrollment_end_on_day = Registry.resolve "aca_shop_market.open_enrollment.monthly_end_on"
+        if @roster_upload_form.success?
+          render json: { status: 'success', census_records: @roster_upload_form.value!.values }
+        else
+          render json: { status: 'failure', census_records: [], errors: @roster_upload_form.failure }
+        end
+      end
 
-    minimum_day = open_enrollment_end_on_day - minimum_length
-    minimum_day.positive? ? minimum_day : 1
+      # Calculates available start dates for coverage based on current date
+      # Takes into account minimum length days, open enrollment periods, and rate availability
+      # @return [JSON] List of available start dates and flag indicating if any late rates
+      def start_on_dates
+        current_date = Time.zone.today
 
-    start_on =  if current_date.day > minimum_day
-                  current_date.beginning_of_month + Registry.resolve("aca_shop_market.open_enrollment.maximum_length_months").months
-                else
-                  current_date.prev_month.beginning_of_month + Registry.resolve("aca_shop_market.open_enrollment.maximum_length_months").months
-                end
+        minimum_length = QuotingToolRegistry[:quoting_tool_app].setting(:minimum_length_days).item
+        open_enrollment_end_on_day = QuotingToolRegistry[:quoting_tool_app].setting(:monthly_end_on).item
 
-    end_on = current_date - (Registry.resolve("aca_shop_market.initial_application.earliest_start_prior_to_effective_on_months").months)
-    dates_rates_hash = has_rates_for(start_on..end_on)
-    dates = dates_rates_hash.collect {|k, v| k.to_date.to_s.gsub!("-", "/") if v}.compact
+        minimum_day = open_enrollment_end_on_day - minimum_length
+        minimum_day = 1 if minimum_day.negative?
 
-    render json: {dates: ["2025/06/01", "2025/07/01", "2025/08/01"], is_late_rate: !dates_rates_hash.values.all?}
-  end
+        start_on = if current_date.day > minimum_day
+                     current_date.beginning_of_month +
+                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item
+                   else
+                     current_date.prev_month.beginning_of_month +
+                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item
+                   end
 
-  private
+        end_on = current_date - QuotingToolRegistry[:quoting_tool_app].setting(
+          :earliest_start_prior_to_effective_on_months
+        ).item.months
+        dates_rates_hash = rates_for?(start_on..end_on)
+        dates = dates_rates_hash.collect { |k, v| k.to_date.to_s.gsub!('-', '/') if v }.compact
 
-  def has_rates_for(dates)
-    dates.inject({}) do |result, key|
-      result[key.to_s] = rates_available?(key) if key == key.beginning_of_month
-      result
-    end
-  end
+        render json: { dates:, is_late_rate: !dates_rates_hash.values.all? }
+      end
 
-  def rates_available?(date)
-    Rails.cache.fetch(date.to_s, expires_in: 1.days) do
-      Products::Product.health_products.effective_with_premiums_on(date).present?
+      private
+
+      # Checks if rates are available for a range of dates
+      # @param dates [Range] Range of dates to check for rate availability
+      # @return [Hash] Hash mapping date strings to boolean indicating rate availability
+      def rates_for?(dates)
+        dates.each_with_object({}) do |key, result|
+          result[key.to_s] = rates_available?(key) if key == key.beginning_of_month
+        end
+      end
+
+      # Checks if rates are available for a specific date
+      # Results are cached for 1 day to improve performance
+      # @param date [Date] Date to check for rate availability
+      # @return [Boolean] True if rates are available, false otherwise
+      def rates_available?(date)
+        Rails.cache.fetch(date.to_s, expires_in: 1.day) do
+          Products::Product.health_products.effective_with_premiums_on(date).present?
+        end
+      end
     end
   end
 end
-

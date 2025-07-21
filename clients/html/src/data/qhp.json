@@ -1,7 +1,7 @@
 [
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0041409",
@@ -18,7 +18,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0041411",
@@ -35,7 +35,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "41304MA0041413",
@@ -52,7 +52,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "PPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0071423",
@@ -69,7 +69,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0041417",
@@ -86,7 +86,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0041419",
@@ -103,7 +103,7 @@
   },
   {
     "Carrier": "AllWays Health Partners",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "41304MA0041421",
@@ -120,7 +120,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1260001",
@@ -137,7 +137,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1300003",
@@ -154,7 +154,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1300047",
@@ -171,7 +171,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1300042",
@@ -188,7 +188,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1300043",
@@ -205,7 +205,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "PPO",
     "Standard Plan?": "No",
     "HIOS Component ID": "42690MA1360013",
@@ -222,7 +222,7 @@
   },
   {
     "Carrier": "Blue Cross Blue Shield of Massachusetts",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "42690MA1300038",
@@ -239,7 +239,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0200001",
@@ -256,7 +256,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0230001",
@@ -273,7 +273,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0490001",
@@ -290,7 +290,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0250001",
@@ -307,7 +307,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0500001",
@@ -324,7 +324,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "82569MA0410001",
@@ -341,7 +341,7 @@
   },
   {
     "Carrier": "BMC HealthNet Plan",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "82569MA0260001",
@@ -358,7 +358,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0020068",
@@ -375,7 +375,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0040065",
@@ -392,7 +392,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0020069",
@@ -409,7 +409,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0040066",
@@ -426,7 +426,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "88806MA0020073",
@@ -443,7 +443,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "88806MA0020075",
@@ -460,7 +460,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "88806MA0040067",
@@ -477,7 +477,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0020070",
@@ -494,7 +494,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0040070",
@@ -511,7 +511,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0100006",
@@ -528,7 +528,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0020074",
@@ -545,7 +545,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0040069",
@@ -562,7 +562,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "PPO",
     "Standard Plan?": "No",
     "HIOS Component ID": "52710MA0020037",
@@ -579,7 +579,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0020072",
@@ -596,7 +596,7 @@
   },
   {
     "Carrier": "Fallon Health",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "88806MA0040068",
@@ -613,7 +613,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA0510001",
@@ -630,7 +630,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA0540001",
@@ -647,7 +647,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA1600001",
@@ -664,7 +664,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "PPO",
     "Standard Plan?": "No",
     "HIOS Component ID": "34484MA0480002",
@@ -681,7 +681,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA0560001",
@@ -698,7 +698,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA1580001",
@@ -715,7 +715,7 @@
   },
   {
     "Carrier": "Health New England",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "34484MA1430001",
@@ -732,7 +732,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770028",
@@ -749,7 +749,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770029",
@@ -766,7 +766,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770030",
@@ -783,7 +783,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "PPO",
     "Standard Plan?": "No",
     "HIOS Component ID": "36046MA0810014",
@@ -800,7 +800,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770031",
@@ -817,7 +817,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770032",
@@ -834,7 +834,7 @@
   },
   {
     "Carrier": "Harvard Pilgrim Health Care",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "36046MA0770033",
@@ -851,7 +851,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030009",
@@ -868,7 +868,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030011",
@@ -885,7 +885,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030019",
@@ -902,7 +902,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030012",
@@ -919,7 +919,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030020",
@@ -936,7 +936,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "59763MA0030014",
@@ -953,7 +953,7 @@
   },
   {
     "Carrier": "Tufts Health Direct",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "No",
     "HIOS Component ID": "59763MA0030016",
@@ -970,7 +970,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030232",
@@ -987,7 +987,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030233",
@@ -1004,7 +1004,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030234",
@@ -1021,7 +1021,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030235",
@@ -1038,7 +1038,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030237",
@@ -1055,7 +1055,7 @@
   },
   {
     "Carrier": "Tufts Health Premier",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "HMO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "29125MA0030236",
@@ -1072,7 +1072,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "EPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0100001",
@@ -1089,7 +1089,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "POS",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0010032",
@@ -1106,7 +1106,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "EPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0100004",
@@ -1123,7 +1123,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "EPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0100007",
@@ -1140,7 +1140,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "EPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0100010",
@@ -1157,7 +1157,7 @@
   },
   {
     "Carrier": "UnitedHealthcare",
-    "Plan Year": 2020,
+    "Plan Year": 2024,
     "Product": "EPO",
     "Standard Plan?": "Yes",
     "HIOS Component ID": "31779MA0100013",

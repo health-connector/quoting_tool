@@ -1,31 +1,33 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
-  factory :qhp, class: "Products::Qhp" do
-    issuer_id { "11111" }
-    state_postal_code { "MA" }
-    standard_component_id { "12340987" }
-    plan_marketing_name { "gold plan" }
-    hios_product_id { "1234" }
-    network_id { "123" }
-    service_area_id { "MAS001" }
-    formulary_id { "123" }
-    is_new_plan { "yes" }
-    plan_type { "hmo" }
-    metal_level { "bronze" }
-    unique_plan_design { "" }
-    qhp_or_non_qhp { "qhp" }
-    insurance_plan_pregnancy_notice_req_ind { "yes" }
-    is_specialist_referral_required { "yes" }
-    hsa_eligibility { "yes" }
-    emp_contribution_amount_for_hsa_or_hra { "1000" }
-    child_only_offering { "no" }
-    is_wellness_program_offered { "yes" }
-    plan_effective_date {Date.today.beginning_of_year}
-    out_of_country_coverage { "yes" }
-    out_of_service_area_coverage { "yes" }
-    national_network { "yes" }
-    summary_benefit_and_coverage_url { "www.example.com" }
-    dental_plan_only_ind { "no" }
-    active_year {Date.today.year}
-    market_coverage {"shop"}
+  factory :qhp, class: 'Products::Qhp' do
+    issuer_id { '11111' }
+    state_postal_code { 'MA' }
+    standard_component_id { '12340987' }
+    plan_marketing_name { 'gold plan' }
+    hios_product_id { '1234' }
+    network_id { '123' }
+    service_area_id { 'MAS001' }
+    formulary_id { '123' }
+    is_new_plan { 'yes' }
+    plan_type { 'hmo' }
+    metal_level { 'bronze' }
+    unique_plan_design { '' }
+    qhp_or_non_qhp { 'qhp' }
+    insurance_plan_pregnancy_notice_req_ind { 'yes' }
+    is_specialist_referral_required { 'yes' }
+    hsa_eligibility { 'yes' }
+    emp_contribution_amount_for_hsa_or_hra { '1000' }
+    child_only_offering { 'no' }
+    is_wellness_program_offered { 'yes' }
+    plan_effective_date { Time.zone.today.beginning_of_year }
+    out_of_country_coverage { 'yes' }
+    out_of_service_area_coverage { 'yes' }
+    national_network { 'yes' }
+    summary_benefit_and_coverage_url { 'www.example.com' }
+    dental_plan_only_ind { 'no' }
+    active_year { Time.zone.today.year }
+    market_coverage { 'shop' }
   end
 end

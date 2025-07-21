@@ -12,7 +12,7 @@ describe('EmployerDetailsService', () => {
   );
 
   it('should be created', () => {
-    const service: EmployerDetailsService = TestBed.get(EmployerDetailsService);
+    const service: EmployerDetailsService = TestBed.inject(EmployerDetailsService);
     expect(service).toBeTruthy();
   });
 });

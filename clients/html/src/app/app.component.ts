@@ -1,33 +1,19 @@
 import { Component, OnInit } from '@angular/core';
-import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { CustomDateParserFormatter } from './custom_date_parser_formatter';
-import Swal from 'sweetalert2';
+import { RouterOutlet } from '@angular/router';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
-  providers: [{provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter}],
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  template: `
+    <app-header />
+    <router-outlet />
+    <app-footer />
+  `,
+  imports: [HeaderComponent, RouterOutlet, FooterComponent],
 })
 export class AppComponent implements OnInit {
-  showIENotSupportiveMessage = false;
-  blockIEBrowser = false;
-
   ngOnInit() {
     localStorage.removeItem('employerDetails');
-    this.detectBrowser();
-  }
-
-  onDismiss() {
-    this.showIENotSupportiveMessage = false;
-  }
-
-  detectBrowser() {
-    const match = navigator.userAgent.search(/(?:MSIE|Trident\/.*; rv:)/);
-
-    if (match !== -1) {
-      // this.showIENotSupportiveMessage = true;
-      this.blockIEBrowser = true;
-    }
   }
 }

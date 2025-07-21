@@ -4,34 +4,35 @@
 ############################################
 ###             Base image               ###
 ############################################
-ARG RUBY_VERSION=2.6.3
-FROM ruby:$RUBY_VERSION-slim-buster AS base
+ARG RUBY_VERSION=3.4.3
+FROM ruby:$RUBY_VERSION-slim-bookworm AS base
 LABEL author="MHC"
 
 ENV USERNAME=quoting_tool
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG BUNDLER_VERSION=2.0.2
+ARG BUNDLER_VERSION=2.4.22
 ENV BUNDLER_VERSION=$BUNDLER_VERSION
 
 # Only install what's needed that isn't in the base image (per `app list --installed`)
 RUN apt-get update \
     && apt-get -yq dist-upgrade \
-    && apt-get install -y \
+    && apt-get install -y --no-install-recommends \
+      ca-certificates \
       fontconfig \
       libsodium23 \
       libxext6 \
       libxrender1 \
-      libyaml-cpp0.6 \
+      libyaml-cpp0.7 \
       sshpass \
       unzip \
       zip \
-      zlibc \
+      zlib1g \
       libjemalloc2 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && truncate -s 0 /var/log/*log
+    && truncate -s 0 /var/log/*log || true
 
 # Configure bundler and PATH, install bundler version
 ENV GEM_HOME=/usr/local/bundle
@@ -87,7 +88,7 @@ FROM builder AS prod_gems_and_assets
 # This is a build time requirement of activestorage (though activestorage is not currently loaded at startup)
 RUN apt-get update -qq \
     && apt-get install -yq --no-install-recommends \
-      shared-mime-info \
+      shared-mime-info libyaml-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && truncate -s 0 /var/log/*log

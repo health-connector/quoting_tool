@@ -1,25 +1,13 @@
-ResourceRegistry.configure do
-  {
-    application: {
-      config: {
-        name: "Quoting Tool",
-        default_namespace: "options",
-        root: Rails.root,
-        system_dir: "system",
-        auto_register: []
-      },
-      load_paths: ['system']
-    },
-    resource_registry: {
-      resolver: {
-        root: :enterprise,
-        tenant: :cca,
-        site: :primary,
-        env: :production,
-        application: :quoting_tool
-      }
-    }
-  }
-end
+# frozen_string_literal: true
 
-ResourceRegistry.create
+require 'cgi'
+require 'dry-types'
+
+Dry::Types.load_extensions(:maybe)
+QuotingToolRegistry = ResourceRegistry::Registry.new
+
+QuotingToolRegistry.configure do |config|
+  config.name       = :quoting_tool
+  config.created_at = DateTime.now
+  config.load_path  = Rails.root.join('system/config').to_s
+end
