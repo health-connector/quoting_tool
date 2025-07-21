@@ -48,6 +48,7 @@ module Api
         dates = dates_rates_hash.collect { |k, v| k.to_date.to_s.gsub!('-', '/') if v }.compact
 
         render json: { dates:, is_late_rate: !dates_rates_hash.values.all? }
+        render json: {dates: ["2025/11/01", "2025/12/01", "2024/01/01"], is_late_rate: !dates_rates_hash.values.all?}
       end
 
       private
