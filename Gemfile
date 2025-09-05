@@ -15,7 +15,7 @@ gem 'net-smtp', require: false
 gem 'observer'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.2.2.1'
+gem 'rails', '~> 7.2.2.2'
 
 # Use Puma as the app server
 gem 'puma', '~> 6.6.0'
