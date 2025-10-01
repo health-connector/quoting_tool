@@ -18,7 +18,7 @@ module Transactions
     # @return [Dry::Monads::Result::Success] Hash containing the sanitized key
     def load(input)
       key = parse_text(input[:key])
-      Success({ key: })
+      Success({ key: key })
     end
 
     # Validates the key and retrieves the document identifier
@@ -45,16 +45,16 @@ module Transactions
 
       object = resource.bucket(bucket).object(key)
       encoded_result = Base64.encode64(object.get.body.read)
-      Success({ message: 'Successfully retrieved documents.', result: encoded_result })
+      Success({ message: "Successfully retrieved documents from bucket #{bucket} and key #{key}", result: encoded_result })
     rescue StandardError => e
-      Failure({ message: e.message })
+      Failure({ message: "Error retrieving document: #{e.message} from bucket #{bucket} and key #{key}" })
     end
 
     # Creates an AWS S3 resource
     #
     # @return [Aws::S3::Resource] S3 resource for document retrieval
     def resource
-      @resource ||= ::Aws::S3::Resource.new(client:)
+      @resource ||= ::Aws::S3::Resource.new(client: client)
     end
 
     # Creates an AWS S3 client

@@ -103,10 +103,10 @@ module Operations
         ).each do |product|
           product.premium_tables << ::Products::PremiumTable.new(
             effective_period: applicable_range,
-            rating_area_id:,
+            rating_area_id: rating_area_id,
             premium_tuples: tuples
           )
-          product.premium_ages = tuples.map(&:age).minmax
+          product.premium_ages = Range.new(tuples.map(&:age).min, tuples.map(&:age).max)
           product.save!
         end
       end
