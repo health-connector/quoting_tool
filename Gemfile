@@ -28,7 +28,6 @@ gem 'puma', '~> 6.6.0'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-#gem 'aws-sdk'
 gem 'aws-sdk-s3', '~> 1.167'
 
 gem 'rack-cors'
