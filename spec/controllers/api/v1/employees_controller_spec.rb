@@ -37,7 +37,7 @@ RSpec.describe Api::V1::EmployeesController do
           rating_area_id: rating_area.id,
           premium_tuples:
         )
-        product.premium_ages = premium_tuples.map(&:age).minmax
+        product.premium_ages = Range.new(premium_tuples.map(&:age).min, premium_tuples.map(&:age).max)
         product.save!
       end
     end
