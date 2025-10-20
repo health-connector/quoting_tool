@@ -63,7 +63,7 @@ module Transactions
     # @param input [Hash] Contains the processed rate data from previous steps
     # @return [Dry::Monads::Result::Success] Success with completion message
     def create_records(input)
-      Operations::RateBuilder.new.call({ rate_groups: input[:result], rating_area_map: })
+      Operations::RateBuilder.new.call({ rate_groups: input[:result], rating_area_map: rating_area_map })
       Success({ message: 'Rates Succesfully Loaded' })
     end
 

@@ -50,7 +50,7 @@ module Api
         if result.success?
           render json: { status: 'success', metadata: result.value!.values }
         else
-          render json: { status: 'failure', metadata: '' }
+          render json: { status: 'failure', metadata: result&.failure }
         end
       end
 

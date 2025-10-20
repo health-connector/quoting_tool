@@ -133,9 +133,9 @@ RSpec.describe Api::V1::ProductsController do
         expect(parsed_response['status']).to eq 'failure'
       end
 
-      it 'returns empty metadata' do
+      it 'returns error metadata' do
         parsed_response = response.parsed_body
-        expect(parsed_response['metadata']).to eq ''
+        expect(parsed_response['metadata']).to eq 'error'
       end
     end
   end

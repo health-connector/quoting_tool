@@ -43,14 +43,14 @@ module Operations
         next if csr_variant_id == '00'
 
         csr_variant_id = '' if retrieve_metal_level == 'dental'
+
         product = retrieve_first_matching_product(hios_base_id, csr_variant_id, qhp)
 
-        (params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]] if params[:service_area_map].present?)
+        service_area_id = (params[:service_area_map][[qhp.issuer_id, qhp.service_area_id, qhp.active_year]] if params[:service_area_map].present?)
 
-        attrs = build_product_hash(cost_share_variance, hios_base_id, health_data_map, dental_data_map)
-
+        attrs = build_product_hash(cost_share_variance, hios_base_id, health_data_map, dental_data_map, service_area_id, csr_variant_id)
         if product.present?
-          product.issuer_hios_ids = (product.issuer_hios_ids + qhp.issuer_id).uniq
+          product.issuer_hios_ids = product.issuer_hios_ids.push(qhp.issuer_id).uniq
           product.update!(attrs)
           cost_share_variance.product_id = product.id if cost_share_variance.product_id.blank?
           created_product = product
@@ -67,17 +67,19 @@ module Operations
       Success({ message: 'Successfully created/updated Plan records', product: created_product })
     end
 
-    def build_product_hash(cost_share_variance, hios_base_id, health_data_map, dental_data_map)
-      shared_attrs = shared_hash(cost_share_variance)
+    # rubocop:disable Metrics/ParameterLists
+    def build_product_hash(cost_share_variance, hios_base_id, health_data_map, dental_data_map, service_area_id, csr_variant_id)
+      shared_attrs = shared_hash(cost_share_variance, hios_base_id, service_area_id, csr_variant_id)
 
       specific_attrs = if health_product?
                          health_hash(health_data_map[[hios_base_id, qhp.active_year]], qhp, cost_share_variance)
                        else
-                         dental_hash(dental_data_map[[hios_base_id, qhp.active_year]], qhp)
+                         dental_hash(dental_data_map[[hios_base_id, qhp.active_year]], qhp, cost_share_variance)
                        end
 
       shared_attrs.merge(specific_attrs)
     end
+    # rubocop:enable Metrics/ParameterLists
 
     def create_new_product(attrs)
       if health_product?
@@ -96,15 +98,15 @@ module Operations
       ).first
     end
 
-    def shared_hash(cost_share_variance)
+    def shared_hash(cost_share_variance, hios_base_id, service_area_id, csr_variant_id)
       {
         benefit_market_kind: "aca_#{parse_market}",
         title: cost_share_variance.plan_marketing_name.squish,
         hios_id: health_product? ? cost_share_variance.hios_plan_and_variant_id : hios_base_id,
-        hios_base_id: nil,
-        csr_variant_id: nil,
+        hios_base_id: hios_base_id,
+        csr_variant_id: csr_variant_id,
         application_period: (Date.new(qhp.active_year, 1, 1)..Date.new(qhp.active_year, 12, 31)),
-        service_area_id: nil,
+        service_area_id: service_area_id,
         deductible: cost_share_variance.qhp_deductable.in_network_tier_1_individual,
         family_deductible: cost_share_variance.qhp_deductable.in_network_tier_1_family,
         is_reference_plan_eligible: true,
@@ -138,7 +140,7 @@ module Operations
       }
     end
 
-    def dental_hash(info, qhp)
+    def dental_hash(info, qhp, cost_share_variance)
       {
         dental_plan_kind: qhp.plan_type.downcase,
         dental_level: qhp.metal_level.downcase,

@@ -81,7 +81,7 @@ module Transactions
           result << ({
             hios_id: parse_text(row['hios_standard_component_id']),
             provider_directory_url: parse_text(row['provider_directory_url']),
-            year:,
+            year: year,
             rx_formulary_url: parse_url(parse_text(row['rx_formulary_url'])),
             is_standard_plan: parse_boolean(row['standard_plan']),
             network_information: parse_text(row['network_notes']),
@@ -99,7 +99,7 @@ module Transactions
           result << {
             hios_id: parse_text(row['hios_standard_component_id']),
             provider_directory_url: parse_text(row['provider_directory_url']),
-            year:,
+            year: year,
             is_standard_plan: parse_boolean(row['standard_plan']),
             network_information: parse_text(row['network_notes']),
             title: parse_text(row['plan_name'])

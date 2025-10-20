@@ -28,7 +28,8 @@ gem 'puma', '~> 6.6.0'
 gem 'bootsnap', '>= 1.4.2', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
-gem 'aws-sdk'
+gem 'aws-sdk-s3', '~> 1.167'
+
 gem 'rack-cors'
 # Use to dry up responses
 gem 'responders'
@@ -47,7 +48,7 @@ gem 'money-rails', '~> 1.13'
 gem 'nokogiri', '~> 1.18.6'
 gem 'nokogiri-happymapper', '~> 0.8.0', require: 'happymapper'
 gem 'resource_registry', git: 'https://github.com/ideacrew/resource_registry.git', tag: 'v0.10.1'
-gem 'roo', '~> 2.1'
+gem 'roo', '~> 2.10'
 gem 'virtus', '~> 1.0'
 
 # bundler-audit upgrades

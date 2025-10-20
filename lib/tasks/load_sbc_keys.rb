@@ -9,7 +9,7 @@ def sanitize_value(value)
   value.gsub(/[[:cntrl:]]|^\p{Space}+|\p{Space}+$/, '')
 end
 
-Rails.logger.debug ':: Started Creating SBC documents ::'
+puts ':: Started Creating SBC documents ::'
 
 roster = Roo::Spreadsheet.open(ENV.fetch('sbc_path', nil))
 sheet = roster.sheet(0)
@@ -50,4 +50,4 @@ output.each do |info|
 end
 Rails.logger.debug { "Total #{count} plans/products updated." } unless Rails.env.test?
 
-Rails.logger.debug ':: Created SBC documents ::'
+puts ':: Created SBC documents ::'

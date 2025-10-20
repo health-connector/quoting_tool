@@ -30,6 +30,13 @@ AllCops:
     - "vendor/**/*"
     - 'node_modules/**/*'
 
+#we want some output to the console
+Rails/Output:
+  Enabled: true
+  Exclude:
+    - lib/tasks/load_sbc_keys.rb
+    - app/models/transactions/load_benefit_market_catalog.rb
+
 # this is because we use mongoid instead of activerecord
 Rails/FindEach:
   Enabled: false
