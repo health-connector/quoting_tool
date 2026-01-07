@@ -35,10 +35,10 @@ module Api
 
         start_on = if current_date.day > minimum_day
                      current_date.beginning_of_month +
-                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item
+                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item.months
                    else
                      current_date.prev_month.beginning_of_month +
-                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item
+                       QuotingToolRegistry[:quoting_tool_app].setting(:maximum_length_months).item.months
                    end
 
         end_on = current_date - QuotingToolRegistry[:quoting_tool_app].setting(

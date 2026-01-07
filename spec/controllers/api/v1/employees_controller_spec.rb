@@ -87,6 +87,20 @@ RSpec.describe Api::V1::EmployeesController do
         expect(parsed_response['dates']).to eq ['2020/08/01', '2020/09/01']
         expect(parsed_response['is_late_rate']).to be false
       end
+
+      it 'calculates start_on for current_date.day > minimum_day' do
+        current_date = Date.new(2025, 6, 15)
+        maximum_length_months = 2
+        start_on = current_date.beginning_of_month + maximum_length_months.months
+        expect(start_on).to eq(Date.new(2025, 8, 1))
+      end
+
+      it 'calculates start_on for current_date.day <= minimum_day' do
+        current_date = Date.new(2025, 6, 4)
+        maximum_length_months = 2
+        start_on = current_date.prev_month.beginning_of_month + maximum_length_months.months
+        expect(start_on).to eq(Date.new(2025, 7, 1))
+      end
     end
   end
 end
