@@ -6,9 +6,9 @@ services:
       context: .
       dockerfile: ./.docker/production/app/Dockerfile
       args:
-        RUBY_VERSION: '3.1.6'
-        BUNDLER_VERSION: '2.0.2'
-        NODE_MAJOR: '11'
+        RUBY_VERSION: '3.4.7-bookworm'
+        BUNDLER_VERSION: '2.4.22'
+        NODE_MAJOR: '20'
         YARN_VERSION: '1.17.3'
     image: ideacrew/quoting_tool_app:0.1.0
     volumes:
