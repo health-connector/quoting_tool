@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.4.3'
+ruby '3.4.7'
 
 # Ruby 3.1+ compatibility - these standard libraries are now separate gems
 # Temp fix for kube pod restarts
@@ -15,7 +15,7 @@ gem 'net-smtp', require: false
 gem 'observer'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.2.2.1'
+gem 'rails', '~> 8.1.2'
 
 # Use Puma as the app server
 gem 'puma', '~> 6.6.0'
@@ -36,10 +36,10 @@ gem 'responders'
 
 gem 'matrix'
 # gem 'i18n', '~> 1.5'
-gem 'rails-i18n', '7.0.9'
+gem 'rails-i18n', '~> 8.0'
 
 # MongoDB NoSQL database ORM
-gem 'mongoid', '8.1.9'
+gem 'mongoid', '9.0.9'
 
 # Settings, validation and dependency injection
 gem 'dry-transaction', '~> 0.13.0'

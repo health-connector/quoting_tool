@@ -22,19 +22,21 @@ RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrad
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     truncate -s 0 /var/log/*log
 
-# Configure bundler and PATH
+# Upgrade RubyGems and install required Bundler version
+RUN gem update --system && \
+    gem install bundler:$BUNDLER_VERSION
+
+# Configure bundler and PATH (set after Bundler install so the gem isn't
+# installed into the /bundle volume during image build)
 ENV LANG=C.UTF-8 \
   GEM_HOME=/bundle \
+  GEM_PATH=/bundle:/usr/local/bundle \
   BUNDLE_JOBS=4 \
   BUNDLE_RETRY=3
 ENV BUNDLE_PATH $GEM_HOME
 ENV BUNDLE_APP_CONFIG=$BUNDLE_PATH \
   BUNDLE_BIN=$BUNDLE_PATH/bin
 ENV PATH /app/bin:$BUNDLE_BIN:$PATH
-
-# Upgrade RubyGems and install required Bundler version 
-RUN gem update --system && \
-    gem install bundler:$BUNDLER_VERSION
 
 # Create a directory for the app code
 RUN mkdir -p /app
