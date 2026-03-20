@@ -3,7 +3,7 @@
 #############
 
 # base image
-FROM node:22-bookworm AS build
+FROM node:22-trixie AS build
 
 # install chrome for protractor tests
 RUN apt-get update && apt-get install

@@ -8,9 +8,16 @@ ARG YARN_VERSION
 # Add NodeJS to sources list
 RUN curl -sL https://deb.nodesource.com/setup_$NODE_MAJOR.x | bash -
 
-# Add Yarn to the sources list
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
-  && echo 'deb http://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list
+# Add Yarn to the sources list (apt-key removed in Debian 13)
+RUN apt-get update -qq \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends gnupg \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg \
+    | gpg --dearmor -o /etc/apt/keyrings/yarn-archive-keyring.gpg \
+  && echo 'deb [signed-by=/etc/apt/keyrings/yarn-archive-keyring.gpg] http://dl.yarnpkg.com/debian/ stable main' \
+    > /etc/apt/sources.list.d/yarn.list \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 RUN apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get -yq dist-upgrade && \
