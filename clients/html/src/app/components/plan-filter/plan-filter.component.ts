@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import html2PDF from 'jspdf-html2canvas';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators'; // Import takeUntil if using PlanProviderService observables
 
@@ -178,7 +179,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   // --- Misc ---
   private destroy$ = new Subject<void>();
-  public html2PDF = html2PDF; // Expose for template
 
   // --- Lifecycle Hooks ---
   ngOnInit() {
@@ -791,7 +791,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   // --- Actions ---
 
-  public downloadPdf(): void {
+  public async downloadPdf(): Promise<void> {
     const table = document.getElementById('plan-table');
     if (!table) {
       console.error("Element with ID 'plan-table' not found.");
@@ -804,24 +804,41 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
     const filename = `${this.planType() || 'download'}.pdf`;
 
-    html2PDF(table, {
-      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }, // Consider landscape if table is wide
-      imageType: 'image/png',
-      output: filename, // Let save() handle download name
-      html2canvas: { scale: 2, useCORS: true }, // Improve quality, allow external images
-      margin: { top: 40, right: 40, bottom: 40, left: 40 },
-    })
-      .then((pdf: any) => {
-        // Use 'any' if jspdf types are not available
-        pdf.save(filename);
-        Swal.close();
-        this.pdfView = false;
-      })
-      .catch((error: unknown) => {
-        console.error('PDF generation failed:', error);
-        Swal.fire('Error', 'PDF generation failed. Please try again.', 'error');
-        this.pdfView = false;
-      });
+    try {
+      const canvas = await html2canvas(table, { scale: 2, useCORS: true });
+      const imgData = canvas.toDataURL('image/png');
+
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4', orientation: 'portrait' });
+      const margin = { top: 40, right: 40, bottom: 40, left: 40 };
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const usableW = pageW - margin.left - margin.right;
+      const usableH = pageH - margin.top - margin.bottom;
+
+      const props = pdf.getImageProperties(imgData);
+      const imgH = (props.height * usableW) / props.width;
+
+      let heightLeft = imgH;
+      let position = margin.top;
+
+      pdf.addImage(imgData, 'PNG', margin.left, position, usableW, imgH);
+      heightLeft -= usableH;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgH + margin.top;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin.left, position, usableW, imgH);
+        heightLeft -= usableH;
+      }
+
+      pdf.save(filename);
+      Swal.close();
+      this.pdfView = false;
+    } catch (error: unknown) {
+      console.error('PDF generation failed:', error);
+      Swal.fire('Error', 'PDF generation failed. Please try again.', 'error');
+      this.pdfView = false;
+    }
   }
 
   private _showPdfGenerationMsg(): void {
