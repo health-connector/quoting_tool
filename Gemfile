@@ -18,7 +18,7 @@ gem 'observer'
 gem 'rails', '~> 8.1.2'
 
 # Use Puma as the app server
-gem 'puma', '~> 6.6.0'
+gem 'puma', '~> 7.2.1'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.7'
 # Use Active Model has_secure_password
