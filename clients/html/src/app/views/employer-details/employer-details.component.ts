@@ -20,7 +20,7 @@ import {
   NgbDateStruct,
   NgbDatepickerConfig,
 } from '@ng-bootstrap/ng-bootstrap';
-import * as XLSX from 'xlsx';
+import { Workbook } from 'exceljs';
 import Swal from 'sweetalert2';
 
 import { EmployerDetailsService } from '../../services/employer-details.service';
@@ -86,8 +86,7 @@ interface ParsedExcelRow {
   dob: Date;
 }
 
-type ExcelRowData = (string | number | null)[];
-type AOA = ExcelRowData[];
+
 
 interface Alert {
   type: string;
@@ -457,64 +456,50 @@ export class EmployerDetailsComponent implements OnInit {
     this.employerDetailsService.postUpload(input).subscribe();
     // Below is used to display in the UI
     const reader: FileReader = new FileReader();
-    reader.onload = (e: ProgressEvent<FileReader>) => {
+    reader.onload = async (e: ProgressEvent<FileReader>) => {
       const target = e.target as FileReader;
-      if (typeof target.result !== 'string') {
+      if (!(target.result instanceof ArrayBuffer)) {
         Swal.fire('Error', 'Failed to read file content.', 'error');
-        console.error('FileReader result is not a string:', target.result);
+        console.error('FileReader result is not an ArrayBuffer:', target.result);
         return;
       }
-      /* read workbook */
-      const bstr: string = target.result;
-      const wb: XLSX.WorkBook = XLSX.read(bstr, { type: 'binary' });
 
-      /* grab first sheet */
-      const wsname: string = wb.SheetNames[0];
-      const ws: XLSX.WorkSheet = wb.Sheets[wsname];
+      try {
+        const wb = new Workbook();
+        await wb.xlsx.load(target.result);
+        const ws = wb.worksheets[0];
 
-      /* save data */
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1 }) as AOA;
-      const dataFromArray: ParsedExcelRow[] = [];
-      data.forEach((d, i) => {
-        // Skip header rows (assuming first 3 rows are headers) and empty rows
-        if (i > 2 && d.length > 8) {
-          // Check length before accessing index 8
-          const relation = d[1];
-          const lastName = d[2];
-          const firstName = d[3];
-          const dobExcel = d[8];
-
-          // Validate types before processing
+        const dataFromArray: ParsedExcelRow[] = [];
+        ws.eachRow((row, rowNumber) => {
+          if (rowNumber <= 3) return; // skip 3 header rows
+          // ExcelJS row.values is 1-indexed (index 0 is always null)
+          const v = row.values as (string | number | Date | null | undefined)[];
+          const relation = v[2];
+          const lastName = v[3];
+          const firstName = v[4];
+          const dobCell = v[9];
+          const dob = dobCell instanceof Date ? dobCell : null;
           if (
             typeof relation === 'string' &&
             typeof lastName === 'string' &&
             typeof firstName === 'string' &&
-            typeof dobExcel === 'number' // Check if dob is a number (Excel date)
+            dob !== null &&
+            !isNaN(dob.getTime())
           ) {
-            try {
-              const dob = this.getJsDateFromExcel(dobExcel);
-              // Check if the date is valid after conversion
-              if (!isNaN(dob.getTime())) {
-                dataFromArray.push({ relation, lastName, firstName, dob });
-              } else {
-                console.warn(`Invalid date calculated for row ${i + 1}:`, dobExcel);
-                // Optionally notify the user about the specific row
-              }
-            } catch (dateError) {
-              console.error(`Error processing date for row ${i + 1}:`, dobExcel, dateError);
-            }
+            dataFromArray.push({ relation, lastName, firstName, dob });
           } else {
-            console.warn(`Skipping row ${i + 1} due to unexpected data types:`, d);
-            // Optionally notify the user about skipped rows
+            console.warn(`Skipping row ${rowNumber} due to missing or invalid data:`, v);
           }
-        }
-      });
-      this.excelArray = dataFromArray;
+        });
+
+        this.excelArray = dataFromArray;
+        this.parseResults(this.excelArray);
+      } catch (err) {
+        console.error('Error parsing Excel file:', err);
+        Swal.fire('Error', 'Failed to parse the uploaded Excel file.', 'error');
+      }
     };
-    reader.readAsBinaryString(fileInfo.files[0]);
-    setTimeout(() => {
-      this.parseResults(this.excelArray);
-    }, 500);
+    reader.readAsArrayBuffer(fileInfo.files[0]);
   }
 
   zipChangeSearch(event) {
@@ -639,10 +624,6 @@ export class EmployerDetailsComponent implements OnInit {
     const input = event.target;
     input.style.border = '1px solid #000';
     // do something when input is focused
-  }
-
-  getJsDateFromExcel(excelDate) {
-    return new Date((excelDate - (25567 + 1)) * 86400 * 1000);
   }
 
   parseResults(excelArray) {
