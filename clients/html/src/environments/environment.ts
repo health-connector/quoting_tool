@@ -4,8 +4,6 @@
 
 export const environment = {
   production: false,
-  envApi: 'http://localhost:3000',
-  cataract_api: 'http://localhost:3001',
 };
 
 /*

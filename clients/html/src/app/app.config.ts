@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, provideAppInitializer, inject, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
 import { CustomDateParserFormatter } from './custom_date_parser_formatter';
@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { CommonModule } from '@angular/common';
 import { ROUTES } from './app.routes';
+import { ConfigService } from './services/config.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,5 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     importProvidersFrom(NgbModule, SweetAlert2Module.forRoot(), FormsModule, ReactiveFormsModule, CommonModule),
     { provide: NgbDateParserFormatter, useClass: CustomDateParserFormatter },
+    provideAppInitializer(() => inject(ConfigService).loadConfig()),
   ],
 };
