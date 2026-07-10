@@ -60,7 +60,7 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 6.4.4'
   gem 'pry-byebug', '~> 3.11.0'
   gem 'rspec-rails', '~> 7.1.1'
-  gem 'yard', '~> 0.9.36', require: false
+  gem 'yard', '~> 0.9.44', require: false
 end
 
 group :development do
