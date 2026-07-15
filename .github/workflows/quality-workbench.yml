@@ -92,3 +92,18 @@ jobs:
       #   run: sudo bash -c "echo '127.0.0.1 rabbitmq mongodb' >> /etc/hosts"
       - name: run tests
         run: bundle exec rspec
+  angular-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: clients/html/.nvmrc
+          cache: npm
+          cache-dependency-path: clients/html/package-lock.json
+      - name: Install dependencies
+        working-directory: clients/html
+        run: npm ci
+      - name: Run Angular unit tests
+        working-directory: clients/html
+        run: npx ng test --watch=false --browsers=ChromeHeadlessCI
