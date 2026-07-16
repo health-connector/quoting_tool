@@ -104,6 +104,12 @@ jobs:
       - name: Install dependencies
         working-directory: clients/html
         run: npm ci
+      - name: Run Angular lint
+        working-directory: clients/html
+        run: npx ng lint
       - name: Run Angular unit tests
         working-directory: clients/html
         run: npx ng test --watch=false --browsers=ChromeHeadlessCI
+      - name: Run Angular build
+        working-directory: clients/html
+        run: npm run build
