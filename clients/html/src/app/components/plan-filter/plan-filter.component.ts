@@ -7,7 +7,6 @@ import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import html2PDF from 'jspdf-html2canvas';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators'; // Import takeUntil if using PlanProviderService observables
 
 import tooltipsData from '../../../data/tooltips.json';
 import tableHeadersData from '../../../data/tableHeaders.json';
