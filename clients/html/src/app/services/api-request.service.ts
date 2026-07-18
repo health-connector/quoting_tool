@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { ConfigService } from './config.service';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -8,13 +8,14 @@ import { Observable } from 'rxjs';
 })
 export class ApiRequestService {
   private http = inject(HttpClient);
+  private configService = inject(ConfigService);
   headers = new HttpHeaders({ 'Content-Type': 'application/json' });
   // The API version
   public version = 1.0;
 
-  // URL to the API we want to use
-  private api = environment.envApi;
-  private cataract_api = environment.cataract_api;
+  // URL to the API we want to use — loaded dynamically at runtime from assets/config.json
+  private get api(): string { return this.configService.envApi; }
+  private get cataract_api(): string { return this.configService.cataractApi; }
 
   // Get the full URL to the API
   private getFullPath(url: string): string {
