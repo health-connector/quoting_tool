@@ -1,13 +1,12 @@
 import { Component, OnInit, inject, input, OnDestroy } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
-import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe, NgIf } from '@angular/common';
+import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgbCollapse, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import html2PDF from 'jspdf-html2canvas';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators'; // Import takeUntil if using PlanProviderService observables
 
 import tooltipsData from '../../../data/tooltips.json';
 import tableHeadersData from '../../../data/tableHeaders.json';
@@ -101,9 +100,8 @@ const DEFAULT_ICON_COL = 'col-6'; // TODO: Revisit if this is the best way to tr
     CurrencyPipe,
     DatePipe,
     PlanFilterPipe,
-    OrderByPipe,
-    NgIf, // <-- Add NgIf here
-  ],
+    OrderByPipe
+],
   host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
 export class PlanFilterComponent implements OnInit, OnDestroy {
