@@ -5,14 +5,15 @@
   let-onCheckedChange="onCheckedChange"
 >
   <div class="form-inline row-item">
-    <i
-      *ngIf="item.children"
-      (click)="onCollapseExpand()"
-      aria-hidden="true"
-      class="fa"
-      [class.fa-caret-right]="item.collapsed"
-      [class.fa-caret-down]="!item.collapsed"
-    ></i>
+    @if (item.children) {
+      <i
+        (click)="onCollapseExpand()"
+        aria-hidden="true"
+        class="fa"
+        [class.fa-caret-right]="item.collapsed"
+        [class.fa-caret-down]="!item.collapsed"
+      ></i>
+    }
     <label class="form-check-label" (click)="select(item)">{{
       item.text
     }}</label>
@@ -26,38 +27,47 @@
   let-onCheckedChange="onCheckedChange"
   let-onFilterTextChange="onFilterTextChange"
 >
-  <div *ngIf="config.hasFilter" class="row row-filter">
-    <div class="col-12">
-      <input
-        class="form-control"
-        type="text"
-        placeholder="Search SIC"
-        [(ngModel)]="filterText"
-        (ngModelChange)="onFilterTextChange($event)"
-      />
+  @if (config.hasFilter) {
+    <div class="row row-filter">
+      <div class="col-12">
+        <input
+          class="form-control"
+          type="text"
+          placeholder="Search SIC"
+          [(ngModel)]="filterText"
+          (ngModelChange)="onFilterTextChange($event)"
+        />
+      </div>
     </div>
-  </div>
-  <div *ngIf="config.hasAllCheckBox || config.hasCollapseExpand" class="row">
-    <div class="col-12">
-      <label *ngIf="config.hasAllCheckBox" (click)="select(item)">
-        <strong></strong>
-      </label>
-      <label
-        *ngIf="config.hasCollapseExpand"
-        class="pull-right"
-        (click)="onCollapseExpand()"
-      >
-        <i
-          title="test 1"
-          aria-hidden="true"
-          class="fa"
-          [class.fa-expand]="item.collapsed"
-          [class.fa-compress]="!item.collapsed"
-        ></i>
-      </label>
+  }
+  @if (config.hasAllCheckBox || config.hasCollapseExpand) {
+    <div class="row">
+      <div class="col-12">
+        @if (config.hasAllCheckBox) {
+          <label (click)="select(item)">
+            <strong></strong>
+          </label>
+        }
+        @if (config.hasCollapseExpand) {
+          <label
+            class="pull-right"
+            (click)="onCollapseExpand()"
+          >
+            <i
+              title="test 1"
+              aria-hidden="true"
+              class="fa"
+              [class.fa-expand]="item.collapsed"
+              [class.fa-compress]="!item.collapsed"
+            ></i>
+          </label>
+        }
+      </div>
     </div>
-  </div>
-  <div *ngIf="config.hasDivider" class="dropdown-divider"></div>
+  }
+  @if (config.hasDivider) {
+    <div class="dropdown-divider"></div>
+  }
 </ng-template>
 <ngx-treeview
   [config]="config"

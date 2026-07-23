@@ -47,7 +47,7 @@
     "@types/jasmine": "~5.1.7",
     "@types/jasminewd2": "^2.0.13",
     "@types/node": "^22.14.1",
-    "angular-eslint": "20.7.0",
+    "angular-eslint": "21.4.0",
     "cypress": "latest",
     "cypress-file-upload": "^5.0.8",
     "cypress-plugin-tab": "^1.0.5",
