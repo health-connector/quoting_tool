@@ -126,7 +126,10 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   public costShownText = '';
   public btnName = '';
   public btnLink = '';
-  public filterSelected = false; // Add filterSelected back
+  // Derived from planFilter — keeps template bindings stable across CD verification passes
+  get filterSelected(): boolean {
+    return this.planFilter !== null;
+  }
 
   // --- Data Properties ---
   public employerDetails: EmployerDetails | null = null; // Must be public for template access
@@ -445,8 +448,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     this._applyPackageFilter();
     this._recalculateQuotes(); // Recalculate quotes for the new set of kindFilteredProducts
     this.resetFiltersAndSort(); // Reset filters when package changes
-    this.showPlansTable = this.planFilter !== null; // Only show plans table if a filter is selected
-    this.filterSelected = this.planFilter !== null; // Only enable filter button if a model is selected
+    this.showPlansTable = this.planFilter !== null;
   }
 
   private _applyPackageFilter(): void {
@@ -669,7 +671,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
     // Update count based on *currently filtered* carriers
     this.filterLength = this.filteredCarriers.length;
-    this.filterSelected = this.defaultCarriers.length > 0; // Enable if we have data
     console.log('[PlanFilterComponent] Filters updated. Filter length:', this.filterLength);
   }
 

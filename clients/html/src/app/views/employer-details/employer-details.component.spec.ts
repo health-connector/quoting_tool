@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { EmployerDetailsComponent } from './employer-details.component';
 import { NavComponent } from '../../components/nav/nav.component';
@@ -28,7 +28,7 @@ describe('EmployerDetailsComponent', () => {
         NgbModule,
         RouterTestingModule,
         AutocompleteLibModule,
-        BrowserAnimationsModule,
+        NoopAnimationsModule,
         EmployerDetailsComponent,
         NavComponent,
         CoverageTypePipe,
@@ -42,6 +42,8 @@ describe('EmployerDetailsComponent', () => {
   }));
 
   beforeEach(() => {
+    // Clear localStorage so ngOnInit does not set showEmployeeRoster=true from a previous test run
+    localStorage.removeItem('employerDetails');
     fixture = TestBed.createComponent(EmployerDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -71,8 +73,6 @@ describe('EmployerDetailsComponent', () => {
     // Ensure showEmployeeRoster is false so the buttons are present
     component.showEmployeeRoster = false;
     fixture.detectChanges();
-
-    // Use debugElement and By for more robust querying
     const debugElement = fixture.debugElement;
 
     // Find the specific H2 element by its text content, making the test less brittle to structure changes

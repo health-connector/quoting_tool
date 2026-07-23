@@ -43,7 +43,7 @@ export class PlanProviderService {
       byteArrays.push(byteArray);
     }
 
-    const blob = new Blob(byteArrays, { type: contentType });
+    const blob = new Blob(byteArrays as BlobPart[], { type: contentType });
     return blob;
   };
 
