@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@angular/build": "^20.3.32",
-    "@angular/cli": "^20.3.32",
+    "@angular/cli": "^21.0.4",
     "@angular/compiler-cli": "~20.3.26",
     "@angular/language-service": "~20.3.26",
     "@cypress/schematic": "^3.0.0",
