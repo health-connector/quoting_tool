@@ -3,12 +3,13 @@ import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { PlanFilterComponent } from './plan-filter.component';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
+import { PlanProviderService } from '../../services/plan-provider.service';
 
 const data = {
   effectiveDate: 'October 2019',
@@ -78,7 +79,7 @@ describe('PlanFilterComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      imports: [NgbModule, BrowserAnimationsModule, FormsModule, PlanFilterComponent, PlanFilterPipe, OrderByPipe],
+      imports: [NgbModule, NoopAnimationsModule, FormsModule, PlanFilterComponent, PlanFilterPipe, OrderByPipe],
       providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter([])],
     }).compileComponents();
   }));
@@ -88,6 +89,12 @@ describe('PlanFilterComponent', () => {
     component = fixture.componentInstance;
     localStorage.setItem('employerDetails', JSON.stringify(data));
     fixture.componentRef.setInput('planType', 'health');
+
+    const planService = fixture.debugElement.injector.get(PlanProviderService);
+    spyOn(planService, 'getPlansFor').and.callFake((consumer: any) => {
+      consumer.onProductsLoaded([]);
+    });
+    // ngOnInit: spy fires synchronously → isLoading = false
     fixture.detectChanges();
   });
 
@@ -103,8 +110,15 @@ describe('PlanFilterComponent', () => {
 
   it('should have the table headers for health if plan type health', () => {
     component.isLoading = false;
-    component.changePackageFilter('single_product');
     fixture.detectChanges();
+    // Use DOM click (zone-aware) instead of direct call to avoid NG0100 in Angular 21 strict CD.
+    const radios = fixture.nativeElement.querySelectorAll('input[type="radio"]');
+    const singleProductRadio = Array.from(radios).find(
+      (_: unknown, i: number) => component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'health'
+    ) as HTMLInputElement;
+    singleProductRadio.click();
+    fixture.detectChanges();
+
     const headers = fixture.nativeElement.querySelectorAll('th');
     const headerTexts = Array.from(headers).map((h: HTMLElement) => h.innerText.trim());
 
@@ -135,7 +149,7 @@ describe('PlanFilterComponent', () => {
     expect(visibleRadio).withContext('Radio button for plan selection not found in DOM').not.toBeNull();
     if (!visibleRadio) return;
     (visibleRadio as HTMLInputElement).click();
-    component.filterSelected = true;
+    // filterSelected getter returns true automatically once planFilter is set via radio click.
     fixture.detectChanges();
     const button = fixture.nativeElement.querySelector('.filter-btn');
     expect(button.disabled).toEqual(false);
@@ -151,7 +165,13 @@ describe('PlanFilterComponent', () => {
   it('should have the table headers for dental if plan type dental', () => {
     component.isLoading = false;
     fixture.componentRef.setInput('planType', 'dental');
-    component.changePackageFilter('single_product');
+    fixture.detectChanges();
+    // Use DOM click (zone-aware) for consistency with the health test, avoids NG0100 in Angular 21 strict CD.
+    const radios = fixture.nativeElement.querySelectorAll('input[type="radio"]');
+    const dentalRadio = Array.from(radios).find(
+      (_: unknown, i: number) => component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'dental'
+    ) as HTMLInputElement;
+    dentalRadio.click();
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
     const headerTexts = Array.from(headers).map((h: HTMLElement) => h.innerText.trim());
