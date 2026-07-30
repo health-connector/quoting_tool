@@ -138,7 +138,7 @@ describe('RelationshipCoverageCostCalculatorService, created with a roster', () 
   );
 
   it('calculates the product quote', () => {
-    const dependents = [];
+    const dependents: RosterDependent[] = [];
 
     const entry_1 = new MockRosterEntry(subscriber_1_dob, true, dependents, 'health');
 

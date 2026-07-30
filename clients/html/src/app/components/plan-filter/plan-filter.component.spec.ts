@@ -125,7 +125,7 @@ describe('PlanFilterComponent', () => {
     fixture.detectChanges();
 
     const headers = fixture.nativeElement.querySelectorAll('th');
-    const headerTexts = Array.from(headers).map((h: HTMLElement) => h.innerText.trim());
+    const headerTexts = Array.from<HTMLElement>(headers).map((h) => h.innerText.trim());
 
     expect(headerTexts[0]).toContain('Plan name');
     expect(headerTexts[1]).toContain('Benefit Cost');
@@ -150,7 +150,7 @@ describe('PlanFilterComponent', () => {
     fixture.detectChanges();
     // Find the first visible radio button (plan selection)
     const radios = fixture.nativeElement.querySelectorAll('input[type="radio"]');
-    const visibleRadio = Array.from(radios).find((radio: HTMLInputElement) => !radio.closest('label')?.hidden);
+    const visibleRadio = Array.from<HTMLInputElement>(radios).find((radio) => !radio.closest('label')?.hidden);
     expect(visibleRadio).withContext('Radio button for plan selection not found in DOM').not.toBeNull();
     if (!visibleRadio) return;
     (visibleRadio as HTMLInputElement).click();
@@ -180,7 +180,7 @@ describe('PlanFilterComponent', () => {
     dentalRadio.click();
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
-    const headerTexts = Array.from(headers).map((h: HTMLElement) => h.innerText.trim());
+    const headerTexts = Array.from<HTMLElement>(headers).map((h) => h.innerText.trim());
 
     expect(headerTexts[0].toLowerCase()).toContain('plan name');
     expect(headerTexts[1].toLowerCase()).toContain('services');
