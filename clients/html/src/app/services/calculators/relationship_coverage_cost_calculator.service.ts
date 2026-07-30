@@ -15,7 +15,7 @@ class FilteredRelationshipRosterEntry {
   dob: Date;
   roster_dependents: Array<RosterDependent>;
   will_enroll: boolean;
-  start_date: Date;
+  start_date!: Date;
 
   constructor(
     start_date: Date,
@@ -178,7 +178,7 @@ export class RelationshipCoverageCostCalculatorService {
     return calculated_products;
   }
 
-  public reducedMemberCost(q, roster_entry, total) {
+  public reducedMemberCost(q: Quote, roster_entry: RosterEntry, total: number) {
     const gs_factor = q.product_information.group_size_factor(this.groupSize);
     const pr_factor = q.product_information.participation_factor(this.participation);
     const sic_code_factor = q.product_information.sic_code_factor;

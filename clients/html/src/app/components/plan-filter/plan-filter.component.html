@@ -4,7 +4,7 @@
       <span class="cs-text pe-2">Cost shown for</span>
       <i class="fas fa-user ms-1"></i> {{ costShownText }}
     </div>
-    Effective Date: <strong>{{ employerDetails?.effectiveDate | date: 'MMMM, y' }}</strong>
+    Effective Date: <strong>{{ $safeNavigationMigration(employerDetails?.effectiveDate) | date: 'MMMM, y' }}</strong>
   </div>
 
   <div class="col-12 mt-4 mb-4">
@@ -300,10 +300,7 @@
                       }
                     </th>
                     @if (planFilter === 'single_product' && planType() !== 'dental') {
-                      <th
-                        [ngStyle]="{ width: '17%' }"
-                        scope="col"
-                        >
+                      <th [ngStyle]="{ width: '17%' }" scope="col">
                         {{ getTableHeader('col-5') }}
                         @if (!pdfView) {
                           <i
@@ -339,104 +336,104 @@
                 <tbody>
                   @for (
                     carrier of $any(filteredCarriers)
-                    | orderBy: sortFilter : planType() : planFilter : getTableHeader(iconSelected);
+                      | orderBy: sortFilter : planType() : planFilter : getTableHeader(iconSelected);
                     track carrier
-                    ) {
+                  ) {
                     <tr>
                       <td>
                         <strong>{{ carrier['product_information']['provider_name'] }}</strong
-                          ><br /><strong>{{ carrier['product_name'] }}</strong
-                          ><br />
-                          @if (!pdfView) {
-                            <a
-                              href="javascript:void(0);"
-                              class="btn-link"
-                              (click)="getSbcDocument(carrier['product_information']['id'])"
-                              >Summary of Benefit Coverage <i class="far fa-file-pdf fa-lg"></i
-                            ></a>
-                          }
-                        </td>
-                        <td>
-                          @if (planType() === 'health') {
-                            <span>
-                              <p class="mb-0">
-                                <strong>Hospital Stay -</strong>
-                                {{
+                        ><br /><strong>{{ carrier['product_name'] }}</strong
+                        ><br />
+                        @if (!pdfView) {
+                          <a
+                            href="javascript:void(0);"
+                            class="btn-link"
+                            (click)="getSbcDocument(carrier['product_information']['id'])"
+                            >Summary of Benefit Coverage <i class="far fa-file-pdf fa-lg"></i
+                          ></a>
+                        }
+                      </td>
+                      <td>
+                        @if (planType() === 'health') {
+                          <span>
+                            <p class="mb-0">
+                              <strong>Hospital Stay -</strong>
+                              {{
                                 carrier['product_information']['hospital_stay'] &&
                                 isPercentageValue(carrier['product_information']['hospital_stay'])
-                                ? carrier['product_information']['hospital_stay']
-                                : (carrier['product_information']['hospital_stay'] | currency)
-                                }}
-                              </p>
-                              <p class="mb-0">
-                                <strong>Emergency Stay -</strong>
-                                {{
+                                  ? carrier['product_information']['hospital_stay']
+                                  : (carrier['product_information']['hospital_stay'] | currency)
+                              }}
+                            </p>
+                            <p class="mb-0">
+                              <strong>Emergency Stay -</strong>
+                              {{
                                 carrier['product_information']['emergency_stay'] &&
                                 isPercentageValue(carrier['product_information']['emergency_stay'])
-                                ? carrier['product_information']['emergency_stay']
-                                : (carrier['product_information']['emergency_stay'] | currency)
-                                }}
-                              </p>
-                              <p class="mb-0">
-                                <strong>PCP Office Visit -</strong>
-                                {{ carrier['product_information']['pcp_office_visit'] | currency }}
-                              </p>
-                              <p class="mb-0">
-                                <strong>RX -</strong>
-                                {{ carrier['product_information']['rx'] | currency }}
-                              </p>
-                            </span>
-                          }
-                          @if (planType() === 'dental') {
-                            <span>
-                              <p class="mb-0">
-                                <strong>Preventive Services -</strong>
-                                {{ carrier['product_information']['preventive_dental_services'] }}
-                              </p>
-                              <p class="mb-0">
-                                <strong>Basic Services -</strong>
-                                {{ carrier['product_information']['basic_dental_services'] }}
-                              </p>
-                              <p class="mb-0">
-                                <strong>Major Services -</strong>
-                                {{ carrier['product_information']['major_dental_services'] }}
-                              </p>
-                            </span>
-                          }
-                        </td>
-                        <td>{{ carrier['group_deductible'] }}</td>
-                        <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
-                        @if (planFilter === 'single_product' && planType() !== 'dental') {
-                          <td>
-                            <span>
-                              <strong>Employee -</strong> {{ carrier['employee_cost'] || 0 | currency }}<br />
-                              <strong>Emp & Spouse -</strong> {{ carrier['employee_spouse_cost'] || 0 | currency }}<br />
-                              <strong>Emp & Children -</strong> {{ carrier['employee_children_cost'] || 0 | currency
-                              }}<br />
-                              <strong>Family -</strong> {{ carrier['family_cost'] || 0 | currency }}
-                            </span>
-                          </td>
+                                  ? carrier['product_information']['emergency_stay']
+                                  : (carrier['product_information']['emergency_stay'] | currency)
+                              }}
+                            </p>
+                            <p class="mb-0">
+                              <strong>PCP Office Visit -</strong>
+                              {{ carrier['product_information']['pcp_office_visit'] | currency }}
+                            </p>
+                            <p class="mb-0">
+                              <strong>RX -</strong>
+                              {{ carrier['product_information']['rx'] | currency }}
+                            </p>
+                          </span>
                         }
-                        <td>{{ carrier['sponsor_cost'] || 0 | currency }}</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
+                        @if (planType() === 'dental') {
+                          <span>
+                            <p class="mb-0">
+                              <strong>Preventive Services -</strong>
+                              {{ carrier['product_information']['preventive_dental_services'] }}
+                            </p>
+                            <p class="mb-0">
+                              <strong>Basic Services -</strong>
+                              {{ carrier['product_information']['basic_dental_services'] }}
+                            </p>
+                            <p class="mb-0">
+                              <strong>Major Services -</strong>
+                              {{ carrier['product_information']['major_dental_services'] }}
+                            </p>
+                          </span>
+                        }
+                      </td>
+                      <td>{{ carrier['group_deductible'] }}</td>
+                      <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
+                      @if (planFilter === 'single_product' && planType() !== 'dental') {
+                        <td>
+                          <span>
+                            <strong>Employee -</strong> {{ carrier['employee_cost'] || 0 | currency }}<br />
+                            <strong>Emp & Spouse -</strong> {{ carrier['employee_spouse_cost'] || 0 | currency }}<br />
+                            <strong>Emp & Children -</strong> {{ carrier['employee_children_cost'] || 0 | currency
+                            }}<br />
+                            <strong>Family -</strong> {{ carrier['family_cost'] || 0 | currency }}
+                          </span>
+                        </td>
+                      }
+                      <td>{{ carrier['sponsor_cost'] || 0 | currency }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
-        }
-        @if (showPlansTable) {
-          <div class="row button-group mt-3">
-            <div class="col-12 d-flex justify-content-between">
-              <button class="btn btn-success" (click)="downloadPdf()" [disabled]="!filterSelected">
-                <i class="far fa-file-pdf"></i> Save PDF
-              </button>
+        </div>
+      }
+      @if (showPlansTable) {
+        <div class="row button-group mt-3">
+          <div class="col-12 d-flex justify-content-between">
+            <button class="btn btn-success" (click)="downloadPdf()" [disabled]="!filterSelected">
+              <i class="far fa-file-pdf"></i> Save PDF
+            </button>
 
-              <a class="btn btn-primary" [routerLink]="btnLink">{{ btnName }}</a>
-            </div>
+            <a class="btn btn-primary" [routerLink]="btnLink">{{ btnName }}</a>
           </div>
-        }
-      </div>
-    }
-  </div>
+        </div>
+      }
+    </div>
+  }
+</div>

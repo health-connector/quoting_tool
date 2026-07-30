@@ -47,7 +47,7 @@ class LoadedProduct {
 
   public group_tier_factor(tier_name: ContributionTierName): number {
     if (this.tier_factors.has(tier_name)) {
-      return this.tier_factors.get(tier_name);
+      return this.tier_factors.get(tier_name)!;
     }
     return 1.0;
   }
@@ -55,13 +55,13 @@ class LoadedProduct {
   public group_size_factor(group_size: string): number {
     const gs_int = parseInt(group_size, 0);
     if (gs_int > this.max_group_size) {
-      return this.group_size_factors.get(this.max_group_size.toFixed(0));
+      return this.group_size_factors.get(this.max_group_size.toFixed(0)) ?? 1.0;
     }
-    return this.group_size_factors.get(group_size);
+    return this.group_size_factors.get(group_size) ?? 1.0;
   }
 
   public participation_factor(participation: string): number {
-    return this.participation_factors.get(participation);
+    return this.participation_factors.get(participation) ?? 1.0;
   }
 
   public cost(age: string): number {
@@ -74,8 +74,8 @@ class LoadedProduct {
     return this.getRate(age);
   }
 
-  private getRate(age: string) {
-    return this.rates.get(age);
+  private getRate(age: string): number {
+    return this.rates.get(age) ?? 0;
   }
 }
 
@@ -91,10 +91,10 @@ export class ProductDataLoader {
   public castJSON(parsed_data: LoadedProductList) {
     const data: LoadedProductList | null = <LoadedProductList>parsed_data;
     if (data != null) {
-      const products = [];
-      Object.keys(data).forEach(function(k) {
+      const products: Product[] = [];
+      Object.keys(data).forEach((k) => {
         if (k !== 'default') {
-          products.push(this.castSingleProduct(data[k]));
+          products.push(this.castSingleProduct(data[k as unknown as number]));
         }
       });
       return products;
@@ -110,18 +110,18 @@ export class ProductDataLoader {
     const participation_factors = new Map<string, number>();
     const group_size_factors = new Map<string, number>();
     const rates = new Map<string, number>();
-    Object.keys(data.participation_factors).forEach(function(k) {
+    Object.keys(data.participation_factors).forEach((k) => {
       participation_factors.set(k, data.participation_factors[k]);
     });
-    Object.keys(data.group_size_factors.factors).forEach(function(k) {
+    Object.keys(data.group_size_factors.factors).forEach((k) => {
       group_size_factors.set(k, data.group_size_factors.factors[k]);
     });
-    Object.keys(data.rates.entries).forEach(function(k) {
+    Object.keys(data.rates.entries).forEach((k) => {
       rates.set(k, data.rates.entries[k]);
     });
     const product_tfs = new Map<ContributionTierName, number>();
     if (data.group_tier_factors != null) {
-      data.group_tier_factors.forEach(function(gtf) {
+      data.group_tier_factors.forEach((gtf) => {
         product_tfs.set(gtf.name, gtf.factor);
       });
     }

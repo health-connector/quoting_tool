@@ -7,7 +7,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { PlanFilterPipe } from '../../pipes/plan-filter.pipe';
 import { OrderByPipe } from '../../pipes/order-by.pipe';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { PlanProviderService } from '../../services/plan-provider.service';
 
@@ -80,7 +80,11 @@ describe('PlanFilterComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [NgbModule, NoopAnimationsModule, FormsModule, PlanFilterComponent, PlanFilterPipe, OrderByPipe],
-      providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting(), provideRouter([])],
+      providers: [
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        provideRouter([]),
+      ],
     }).compileComponents();
   }));
 
@@ -114,7 +118,8 @@ describe('PlanFilterComponent', () => {
     // Use DOM click (zone-aware) instead of direct call to avoid NG0100 in Angular 21 strict CD.
     const radios = fixture.nativeElement.querySelectorAll('input[type="radio"]');
     const singleProductRadio = Array.from(radios).find(
-      (_: unknown, i: number) => component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'health'
+      (_: unknown, i: number) =>
+        component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'health',
     ) as HTMLInputElement;
     singleProductRadio.click();
     fixture.detectChanges();
@@ -169,7 +174,8 @@ describe('PlanFilterComponent', () => {
     // Use DOM click (zone-aware) for consistency with the health test, avoids NG0100 in Angular 21 strict CD.
     const radios = fixture.nativeElement.querySelectorAll('input[type="radio"]');
     const dentalRadio = Array.from(radios).find(
-      (_: unknown, i: number) => component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'dental'
+      (_: unknown, i: number) =>
+        component.planOptions[i]?.key === 'single_product' && component.planOptions[i]?.view === 'dental',
     ) as HTMLInputElement;
     dentalRadio.click();
     fixture.detectChanges();

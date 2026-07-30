@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import {
   FormBuilder,
   Validators,
@@ -159,6 +159,7 @@ const sicCodes: DetailedSicCode[] = sicCodesData as unknown as DetailedSicCode[]
     DatePipe,
     CoverageTypePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
 export class EmployerDetailsComponent implements OnInit {
@@ -169,9 +170,9 @@ export class EmployerDetailsComponent implements OnInit {
   private selectedSicService = inject(SelectedSicService);
 
   rows: Employee[] = [];
-  alerts: Alert[];
-  model: NgbDateStruct;
-  date: { months: number; day: number; year: number };
+  alerts!: Alert[];
+  model!: NgbDateStruct;
+  date!: { months: number; day: number; year: number };
   sicKeyword = 'standardIndustryCodeCode';
   zipKeyword = 'zipCode';
   sics: SimpleSicCode[] = sics;
@@ -324,8 +325,9 @@ export class EmployerDetailsComponent implements OnInit {
     let dates: string[] = [];
     let is_late_rate = false;
     this.employerDetailsService.getStartOnDates().subscribe((response) => {
-      dates = response['dates'] as string[];
-      is_late_rate = response['is_late_rate'] as boolean;
+      const res = response as Record<string, unknown>;
+      dates = res['dates'] as string[];
+      is_late_rate = res['is_late_rate'] as boolean;
       this.isLateRates = is_late_rate;
       this.effectiveDateOptions = dates.map((dateStr) => ({
         value: dateStr,
@@ -351,13 +353,13 @@ export class EmployerDetailsComponent implements OnInit {
   }
 
   getZipCodes() {
-    const zipCodes = [];
+    const zipCodes: string[] = [];
     zipcodes.map((zipcode) => zipCodes.push(zipcode.zipCode));
-    this.zipcodes = zipCodes.reduce((unique, item) => (unique.includes(item) ? unique : [...unique, item]), []);
+    this.zipcodes = zipCodes.reduce((unique: string[], item: string) => (unique.includes(item) ? unique : [...unique, item]), []);
   }
 
-  setCounty(value) {
-    this.quoteForm.get('county').setValue(value);
+  setCounty(value: string) {
+    this.quoteForm.get('county')?.setValue(value);
   }
 
   setSicFromTree(item: SicTreeItem | string) {
@@ -365,7 +367,7 @@ export class EmployerDetailsComponent implements OnInit {
       const sicValue = this.sics.filter((sic) => sic['standardIndustryCodeFull'] === item.text)[0][
         'standardIndustryCodeCode'
       ];
-      this.quoteForm.get('sic').setValue(sicValue);
+      this.quoteForm.get('sic')?.setValue(sicValue);
       this.showSicDetails = false;
     }
   }
@@ -411,12 +413,12 @@ export class EmployerDetailsComponent implements OnInit {
     this.showNewEmployee = true;
   }
 
-  deleteEmployee(index) {
+  deleteEmployee(index: number) {
     const control = <FormArray>this.quoteForm.controls.employees;
     control.removeAt(index);
   }
 
-  addDependent(control) {
+  addDependent(control: FormArray<FormGroup<DependentFormGroup>>) {
     control.push(
       this.fb.group<DependentFormGroup>({
         firstName: new FormControl<string | null>('', Validators.required),
@@ -427,7 +429,7 @@ export class EmployerDetailsComponent implements OnInit {
     );
   }
 
-  deleteDependent(control, index) {
+  deleteDependent(control: FormArray<FormGroup<DependentFormGroup>>, index: number) {
     control.removeAt(index);
   }
 
@@ -435,11 +437,11 @@ export class EmployerDetailsComponent implements OnInit {
     // console.log(this.quoteForm.value);
   }
 
-  open(content) {
+  open(content: unknown) {
     this.modalService.open(content);
   }
 
-  fileUploaded(fileInfo) {
+  fileUploaded(fileInfo: { files: File[] }) {
     const input = new FormData();
     const uploadedFile = fileInfo.files[0];
 
@@ -517,7 +519,7 @@ export class EmployerDetailsComponent implements OnInit {
     }, 500);
   }
 
-  zipChangeSearch(event) {
+  zipChangeSearch(event: string) {
     if (event.length === 5) {
       this.counties = this.availableCounties.filter((zipcode) => zipcode.zipCode === event);
       this.quoteForm.get('county')?.setValue(this.counties[0].county);
@@ -528,7 +530,7 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  selectEvent(item) {
+  selectEvent(item: string) {
     this.getCounties(item);
     if (this.showEmployeeRoster) {
       this.updateFormValue(item, 'zipCode');
@@ -551,7 +553,7 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  updateChangedSic(event) {
+  updateChangedSic(event: string) {
     let selectedSic;
     if (event.length === 4) {
       selectedSic = this.sics.find((sic) => sic.standardIndustryCodeCode === event);
@@ -583,10 +585,11 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  getCounties(item) {
+  getCounties(item: string) {
     this.counties = this.availableCounties.filter((zipcode) => zipcode.zipCode === item);
     if (this.showEmployeeRoster) {
-      const form = JSON.parse(localStorage.getItem('employerDetails'));
+      const stored = localStorage.getItem('employerDetails');
+      const form = JSON.parse(stored ?? '{}');
       if (this.counties.length === 1) {
         form.county = this.counties[0].county;
         localStorage.setItem('employerDetails', JSON.stringify(form));
@@ -620,9 +623,9 @@ export class EmployerDetailsComponent implements OnInit {
     }
 
     if (this.counties.length > 1) {
-      countyField.removeAttribute('disabled');
+      countyField?.removeAttribute('disabled');
     } else {
-      countyField.setAttribute('disabled', 'true');
+      countyField?.setAttribute('disabled', 'true');
     }
   }
 
@@ -631,26 +634,26 @@ export class EmployerDetailsComponent implements OnInit {
     // And reassign the 'data' which is binded to 'data' property.
   }
 
-  saveEmployerDetails(form) {
+  saveEmployerDetails(form: string) {
     localStorage.setItem('employerDetails', form);
   }
 
-  onFocused(event) {
-    const input = event.target;
+  onFocused(event: Event) {
+    const input = event.target as HTMLInputElement;
     input.style.border = '1px solid #000';
     // do something when input is focused
   }
 
-  getJsDateFromExcel(excelDate) {
+  getJsDateFromExcel(excelDate: number) {
     return new Date((excelDate - (25567 + 1)) * 86400 * 1000);
   }
 
-  parseResults(excelArray) {
+  parseResults(excelArray: ParsedExcelRow[]) {
     this.modalService.dismissAll();
     let count = 0;
     const employeesControl = this.quoteForm.controls.employees as FormArray<FormGroup<EmployeeFormGroup>>;
 
-    excelArray.forEach((data) => {
+    excelArray.forEach((data: ParsedExcelRow) => {
       // Convert DOB to ISO string immediately
       const dobString = this.convertNgbDateStructToISO(data.dob);
       // Convert ISO string to NgbDateStruct for the form control
@@ -725,12 +728,12 @@ export class EmployerDetailsComponent implements OnInit {
     const newEmployee: Employee = {
       firstName: rawFormValue.firstName ?? '',
       lastName: rawFormValue.lastName ?? '',
-      dob: this.convertNgbDateStructToISO(rawFormValue.dob), // Convert here
+      dob: this.convertNgbDateStructToISO(rawFormValue.dob) ?? '', // Convert here
       coverageKind: rawFormValue.coverageKind ?? '',
       dependents: (rawFormValue.dependents || []).map((dep) => ({
         firstName: dep.firstName ?? '',
         lastName: dep.lastName ?? '',
-        dob: this.convertNgbDateStructToISO(dep.dob), // Convert dependent DOB here
+        dob: this.convertNgbDateStructToISO(dep.dob) ?? '', // Convert dependent DOB here
         relationship: dep.relationship ?? '',
       })),
     };
@@ -760,14 +763,17 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  removeEmployeeFromRoster(rowIndex) {
+  removeEmployeeFromRoster(rowIndex: number) {
     this.rows.splice(rowIndex, 1);
-    this.employerDetails.employees.splice(rowIndex, 1);
+    this.employerDetails!.employees.splice(rowIndex, 1);
     localStorage.setItem('employerDetails', JSON.stringify(this.employerDetails));
     this.loadEmployeesFromStorage();
+    if (this.rows.length === 0) {
+      this.showEmployeeRoster = false;
+    }
   }
 
-  editEmployee(rowIndex) {
+  editEmployee(rowIndex: number) {
     this.editEmployeeIndex = rowIndex;
     this.showEditHousehold = true;
     const employee = JSON.parse(JSON.stringify(this.rows[rowIndex]));
@@ -785,7 +791,7 @@ export class EmployerDetailsComponent implements OnInit {
     const dependentsArray = employeeForm.controls.dependents as FormArray<FormGroup<DependentFormGroup>>;
     dependentsArray.clear();
 
-    employee.dependents.forEach((dependent) => {
+    employee.dependents.forEach((dependent: Dependent) => {
       const dependentDobStruct = this.convertISOToNgbDateStruct(dependent.dob as string);
       dependentsArray.push(
         this.fb.group({
@@ -803,7 +809,7 @@ export class EmployerDetailsComponent implements OnInit {
     return employeeFrom.invalid || employeeFrom.controls.dependents.invalid;
   }
 
-  private convertNgbDateStructToISO(date: NgbDateStruct | Date | string | null): string | null {
+  private convertNgbDateStructToISO(date: NgbDateStruct | Date | string | null | undefined): string | null {
     if (!date) {
       return null;
     }
@@ -845,12 +851,12 @@ export class EmployerDetailsComponent implements OnInit {
     const updatedEmployee: Employee = {
       firstName: formValue.firstName ?? '',
       lastName: formValue.lastName ?? '',
-      dob: this.convertNgbDateStructToISO(formValue.dob),
+      dob: this.convertNgbDateStructToISO(formValue.dob) ?? '',
       coverageKind: formValue.coverageKind ?? '',
       dependents: (formValue.dependents || []).map((dep) => ({
         firstName: dep.firstName ?? '',
         lastName: dep.lastName ?? '',
-        dob: this.convertNgbDateStructToISO(dep.dob),
+        dob: this.convertNgbDateStructToISO(dep.dob) ?? '',
         relationship: dep.relationship ?? '',
       })),
     };
@@ -870,7 +876,7 @@ export class EmployerDetailsComponent implements OnInit {
     }
   }
 
-  validateMonthDate(str, max) {
+  validateMonthDate(str: string, max: number) {
     if (str.charAt(0) !== '0' || str === '00') {
       let num = parseInt(str, 10);
       if (isNaN(num) || num <= 0 || num > max) {
@@ -881,13 +887,14 @@ export class EmployerDetailsComponent implements OnInit {
     return str;
   }
 
-  formatInputDate(e) {
-    let input = e.target.value;
+  formatInputDate(e: Event) {
+    const target = e.target as HTMLInputElement;
+    let input = target.value;
     if (/\D\/$/.test(input)) {
       input = input.substr(0, input.length - 3);
     }
 
-    const values = input.split('/').map(function (v) {
+    const values = input.split('/').map(function (v: string) {
       return v.replace(/\D/g, '');
     });
     if (values[0]) {
@@ -896,10 +903,10 @@ export class EmployerDetailsComponent implements OnInit {
     if (values[1]) {
       values[1] = this.validateMonthDate(values[1], 31);
     }
-    const output = values.map(function (v, i) {
+    const output = values.map(function (v: string, i: number) {
       return v.length === 2 && i < 2 ? v + ' / ' : v;
     });
-    e.target.value = output.join('').substr(0, 14);
+    target.value = output.join('').substr(0, 14);
   }
 
   private convertISOToNgbDateStruct(isoDate: string | null): NgbDateStruct | null {
