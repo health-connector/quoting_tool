@@ -304,8 +304,8 @@ export class EmployerDetailsComponent implements OnInit {
     this.selectedSicService.currentMessage.subscribe((item: SicTreeItem | string) => this.setSicFromTree(item));
     this.employeeRoster = localStorage.getItem('employerDetails');
     if (this.employeeRoster) {
-      this.showEmployeeRoster = true;
       const storedDetails: EmployerDetails = JSON.parse(this.employeeRoster);
+      this.showEmployeeRoster = (storedDetails.employees?.length ?? 0) > 0;
       this.employerDetails = storedDetails;
 
       this.quoteForm.patchValue({

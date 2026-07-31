@@ -75,7 +75,7 @@ class LoadedProduct {
   }
 
   private getRate(age: string): number {
-    return this.rates.get(age) ?? 0;
+    return this.rates.get(age) ?? NaN;
   }
 }
 
