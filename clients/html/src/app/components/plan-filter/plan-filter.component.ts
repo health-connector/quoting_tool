@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input, OnDestroy } from '@angular/core';
+import { Component, OnInit, inject, input, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { NgClass, NgStyle, TitleCasePipe, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -40,7 +40,7 @@ interface ProductInformation {
   package_kinds?: PackageTypes[];
   sic_code_factor?: number;
   group_size_factor?: (group_size: string) => number;
-  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((arg: unknown) => unknown);
+  [key: string]: string | boolean | undefined | number | PackageTypes[] | ((...args: never[]) => unknown);
 }
 
 interface QuotedProduct {
@@ -100,8 +100,9 @@ const DEFAULT_ICON_COL = 'col-6'; // TODO: Revisit if this is the best way to tr
     CurrencyPipe,
     DatePipe,
     PlanFilterPipe,
-    OrderByPipe
-],
+    OrderByPipe,
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   host: { '(window:beforeunload)': 'unloadHandler($event)' },
 })
 export class PlanFilterComponent implements OnInit, OnDestroy {
@@ -115,7 +116,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   // --- Configuration Data ---
   public tooltips = tooltipsData[0]; // Consider making type-safe access
-  public tableHeaders = tableHeadersData[0]; // Consider making type-safe access
+  public tableHeaders: Record<string, Array<Record<string, string>>> = tableHeadersData[0]; // Typed for string index access
 
   // --- Component State ---
   public isLoading = false;
@@ -278,9 +279,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
       };
     });
 
-    // Debug log only first employee to avoid cluttering the console
-    console.log('[DEBUG] First roster entry:', this.sponsorRoster[0]);
-
     this.tieredContributionModel = defaultTieredContributionModel();
     this.tieredCalculator = this._createCalculator(effectiveDate, this.tieredContributionModel, planType, true);
     this.relationshipContributionModel = defaultRelationshipContributionModel();
@@ -334,7 +332,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   // Called by PlanProviderService (or subscription) when products are fetched
   public onProductsLoaded(products: Product[]): void {
-    console.log('[PlanFilterComponent] onProductsLoaded received products:', products.length);
     this.isLoading = false; // Stop loading indicator
     this.sponsorProducts = products;
     // Store products but don't filter or display them until a benefit model is selected
@@ -343,15 +340,8 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   private _recalculateQuotes(): void {
     const currentPlanType = this.planType();
-    console.log(
-      '[PlanFilterComponent] recalculate started. kindFilteredProducts:',
-      this.kindFilteredProducts.length,
-      'planFilter:',
-      this.planFilter,
-    );
 
     if (!currentPlanType || this.kindFilteredProducts.length === 0) {
-      console.log('[PlanFilterComponent] recalculate skipped (no plan type or products).');
       this.defaultCarriers = [];
       this.filteredCarriers = [];
       this._updateFilterOptionsAndCounts();
@@ -361,24 +351,13 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     const calculator = this.hasRelationshipCompatibleType ? this.relationshipCalculator : this.tieredCalculator;
 
     if (!calculator) {
-      console.error('[PlanFilterComponent] recalculate failed: Calculator not initialized');
       this.defaultCarriers = [];
       this.filteredCarriers = [];
       this._updateFilterOptionsAndCounts();
       return;
     }
 
-    console.log(
-      '[PlanFilterComponent] recalculate using calculator:',
-      this.hasRelationshipCompatibleType ? 'relationship' : 'tiered',
-    );
-
-    const quotesFromCalculator = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter);
-
-    // Debug check for the first calculated quote
-    if (quotesFromCalculator.length > 0) {
-      console.log('[DEBUG] First quote total_cost:', quotesFromCalculator[0].total_cost);
-    }
+    const quotesFromCalculator = calculator.quoteProducts(this.kindFilteredProducts, this.planFilter!);
 
     // Map tier costs to display properties for each quote
     const newQuotes: QuotedProduct[] = quotesFromCalculator.map((quote: any) => {
@@ -408,14 +387,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
       };
     });
 
-    // Debug check for the first mapped quote
-    if (newQuotes.length > 0) {
-      console.log('[DEBUG] First mapped quote sponsor_cost:', newQuotes[0].sponsor_cost);
-      console.log('[DEBUG] First mapped quote employee_cost:', newQuotes[0].employee_cost);
-    }
-
     this.defaultCarriers = newQuotes;
-    console.log('[PlanFilterComponent] recalculate finished. defaultCarriers:', this.defaultCarriers.length);
 
     // Apply existing filters to the newly calculated default carriers
     this.applyFiltersAndUpdateDisplay();
@@ -543,12 +515,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   }
 
   private _applyCategoricalFilters(plans: QuotedProduct[]): QuotedProduct[] {
-    // Debug logs to see what filters are being applied
-    console.log('Metal levels selected:', this.selectedMetalLevels);
-    console.log('Product types selected:', this.selectedProductTypes);
-    console.log('Insurance companies selected:', this.selectedInsuranceCompanies);
-    console.log('HSA options selected:', this.selectedHSAs);
-
     // If no filters are selected in any category, return all plans
     if (
       this.selectedMetalLevels.length === 0 &&
@@ -568,21 +534,18 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
       filteredPlans = filteredPlans.filter((plan) =>
         metalValues.includes(plan.product_information.metal_level as string),
       );
-      console.log('After metal level filter:', filteredPlans.length);
     }
 
     // Apply product type filter if any are selected
     if (this.selectedProductTypes.length > 0) {
       const productTypeValues = this.selectedProductTypes.map((item) => item.value);
       filteredPlans = filteredPlans.filter((plan) => productTypeValues.includes(plan.product_information.product_type));
-      console.log('After product type filter:', filteredPlans.length);
     }
 
     // Apply insurance company filter if any are selected
     if (this.selectedInsuranceCompanies.length > 0) {
       const providerValues = this.selectedInsuranceCompanies.map((item) => item.value);
       filteredPlans = filteredPlans.filter((plan) => providerValues.includes(plan.product_information.provider_name));
-      console.log('After insurance company filter:', filteredPlans.length);
     }
 
     // Apply HSA eligibility filter if any are selected
@@ -596,18 +559,11 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
         return item.value;
       });
 
-      console.log('HSA values for filtering:', hsaValues);
-
       filteredPlans = filteredPlans.filter((plan) => {
         const planHsaValue = plan.product_information.hsa_eligible;
-        console.log('Plan HSA value:', planHsaValue, 'Type:', typeof planHsaValue);
         return hsaValues.includes(planHsaValue);
       });
-      console.log('After HSA filter:', filteredPlans.length);
     }
-
-    // Log the number of plans after filtering
-    console.log('Plans after all filtering:', filteredPlans.length);
 
     return filteredPlans;
   }
@@ -671,7 +627,6 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
     // Update count based on *currently filtered* carriers
     this.filterLength = this.filteredCarriers.length;
-    console.log('[PlanFilterComponent] Filters updated. Filter length:', this.filterLength);
   }
 
   public resetFiltersAndSort(): void {
@@ -742,7 +697,7 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
 
   public getToolTip(type: string): string | undefined {
     const currentPlanType = this.planType();
-    const tipsForType = this.tooltips[currentPlanType];
+    const tipsForType = (this.tooltips as Record<string, any>)[currentPlanType];
     if (!tipsForType) return undefined;
     const tooltipObj = tipsForType.find((item: any) => item[type]); // Use any temporarily if structure is dynamic
     return tooltipObj ? tooltipObj[type] : undefined;

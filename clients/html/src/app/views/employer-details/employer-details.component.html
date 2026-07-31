@@ -1,5 +1,5 @@
 @if (isLateRates) {
-  @for (alert of alerts; track alert) {
+  @for (alert of alerts; track alert.message) {
     @if (alert.enabled) {
       <ngb-alert [type]="alert.type" (close)="close(alert)">{{ alert.message }}</ngb-alert>
     }
@@ -102,7 +102,7 @@
           <div class="form-group">
             <label for="countyField">County:</label>
             <select formControlName="county" class="form-select" id="countyField" (change)="updateCounty($event)">
-              @for (county of counties; track county) {
+              @for (county of counties; track county.county) {
                 <option [value]="county.county">{{ county.county }}</option>
               }
             </select>
@@ -309,7 +309,7 @@
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
                                 <select type="text" class="form-select" formControlName="relationship">
-                                  @for (relation of relationOptions; track relation) {
+                                  @for (relation of relationOptions; track relation.key) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
                                 </select>
@@ -456,7 +456,7 @@
                               <div class="form-group">
                                 <label for="relationship">Relationship <span class="required-field">*</span></label>
                                 <select type="text" class="form-select" formControlName="relationship">
-                                  @for (relation of relationOptions; track relation) {
+                                  @for (relation of relationOptions; track relation.key) {
                                     <option [value]="relation.key">{{ relation.value }}</option>
                                   }
                                 </select>
@@ -609,7 +609,7 @@
                                 <div class="form-group">
                                   <label for="relationship">Relationship <span class="required-field">*</span></label>
                                   <select type="text" class="form-select" formControlName="relationship">
-                                    @for (relation of relationOptions; track relation) {
+                                    @for (relation of relationOptions; track relation.key) {
                                       <option [value]="relation.key">{{ relation.value }}</option>
                                     }
                                   </select>
