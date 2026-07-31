@@ -351,7 +351,7 @@ export class TieredCoverageCostCalculatorService {
     b_count: BucketCount,
   ) {
     const subscriber_cost =
-      product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
+      (product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
     let members_in_threshold = 0;
     const sorted_dependents = roster_entry.roster_dependents.sort((a, b) => {
       const a_age = this.coverageAge(this.startDate, a.dob);
@@ -360,7 +360,7 @@ export class TieredCoverageCostCalculatorService {
     });
     const total = sorted_dependents.reduce((current_total, rd) => {
       const age = this.coverageAge(this.startDate, rd.dob);
-      let dependentCost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+      let dependentCost = (product.cost(age.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
       if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
           age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&

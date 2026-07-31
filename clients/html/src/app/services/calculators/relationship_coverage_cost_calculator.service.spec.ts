@@ -80,7 +80,7 @@ class MockCalculationProduct {
     return getDefaultValue(this.participation_factors, participation, 1.0);
   }
 
-  public cost(age: string): number {
+  public cost(age: string): number | undefined {
     const age_int = parseInt(age, 0);
     if (age_int > this.max_age) {
       return this.getRate(this.max_age.toFixed(0));

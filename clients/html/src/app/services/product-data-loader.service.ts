@@ -64,7 +64,7 @@ class LoadedProduct {
     return this.participation_factors.get(participation) ?? 1.0;
   }
 
-  public cost(age: string): number {
+  public cost(age: string): number | undefined {
     const age_int = parseInt(age, 0);
     if (age_int > this.max_age) {
       return this.getRate(this.max_age.toFixed(0));
@@ -74,8 +74,8 @@ class LoadedProduct {
     return this.getRate(age);
   }
 
-  private getRate(age: string): number {
-    return this.rates.get(age) ?? NaN;
+  private getRate(age: string): number | undefined {
+    return this.rates.get(age);
   }
 }
 
