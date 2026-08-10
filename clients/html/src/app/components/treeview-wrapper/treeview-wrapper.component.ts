@@ -1,4 +1,4 @@
-import { Component, output, input, OnInit } from '@angular/core';
+import { Component, output, input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 
@@ -129,6 +129,7 @@ interface TreeItem {
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule],
 })
 export class TreeviewWrapperComponent implements OnInit {

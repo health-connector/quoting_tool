@@ -10,7 +10,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { CoverageTypePipe } from '../../pipes/coverage-type.pipe';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 describe('EmployerDetailsComponent', () => {
@@ -35,7 +35,7 @@ describe('EmployerDetailsComponent', () => {
       ],
       providers: [
         { provide: FormBuilder, useValue: formBuilder },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();

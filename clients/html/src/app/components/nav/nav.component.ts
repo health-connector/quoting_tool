@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
 
@@ -26,6 +26,7 @@ import { NgClass } from '@angular/common';
     </div>
   `,
   styleUrls: ['./nav.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NgClass, RouterLink],
 })
 export class NavComponent {
@@ -38,7 +39,7 @@ export class NavComponent {
     { path: '/employer-details/dental', name: 'Dental' },
   ];
 
-  isFormValid(name) {
+  isFormValid(name: string) {
     if (name === 'Health') {
       return !this.validForm();
     }
@@ -48,7 +49,7 @@ export class NavComponent {
     }
   }
 
-  isLinkActive(link) {
+  isLinkActive(link: string) {
     if (link === this.myPath()) {
       return true;
     } else {

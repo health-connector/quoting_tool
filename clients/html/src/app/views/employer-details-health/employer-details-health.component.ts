@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 // import carriers from '../../../data/carriers.json'; // Removed unused import
 import { NavComponent } from '../../components/nav/nav.component';
@@ -66,6 +66,7 @@ interface EmployerDetails {
     </div>
   `,
   styleUrls: ['./employer-details-health.component.css'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NavComponent, PlanFilterComponent],
 })
 export class EmployerDetailsHealthComponent implements OnInit {
