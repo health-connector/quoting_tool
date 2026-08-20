@@ -77,5 +77,5 @@ export interface Product {
   group_size_factor(group_size: string): number;
   group_tier_factor(tier_name: ContributionTierName): number;
   participation_factor(participation: string): number;
-  cost(age: string): number;
+  cost(age: string): number | undefined;
 }

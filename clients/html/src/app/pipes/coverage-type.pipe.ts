@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class CoverageTypePipe implements PipeTransform {
   transform(value: string): string {
-    let name: string;
+    let name: string = '';
     switch (value) {
       case 'both':
         name = 'Both';

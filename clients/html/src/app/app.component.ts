@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -10,6 +10,7 @@ import { HeaderComponent } from './components/header/header.component';
     <router-outlet />
     <app-footer />
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [HeaderComponent, RouterOutlet, FooterComponent],
 })
 export class AppComponent implements OnInit {

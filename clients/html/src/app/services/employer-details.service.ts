@@ -7,7 +7,7 @@ import { ApiRequestService } from './api-request.service';
 export class EmployerDetailsService {
   private api_request = inject(ApiRequestService);
 
-  postUpload(upload) {
+  postUpload(upload: unknown) {
     return this.api_request.authedPost('employees/upload.json', upload);
   }
 

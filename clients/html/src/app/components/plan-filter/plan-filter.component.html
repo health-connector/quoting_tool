@@ -4,7 +4,7 @@
       <span class="cs-text pe-2">Cost shown for</span>
       <i class="fas fa-user ms-1"></i> {{ costShownText }}
     </div>
-    Effective Date: <strong>{{ employerDetails?.effectiveDate | date: 'MMMM, y' }}</strong>
+    Effective Date: <strong>{{ $safeNavigationMigration(employerDetails?.effectiveDate) | date: 'MMMM, y' }}</strong>
   </div>
 
   <div class="col-12 mt-4 mb-4">
@@ -299,20 +299,18 @@
                         ></i>
                       }
                     </th>
-                    <th
-                      *ngIf="planFilter === 'single_product' && planType() !== 'dental'"
-                      [ngStyle]="{ width: '17%' }"
-                      scope="col"
-                    >
-                      {{ getTableHeader('col-5') }}
-                      @if (!pdfView) {
-                        <i
-                          class="fas fa-question-circle ms-2"
-                          placement="right"
-                          [ngbTooltip]="getToolTip('monthlyCost')"
-                        ></i>
-                      }
-                    </th>
+                    @if (planFilter === 'single_product' && planType() !== 'dental') {
+                      <th [ngStyle]="{ width: '17%' }" scope="col">
+                        {{ getTableHeader('col-5') }}
+                        @if (!pdfView) {
+                          <i
+                            class="fas fa-question-circle ms-2"
+                            placement="right"
+                            [ngbTooltip]="getToolTip('monthlyCost')"
+                          ></i>
+                        }
+                      </th>
+                    }
                     <th
                       scope="col"
                       (click)="sortData(getTableHeader('col-6')[0]); setIcon('col-6')"
@@ -405,15 +403,17 @@
                       </td>
                       <td>{{ carrier['group_deductible'] }}</td>
                       <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
-                      <td *ngIf="planFilter === 'single_product' && planType() !== 'dental'">
-                        <span>
-                          <strong>Employee -</strong> {{ carrier['employee_cost'] || 0 | currency }}<br />
-                          <strong>Emp & Spouse -</strong> {{ carrier['employee_spouse_cost'] || 0 | currency }}<br />
-                          <strong>Emp & Children -</strong> {{ carrier['employee_children_cost'] || 0 | currency
-                          }}<br />
-                          <strong>Family -</strong> {{ carrier['family_cost'] || 0 | currency }}
-                        </span>
-                      </td>
+                      @if (planFilter === 'single_product' && planType() !== 'dental') {
+                        <td>
+                          <span>
+                            <strong>Employee -</strong> {{ carrier['employee_cost'] || 0 | currency }}<br />
+                            <strong>Emp & Spouse -</strong> {{ carrier['employee_spouse_cost'] || 0 | currency }}<br />
+                            <strong>Emp & Children -</strong> {{ carrier['employee_children_cost'] || 0 | currency
+                            }}<br />
+                            <strong>Family -</strong> {{ carrier['family_cost'] || 0 | currency }}
+                          </span>
+                        </td>
+                      }
                       <td>{{ carrier['sponsor_cost'] || 0 | currency }}</td>
                     </tr>
                   }

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-footer',
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="footer">
       <div class="container">
@@ -20,7 +21,7 @@ import { Component } from '@angular/core';
   `,
 })
 export class FooterComponent {
-  currentYear: number;
+  currentYear!: number;
 
   ngOnInit() {
     this.currentYear = new Date().getFullYear();
