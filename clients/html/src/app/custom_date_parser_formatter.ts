@@ -25,19 +25,19 @@ function toYear(value: unknown): number {
   if (year_digits === 4 && birth_year > current_year - 120 && birth_year < current_year + 1) {
     return birth_year;
   } else {
-    return null;
+    return 0;
   }
 }
 
 @Injectable()
 export class CustomDateParserFormatter extends NgbDateParserFormatter {
-  parse(value: string): NgbDateStruct {
+  parse(value: string): NgbDateStruct | null {
     if (value) {
       const dateParts = value.replace(/\s/g, '').trim().split('/');
       if (dateParts.length === 1 && isNumber(dateParts[0])) {
-        return { year: null, month: toInteger(dateParts[0]), day: null };
+        return { year: 0, month: toInteger(dateParts[0]), day: 0 };
       } else if (dateParts.length === 2 && isNumber(dateParts[0]) && isNumber(dateParts[1])) {
-        return { year: null, month: toInteger(dateParts[0]), day: toInteger(dateParts[1]) };
+        return { year: 0, month: toInteger(dateParts[0]), day: toInteger(dateParts[1]) };
       } else if (dateParts.length === 3 && isNumber(dateParts[0]) && isNumber(dateParts[1]) && isNumber(dateParts[2])) {
         return { year: toYear(dateParts[2]), month: toInteger(dateParts[0]), day: toInteger(dateParts[1]) };
       }

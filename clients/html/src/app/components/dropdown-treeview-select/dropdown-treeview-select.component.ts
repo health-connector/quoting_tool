@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { SelectedSicService } from '../../services/selected-sic.service';
 import sicCodes from '../../../data/sicCodes.json';
 import { FormsModule } from '@angular/forms';
@@ -25,6 +25,7 @@ interface TreeItem {
 @Component({
   selector: 'app-dropdown-treeview-select',
   template: ` <app-treeview-wrapper [items]="items" [showFilter]="true" (valueChange)="select($event)" /> `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [FormsModule, TreeviewWrapperComponent],
 })
 export class DropdownTreeviewSelectComponent implements OnInit {

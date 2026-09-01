@@ -14,7 +14,7 @@ export class MetalLevelBucket {
 
   add(product: Product, re: RosterEntry, total: number): void {
     if (this.expensiveFamilies.has(product.metal_level)) {
-      const currentCostResult = this.expensiveFamilies.get(product.metal_level);
+      const currentCostResult = this.expensiveFamilies.get(product.metal_level)!;
       if (currentCostResult.total < total) {
         this.expensiveFamilies.set(product.metal_level, new CostResult(re, total));
       }
@@ -22,7 +22,7 @@ export class MetalLevelBucket {
       this.expensiveFamilies.set(product.metal_level, new CostResult(re, total));
     }
     if (this.cheapFamilies.has(product.metal_level)) {
-      const currentCostResult = this.cheapFamilies.get(product.metal_level);
+      const currentCostResult = this.cheapFamilies.get(product.metal_level)!;
       if (currentCostResult.total > total) {
         this.cheapFamilies.set(product.metal_level, new CostResult(re, total));
       }
@@ -31,17 +31,17 @@ export class MetalLevelBucket {
     }
   }
 
-  cheapestFor(q: Quote): CostResult | null {
+  cheapestFor(q: Quote): CostResult | undefined {
     if (this.cheapFamilies.has(q.product_information.metal_level)) {
       return this.cheapFamilies.get(q.product_information.metal_level);
     }
-    return null;
+    return undefined;
   }
 
-  mostExpensiveFor(q: Quote): CostResult | null {
+  mostExpensiveFor(q: Quote): CostResult | undefined {
     if (this.expensiveFamilies.has(q.product_information.metal_level)) {
       return this.expensiveFamilies.get(q.product_information.metal_level);
     }
-    return null;
+    return undefined;
   }
 }

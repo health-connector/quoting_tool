@@ -2,10 +2,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 // Define an interface for the objects being sorted
 interface SortablePlan {
+  [key: string]: unknown; // Allow string indexing for dynamic property access
   sponsor_cost: string | number;
   deductible: string;
   product_information?: {
-    // Mark as optional for safety
+    [key: string]: unknown; // Allow string indexing for dynamic property access
     out_of_pocket_in_network?: string; // Mark as optional for safety
   };
 }

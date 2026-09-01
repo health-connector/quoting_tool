@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { EmployerDetailsComponent } from './employer-details.component';
 import { NavComponent } from '../../components/nav/nav.component';
@@ -10,7 +10,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { CoverageTypePipe } from '../../pipes/coverage-type.pipe';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { By } from '@angular/platform-browser';
 
 describe('EmployerDetailsComponent', () => {
@@ -28,20 +28,22 @@ describe('EmployerDetailsComponent', () => {
         NgbModule,
         RouterTestingModule,
         AutocompleteLibModule,
-        BrowserAnimationsModule,
+        NoopAnimationsModule,
         EmployerDetailsComponent,
         NavComponent,
         CoverageTypePipe,
       ],
       providers: [
         { provide: FormBuilder, useValue: formBuilder },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting(),
       ],
     }).compileComponents();
   }));
 
   beforeEach(() => {
+    // Clear localStorage so ngOnInit does not set showEmployeeRoster=true from a previous test run
+    localStorage.removeItem('employerDetails');
     fixture = TestBed.createComponent(EmployerDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -71,8 +73,6 @@ describe('EmployerDetailsComponent', () => {
     // Ensure showEmployeeRoster is false so the buttons are present
     component.showEmployeeRoster = false;
     fixture.detectChanges();
-
-    // Use debugElement and By for more robust querying
     const debugElement = fixture.debugElement;
 
     // Find the specific H2 element by its text content, making the test less brittle to structure changes

@@ -9,11 +9,11 @@ import { RosterQuote } from './roster_quote';
 import { RelationshipDiscounts } from '../../config/relationship_discount';
 
 class FilteredRelationshipRosterEntry {
-  dob: Date;
-  roster_dependents: Array<RosterDependent>;
-  will_enroll: boolean;
-  start_date: Date;
-  bucket: ContributionTierName;
+  dob!: Date;
+  roster_dependents!: Array<RosterDependent>;
+  will_enroll!: boolean;
+  start_date!: Date;
+  bucket!: ContributionTierName;
 
   constructor(
     start_date: Date,
@@ -83,13 +83,13 @@ class FilteredRelationshipRosterEntry {
     return filtered_deps;
   }
 
-  private setBucketAndDeps(start_date, deps, rel_map, allowed_buckets) {
+  private setBucketAndDeps(start_date: Date, deps: Array<RosterDependent>, rel_map: Map<ContributionTierName, boolean>, allowed_buckets: Array<ContributionTierName>) {
     const clean_deps = this.kickTooOldChildren(start_date, deps);
     this.roster_dependents = this.filterDependents(start_date, clean_deps, rel_map);
     this.bucket = this.selectBucket(this.roster_dependents, allowed_buckets);
   }
 
-  private selectBucket(remaining_deps, allowed_buckets: Array<ContributionTierName>) {
+  private selectBucket(remaining_deps: Array<RosterDependent>, allowed_buckets: Array<ContributionTierName>) {
     if (remaining_deps.length < 1) {
       return ContributionTierName.EMPLOYEE_ONLY;
     }
@@ -136,7 +136,7 @@ class FilteredRelationshipRosterEntry {
     return ContributionTierName.FAMILY;
   }
 
-  private remainingRelationships(remaining_deps) {
+  private remainingRelationships(remaining_deps: Array<RosterDependent>) {
     return remaining_deps.map((rd) => {
       return rd.relationship;
     });
@@ -155,7 +155,7 @@ class BucketCount {
     return new BucketCount(this.counts, this.total + price);
   }
 
-  public toLevels(product) {
+  public toLevels(product: Product) {
     let denominator = 0.0;
     this.counts.forEach((v, k) => {
       denominator = denominator + v * product.group_tier_factor(k);
@@ -351,7 +351,7 @@ export class TieredCoverageCostCalculatorService {
     b_count: BucketCount,
   ) {
     const subscriber_cost =
-      product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) * sic_factor * gs_factor * pr_factor;
+      (product.cost(this.coverageAge(this.startDate, roster_entry.dob).toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
     let members_in_threshold = 0;
     const sorted_dependents = roster_entry.roster_dependents.sort((a, b) => {
       const a_age = this.coverageAge(this.startDate, a.dob);
@@ -360,7 +360,7 @@ export class TieredCoverageCostCalculatorService {
     });
     const total = sorted_dependents.reduce((current_total, rd) => {
       const age = this.coverageAge(this.startDate, rd.dob);
-      let dependentCost = product.cost(age.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+      let dependentCost = (product.cost(age.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
       if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
         if (
           age < RelationshipDiscounts.relationship_discount.relationship_threshold_age &&

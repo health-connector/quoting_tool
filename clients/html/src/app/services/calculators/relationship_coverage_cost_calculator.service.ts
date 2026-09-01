@@ -15,7 +15,7 @@ class FilteredRelationshipRosterEntry {
   dob: Date;
   roster_dependents: Array<RosterDependent>;
   will_enroll: boolean;
-  start_date: Date;
+  start_date!: Date;
 
   constructor(
     start_date: Date,
@@ -178,7 +178,7 @@ export class RelationshipCoverageCostCalculatorService {
     return calculated_products;
   }
 
-  public reducedMemberCost(q, roster_entry, total) {
+  public reducedMemberCost(q: Quote, roster_entry: RosterEntry, total: number) {
     const gs_factor = q.product_information.group_size_factor(this.groupSize);
     const pr_factor = q.product_information.participation_factor(this.participation);
     const sic_code_factor = q.product_information.sic_code_factor;
@@ -230,7 +230,7 @@ export class RelationshipCoverageCostCalculatorService {
     pr_factor: number,
   ) {
     const employeeAge = this.coverageAge(this.startDate, roster_entry.dob);
-    const subscriber_cost = product.cost(employeeAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+    const subscriber_cost = (product.cost(employeeAge.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
     const sponsor_rel_contribution = this.relContributions.get(ContributionRelationship.SELF) || 0.0;
     const subscriber_sponsor_cost = subscriber_cost * (sponsor_rel_contribution * 0.01);
     let members_in_threshold = 0;
@@ -242,7 +242,7 @@ export class RelationshipCoverageCostCalculatorService {
     const total = sorted_dependents.reduce(
       (current_total, rd) => {
         const depAge = this.coverageAge(this.startDate, rd.dob);
-        let dependent_cost = product.cost(depAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        let dependent_cost = (product.cost(depAge.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
         const sponsor_dep_rel_contribution = this.relContributions.get(rd.relationship) || 0.0;
         if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
           if (
@@ -278,7 +278,7 @@ export class RelationshipCoverageCostCalculatorService {
     pr_factor: number,
   ) {
     const employeeAge = this.coverageAge(this.startDate, roster_entry.dob);
-    const subscriber_cost = product.cost(employeeAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+    const subscriber_cost = (product.cost(employeeAge.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
     const sponsor_rel_contribution = this.relContributions.get(ContributionRelationship.SELF) || 0.0;
     const subscriber_sponsor_cost = subscriber_cost * (sponsor_rel_contribution * 0.01);
     let members_in_threshold = 0;
@@ -290,7 +290,7 @@ export class RelationshipCoverageCostCalculatorService {
     const total = sorted_dependents.reduce(
       (current_total, rd) => {
         const depAge = this.coverageAge(this.startDate, rd.dob);
-        let dependent_cost = product.cost(depAge.toFixed(0)) * sic_factor * gs_factor * pr_factor;
+        let dependent_cost = (product.cost(depAge.toFixed(0)) ?? NaN) * sic_factor * gs_factor * pr_factor;
         const sponsor_dep_rel_contribution = this.relContributions.get(rd.relationship) || 0.0;
         if (this.kind === 'health' && RelationshipDiscounts.relationship_discount) {
           if (
