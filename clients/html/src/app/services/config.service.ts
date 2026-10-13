@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 //defines the shape of config.json, which is loaded at runtime and contains environment-specific configuration such as API URLs
 interface AppConfig {
@@ -30,10 +31,10 @@ export class ConfigService {
   }
 
   get envApi(): string {
-    return this.configData?.envApi ?? '';
+    return this.configData?.envApi ?? environment.envApi;
   }
 
   get cataractApi(): string {
-    return this.configData?.cataract_api ?? '';
+    return this.configData?.cataract_api ?? environment.cataract_api;
   }
 }
