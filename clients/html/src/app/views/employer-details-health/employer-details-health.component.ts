@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 // import carriers from '../../../data/carriers.json'; // Removed unused import
 import { NavComponent } from '../../components/nav/nav.component';
 import { PlanFilterComponent } from '../../components/plan-filter/plan-filter.component';
+import { ProviderNetworkInfoComponent } from '../../components/provider-network-info/provider-network-info.component';
 import { RosterEntry } from '../../data/sponsor_roster'; // Import RosterEntry
 
 // Define interface for employer details structure
@@ -60,6 +61,7 @@ interface EmployerDetails {
               >Find My Doctor</a
             ></strong
           >
+          <app-provider-network-info />
         </div>
       </div>
       <app-plan-filter planType="health" />
@@ -67,7 +69,7 @@ interface EmployerDetails {
   `,
   styleUrls: ['./employer-details-health.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [NavComponent, PlanFilterComponent],
+  imports: [NavComponent, PlanFilterComponent, ProviderNetworkInfoComponent],
 })
 export class EmployerDetailsHealthComponent implements OnInit {
   private router = inject(Router);
