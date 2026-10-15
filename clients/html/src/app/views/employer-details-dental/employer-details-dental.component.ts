@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { PlanFilterComponent } from '../../components/plan-filter/plan-filter.component';
+import { ProviderNetworkInfoComponent } from '../../components/provider-network-info/provider-network-info.component';
 import { NavComponent } from '../../components/nav/nav.component';
 import { RosterEntry } from '../../data/sponsor_roster';
 
@@ -29,6 +30,7 @@ interface EmployerDetails {
               >Find My Doctor</a
             ></strong
           >
+          <app-provider-network-info />
         </div>
       </div>
       <app-plan-filter planType="dental" />
@@ -36,7 +38,7 @@ interface EmployerDetails {
   `,
   styleUrls: ['./employer-details-dental.component.css'],
   changeDetection: ChangeDetectionStrategy.Eager,
-  imports: [NavComponent, PlanFilterComponent],
+  imports: [NavComponent, PlanFilterComponent, ProviderNetworkInfoComponent],
 })
 export class EmployerDetailsDentalComponent implements OnInit {
   private router = inject(Router);
