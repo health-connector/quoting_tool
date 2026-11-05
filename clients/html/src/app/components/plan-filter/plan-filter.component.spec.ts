@@ -188,4 +188,40 @@ describe('PlanFilterComponent', () => {
     expect(headerTexts[3].toLowerCase()).toContain('out of pocket');
     expect(headerTexts[4].toLowerCase()).toContain('employer cost');
   });
+
+  describe('displayDeductible', () => {
+    const quote = (deductible: string, group_deductible: string) =>
+      ({ deductible, group_deductible, product_information: {} }) as unknown as Parameters<
+        PlanFilterComponent['displayDeductible']
+      >[0];
+
+    it('shows the individual deductible and the family per-group amount for a non-embedded HSA plan', () => {
+      expect(component.displayDeductible(quote('$2500', '$5000 per person | $5000 per group'))).toEqual(
+        '$2500 / $5000',
+      );
+    });
+
+    it('shows the individual deductible when the family per-person amount is not applicable', () => {
+      expect(component.displayDeductible(quote('$2500', 'per person not applicable | $5000 per group'))).toEqual(
+        '$2500 / $5000',
+      );
+    });
+
+    it('keeps comma-formatted amounts intact', () => {
+      expect(component.displayDeductible(quote('$2,000', '$2,000 per person | $4,000 per group'))).toEqual(
+        '$2,000 / $4,000',
+      );
+    });
+
+    it('shows Not Applicable when the family field has no per-group amount', () => {
+      expect(component.displayDeductible(quote('$0', 'Not Applicable'))).toEqual('$0 / Not Applicable');
+    });
+
+    it('leaves dental deductibles unchanged', () => {
+      fixture.componentRef.setInput('planType', 'dental');
+      expect(component.displayDeductible(quote('$50', '$50 per person | $150 per group'))).toEqual(
+        '$50 per person | $150 per group',
+      );
+    });
+  });
 });

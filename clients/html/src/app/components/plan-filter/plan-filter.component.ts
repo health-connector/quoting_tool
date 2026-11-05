@@ -602,6 +602,17 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     return isNaN(num) ? NaN : num;
   }
 
+  // Health plans show "<individual> / <family per-group>", matching Enroll's plan comparison.
+  // The family field's "per person" amount is what one member of a family pays, not the
+  // individual deductible, and differs from it on HSA plans with a non-embedded deductible.
+  public displayDeductible(carrier: QuotedProduct): string {
+    const groupDeductible = (carrier['group_deductible'] as string | undefined) ?? '';
+    if (this.planType() !== 'health' || !carrier.deductible) return groupDeductible;
+
+    const perGroup = groupDeductible.match(/\|\s*(\$[\d,]+(?:\.\d+)?)/);
+    return `${carrier.deductible} / ${perGroup ? perGroup[1] : 'Not Applicable'}`;
+  }
+
   private _updateFilterOptionsAndCounts(): void {
     // Update options based on *default* carriers to show all possibilities
     const uniqueValues = <T>(items: T[]) => Array.from(new Set(items));
