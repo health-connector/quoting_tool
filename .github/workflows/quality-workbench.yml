@@ -46,7 +46,7 @@ jobs:
   #       run: |
   #         bundle exec rubocop
   rubocop:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
@@ -60,7 +60,7 @@ jobs:
       - name: Run rubocop
         run: rubocop
   rspec:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       mongodb:
         image: mongo:4.2
