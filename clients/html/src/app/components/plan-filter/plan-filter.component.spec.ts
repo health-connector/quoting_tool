@@ -189,37 +189,32 @@ describe('PlanFilterComponent', () => {
     expect(headerTexts[4].toLowerCase()).toContain('employer cost');
   });
 
-  describe('displayDeductible', () => {
-    const quote = (deductible: string, group_deductible: string) =>
-      ({ deductible, group_deductible, product_information: {} }) as unknown as Parameters<
-        PlanFilterComponent['displayDeductible']
-      >[0];
-
+  describe('formatDeductible', () => {
     it('shows the individual deductible per person for a non-embedded HSA plan', () => {
-      expect(component.displayDeductible(quote('$2500', '$5000 per person | $5000 per group'))).toEqual(
+      expect(component.formatDeductible('$2500', '$5000 per person | $5000 per group')).toEqual(
         '$2500 per person | $5000 per group',
       );
     });
 
     it('shows the individual deductible when the family per-person amount is not applicable', () => {
-      expect(component.displayDeductible(quote('$2500', 'per person not applicable | $5000 per group'))).toEqual(
+      expect(component.formatDeductible('$2500', 'per person not applicable | $5000 per group')).toEqual(
         '$2500 per person | $5000 per group',
       );
     });
 
     it('drops commas from the individual deductible', () => {
-      expect(component.displayDeductible(quote('$2,000', '$2000 per person | $4000 per group'))).toEqual(
+      expect(component.formatDeductible('$2,000', '$2000 per person | $4000 per group')).toEqual(
         '$2000 per person | $4000 per group',
       );
     });
 
     it('leaves the family field unchanged when it has no per-group amount', () => {
-      expect(component.displayDeductible(quote('$0', 'Not Applicable'))).toEqual('Not Applicable');
+      expect(component.formatDeductible('$0', 'Not Applicable')).toEqual('Not Applicable');
     });
 
     it('leaves dental deductibles unchanged', () => {
       fixture.componentRef.setInput('planType', 'dental');
-      expect(component.displayDeductible(quote('$50', '$50 per person | $150 per group'))).toEqual(
+      expect(component.formatDeductible('$50', '$50 per person | $150 per group')).toEqual(
         '$50 per person | $150 per group',
       );
     });

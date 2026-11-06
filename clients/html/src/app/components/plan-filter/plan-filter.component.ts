@@ -47,6 +47,7 @@ interface QuotedProduct {
   product_information: ProductInformation;
   total_cost: number;
   deductible: string; // For display and sorting
+  display_deductible: string; // Annual Deductible column text
   sponsor_cost: number; // For sorting
   employee_cost?: number; // For display
   employee_spouse_cost?: number; // For display
@@ -372,13 +373,15 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
           [ContributionTierName.FAMILY]: tierCosts.get(ContributionTierName.FAMILY),
         };
       }
+      const deductible = String(quote.product_information.deductible ?? '');
       return {
         ...quote,
         product_information: {
           ...quote.product_information,
-          deductible: String(quote.product_information.deductible ?? ''), // Ensure string
+          deductible, // Ensure string
         },
-        deductible: String(quote.product_information.deductible ?? ''), // Top-level for sorting/display
+        deductible, // Top-level for sorting/display
+        display_deductible: this.formatDeductible(deductible, quote.group_deductible ?? ''), // Computed once, not per render
         sponsor_cost: quote.total_cost, // Using total_cost as sponsor_cost (since contribution is 100%)
         employee_cost: tierCosts?.[ContributionTierName.EMPLOYEE_ONLY]?.total_cost ?? 0,
         employee_spouse_cost: tierCosts?.[ContributionTierName.EMPLOYEE_AND_SPOUSE]?.total_cost ?? 0,
@@ -606,12 +609,11 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
   // That amount is what one member of a family pays, not the individual deductible, and differs
   // from it on HSA plans with a non-embedded deductible. Commas are dropped so the amount matches
   // the comma-free "per group" amount and the out-of-pocket column.
-  public displayDeductible(carrier: QuotedProduct): string {
-    const groupDeductible = (carrier['group_deductible'] as string | undefined) ?? '';
+  public formatDeductible(deductible: string, groupDeductible: string): string {
     const pipe = groupDeductible.indexOf('|');
-    if (this.planType() !== 'health' || !carrier.deductible || pipe === -1) return groupDeductible;
+    if (this.planType() !== 'health' || !deductible || pipe === -1) return groupDeductible;
 
-    return `${String(carrier.deductible).replace(/,/g, '')} per person ${groupDeductible.slice(pipe)}`;
+    return `${deductible.replace(/,/g, '')} per person ${groupDeductible.slice(pipe)}`;
   }
 
   private _updateFilterOptionsAndCounts(): void {

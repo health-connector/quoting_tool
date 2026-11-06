@@ -401,7 +401,7 @@
                           </span>
                         }
                       </td>
-                      <td>{{ displayDeductible(carrier) }}</td>
+                      <td>{{ carrier.display_deductible }}</td>
                       <td>{{ carrier['product_information']['out_of_pocket_in_network'] }}</td>
                       @if (planFilter === 'single_product' && planType() !== 'dental') {
                         <td>
