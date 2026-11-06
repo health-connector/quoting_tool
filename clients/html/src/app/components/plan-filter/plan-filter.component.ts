@@ -47,6 +47,7 @@ interface QuotedProduct {
   product_information: ProductInformation;
   total_cost: number;
   deductible: string; // For display and sorting
+  display_deductible: string; // Annual Deductible column text
   sponsor_cost: number; // For sorting
   employee_cost?: number; // For display
   employee_spouse_cost?: number; // For display
@@ -372,13 +373,15 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
           [ContributionTierName.FAMILY]: tierCosts.get(ContributionTierName.FAMILY),
         };
       }
+      const deductible = String(quote.product_information.deductible ?? '');
       return {
         ...quote,
         product_information: {
           ...quote.product_information,
-          deductible: String(quote.product_information.deductible ?? ''), // Ensure string
+          deductible, // Ensure string
         },
-        deductible: String(quote.product_information.deductible ?? ''), // Top-level for sorting/display
+        deductible, // Top-level for sorting/display
+        display_deductible: this.formatDeductible(deductible, quote.group_deductible ?? ''), // Computed once, not per render
         sponsor_cost: quote.total_cost, // Using total_cost as sponsor_cost (since contribution is 100%)
         employee_cost: tierCosts?.[ContributionTierName.EMPLOYEE_ONLY]?.total_cost ?? 0,
         employee_spouse_cost: tierCosts?.[ContributionTierName.EMPLOYEE_AND_SPOUSE]?.total_cost ?? 0,
@@ -600,6 +603,17 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     if (!deductibleString) return NaN;
     const num = parseInt(deductibleString.replace(/[$,]/g, ''), 10);
     return isNaN(num) ? NaN : num;
+  }
+
+  // Health plans replace the family field's "per person" amount with the individual deductible.
+  // That amount is what one member of a family pays, not the individual deductible, and differs
+  // from it on HSA plans with a non-embedded deductible. Commas are dropped so the amount matches
+  // the comma-free "per group" amount and the out-of-pocket column.
+  public formatDeductible(deductible: string, groupDeductible: string): string {
+    const pipe = groupDeductible.indexOf('|');
+    if (this.planType() !== 'health' || !deductible || pipe === -1) return groupDeductible;
+
+    return `${deductible.replace(/,/g, '')} per person ${groupDeductible.slice(pipe)}`;
   }
 
   private _updateFilterOptionsAndCounts(): void {
