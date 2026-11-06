@@ -195,26 +195,26 @@ describe('PlanFilterComponent', () => {
         PlanFilterComponent['displayDeductible']
       >[0];
 
-    it('shows the individual deductible and the family per-group amount for a non-embedded HSA plan', () => {
+    it('shows the individual deductible per person for a non-embedded HSA plan', () => {
       expect(component.displayDeductible(quote('$2500', '$5000 per person | $5000 per group'))).toEqual(
-        '$2500 / $5000',
+        '$2500 per person | $5000 per group',
       );
     });
 
     it('shows the individual deductible when the family per-person amount is not applicable', () => {
       expect(component.displayDeductible(quote('$2500', 'per person not applicable | $5000 per group'))).toEqual(
-        '$2500 / $5000',
+        '$2500 per person | $5000 per group',
       );
     });
 
-    it('keeps comma-formatted amounts intact', () => {
-      expect(component.displayDeductible(quote('$2,000', '$2,000 per person | $4,000 per group'))).toEqual(
-        '$2,000 / $4,000',
+    it('drops commas from the individual deductible', () => {
+      expect(component.displayDeductible(quote('$2,000', '$2000 per person | $4000 per group'))).toEqual(
+        '$2000 per person | $4000 per group',
       );
     });
 
-    it('shows Not Applicable when the family field has no per-group amount', () => {
-      expect(component.displayDeductible(quote('$0', 'Not Applicable'))).toEqual('$0 / Not Applicable');
+    it('leaves the family field unchanged when it has no per-group amount', () => {
+      expect(component.displayDeductible(quote('$0', 'Not Applicable'))).toEqual('Not Applicable');
     });
 
     it('leaves dental deductibles unchanged', () => {

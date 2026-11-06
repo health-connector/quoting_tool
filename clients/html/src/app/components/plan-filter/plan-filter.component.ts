@@ -602,15 +602,16 @@ export class PlanFilterComponent implements OnInit, OnDestroy {
     return isNaN(num) ? NaN : num;
   }
 
-  // Health plans show "<individual> / <family per-group>", matching Enroll's plan comparison.
-  // The family field's "per person" amount is what one member of a family pays, not the
-  // individual deductible, and differs from it on HSA plans with a non-embedded deductible.
+  // Health plans replace the family field's "per person" amount with the individual deductible.
+  // That amount is what one member of a family pays, not the individual deductible, and differs
+  // from it on HSA plans with a non-embedded deductible. Commas are dropped so the amount matches
+  // the comma-free "per group" amount and the out-of-pocket column.
   public displayDeductible(carrier: QuotedProduct): string {
     const groupDeductible = (carrier['group_deductible'] as string | undefined) ?? '';
-    if (this.planType() !== 'health' || !carrier.deductible) return groupDeductible;
+    const pipe = groupDeductible.indexOf('|');
+    if (this.planType() !== 'health' || !carrier.deductible || pipe === -1) return groupDeductible;
 
-    const perGroup = groupDeductible.match(/\|\s*(\$[\d,]+(?:\.\d+)?)/);
-    return `${carrier.deductible} / ${perGroup ? perGroup[1] : 'Not Applicable'}`;
+    return `${String(carrier.deductible).replace(/,/g, '')} per person ${groupDeductible.slice(pipe)}`;
   }
 
   private _updateFilterOptionsAndCounts(): void {
