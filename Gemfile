@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '3.4.7'
+ruby '3.4.12'
 
 # Ruby 3.1+ compatibility - these standard libraries are now separate gems
 # Temp fix for kube pod restarts
