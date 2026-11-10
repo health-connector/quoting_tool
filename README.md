@@ -65,7 +65,7 @@ $ docker-compose stop
 
 ## Configuration
 
-- Ruby 3.4.7
+- Ruby 3.4.12
 - Rails 8.1.2 w/options:
   - --skip-action-cable
   - --skip-active-record

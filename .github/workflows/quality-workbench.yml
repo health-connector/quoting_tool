@@ -46,12 +46,12 @@ jobs:
   #       run: |
   #         bundle exec rubocop
   rubocop:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: '3.4.12'
           bundler-cache: false
           rubygems: latest
       - name: bundle install
@@ -60,7 +60,7 @@ jobs:
       - name: Run rubocop
         run: rubocop
   rspec:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     services:
       mongodb:
         image: mongo:4.2
@@ -79,7 +79,7 @@ jobs:
           node-version: '16'
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.4.7'
+          ruby-version: '3.4.12'
           bundler-cache: true
           rubygems: latest
       - name: Update bundler

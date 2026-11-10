@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./.docker/production/app/Dockerfile
       args:
-        RUBY_VERSION: '3.4.7-bookworm'
+        RUBY_VERSION: '3.4.12-bookworm'
         BUNDLER_VERSION: '2.4.22'
         NODE_MAJOR: '20'
         YARN_VERSION: '1.17.3'
